@@ -3181,14 +3181,10 @@ details.notes summary:hover { color: var(--brass); }
 
     /* the method lives below the options and follows them — tick smoke and
        step one becomes smoking the glass */
-    var howBox = el('div');
-
     function redraw() {
       var next = drawGlass(drink, state, 'pour');
       preview.innerHTML = '';
       preview.appendChild(next);
-      howBox.innerHTML = '';
-      howBox.appendChild(stepsList(drink, state));
     }
 
     /* body */
@@ -3265,10 +3261,6 @@ details.notes summary:hover { color: var(--brass); }
       body.appendChild(eggRow);
     }
 
-    var howField = el('div', 'field');
-    howField.appendChild(el('div', 'label', U('how_made')));
-    howField.appendChild(howBox);
-    body.appendChild(howField);
     redraw();
 
     var nameField = el('div', 'field');
@@ -3327,7 +3319,13 @@ details.notes summary:hover { color: var(--brass); }
 
     sheet.appendChild(form);
     sheet.showModal();
-    nameInput.value ? send.focus() : nameInput.focus();
+    /* focus without scrolling, then pin the body to the top — otherwise the
+       browser scrolls the focused field into view and the drink's name and
+       glass are already off-screen when the sheet opens */
+    var coarse = window.matchMedia('(hover: none)').matches;
+    if (!coarse) (nameInput.value ? send : nameInput).focus({ preventScroll: true });
+    body.scrollTop = 0;
+    requestAnimationFrame(function () { body.scrollTop = 0; });
   }
 
   function placeOrder(order) {
