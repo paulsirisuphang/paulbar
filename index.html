@@ -123,14 +123,18 @@ button, input, textarea, select { font: inherit; color: inherit; }
   letter-spacing: -0.015em;
 }
 .wordmark .amp { color: var(--campari); }
-  70%  { box-shadow: 0 0 0 7px rgba(240,102,58,0); }
-  100% { box-shadow: 0 0 0 0 rgba(240,102,58,0); }
+
+.topbar-right {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
 }
 
 .langs {
   display: flex;
   gap: 2px;
-  margin-left: auto;
   padding: 3px;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -151,36 +155,60 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .lang:hover { color: var(--text-2); }
 .lang[aria-pressed='true'] { background: var(--bg-3); color: var(--brass); }
 
-.tabs {
-  display: flex;
-  gap: 2px;
-  margin-left: 10px;
-  padding: 3px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--bg-2);
-}
-.tab {
+.burger {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 6px 16px;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--bg-2);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: color .18s, border-color .18s, background-color .18s;
+}
+.burger:hover { color: var(--text); border-color: var(--line-2); }
+.burger[aria-expanded='true'] { background: var(--bg-3); color: var(--text); border-color: var(--line-2); }
+.burger svg { width: 19px; height: 19px; }
+.burger-count { position: absolute; top: -6px; right: -6px; }
+
+.nav-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 184px;
+  padding: 6px;
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  background: var(--bg-2);
+  box-shadow: 0 24px 48px -22px #000;
+}
+.nav-menu[hidden] { display: none; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
   border: 0;
-  border-radius: 999px;
+  border-radius: 8px;
   background: none;
   color: var(--text-2);
-  font-size: 0.8125rem;
+  font-size: 0.9375rem;
   font-weight: 600;
-  letter-spacing: .02em;
+  text-align: left;
   cursor: pointer;
   transition: color .18s, background-color .18s;
 }
-.tab:hover { color: var(--text); }
-.tab[aria-selected='true'] {
-  background: var(--bg-3);
-  color: var(--text);
-  box-shadow: 0 1px 0 rgba(255,255,255,.04) inset;
-}
+.nav-item:hover { background: var(--bg-3); color: var(--text); }
+.nav-item[aria-selected='true'] { background: var(--bg-3); color: var(--brass); }
+
 .count {
   min-width: 19px;
   padding: 0 5px;
@@ -1113,15 +1141,23 @@ details.notes summary:hover { color: var(--brass); }
 <div class="page">
   <header class="topbar">
     <h1 class="wordmark">Paul<span class="amp">'</span>s Bar</h1>
-    <div class="langs" role="group" aria-label="Language">
-      <button class="lang" id="lang-en" type="button" aria-pressed="true">EN</button>
-      <button class="lang" id="lang-th" type="button" aria-pressed="false">ไทย</button>
-    </div>
-    <div class="tabs" role="tablist" aria-label="Sections">
-      <button class="tab" id="tab-menu" role="tab" aria-selected="true" aria-controls="view-menu" type="button"><span id="tab-menu-text">Menu</span></button>
-      <button class="tab" id="tab-orders" role="tab" aria-selected="false" aria-controls="view-orders" type="button">
-        <span id="tab-orders-text">Orders</span> <span class="count" id="pending-count" hidden>0</span>
+    <div class="topbar-right">
+      <div class="langs" role="group" aria-label="Language">
+        <button class="lang" id="lang-en" type="button" aria-pressed="true">EN</button>
+        <button class="lang" id="lang-th" type="button" aria-pressed="false">ไทย</button>
+      </div>
+      <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16"/>
+        </svg>
+        <span class="count burger-count" id="burger-count" hidden>0</span>
       </button>
+      <nav class="nav-menu" id="nav-menu" role="tablist" aria-label="Sections" hidden>
+        <button class="nav-item" id="tab-menu" role="tab" aria-selected="true" aria-controls="view-menu" type="button"><span id="tab-menu-text">Menu</span></button>
+        <button class="nav-item" id="tab-orders" role="tab" aria-selected="false" aria-controls="view-orders" type="button">
+          <span id="tab-orders-text">Orders</span> <span class="count" id="pending-count" hidden>0</span>
+        </button>
+      </nav>
     </div>
   </header>
 
@@ -3713,10 +3749,15 @@ details.notes summary:hover { color: var(--brass); }
     var badge = $('#pending-count');
     badge.textContent = working.length;
     badge.hidden = working.length === 0;
+    var bcount = $('#burger-count');
+    bcount.textContent = working.length;
+    bcount.hidden = working.length === 0;
     if (isNew && working.length > lastPending && $('#tab-orders').getAttribute('aria-selected') !== 'true') {
-      badge.classList.remove('pulse');
-      void badge.offsetWidth;
-      badge.classList.add('pulse');
+      [badge, bcount].forEach(function (n) {
+        n.classList.remove('pulse');
+        void n.offsetWidth;
+        n.classList.add('pulse');
+      });
     }
     lastPending = working.length;
 
@@ -3772,11 +3813,32 @@ details.notes summary:hover { color: var(--brass); }
     $('#tab-orders').setAttribute('aria-selected', isMenu ? 'false' : 'true');
     $('#view-menu').hidden = !isMenu;
     $('#view-orders').hidden = isMenu;
-    if (!isMenu) $('#pending-count').classList.remove('pulse');
+    if (!isMenu) {
+      $('#pending-count').classList.remove('pulse');
+      $('#burger-count').classList.remove('pulse');
+    }
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
-  $('#tab-menu').addEventListener('click', function () { showTab('menu'); });
-  $('#tab-orders').addEventListener('click', function () { showTab('orders'); });
+  var burger = $('#burger');
+  var navMenu = $('#nav-menu');
+
+  function setNav(open) {
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    navMenu.hidden = !open;
+  }
+  burger.addEventListener('click', function (e) {
+    e.stopPropagation();
+    setNav(navMenu.hidden);
+  });
+  document.addEventListener('click', function (e) {
+    if (!navMenu.hidden && !navMenu.contains(e.target)) setNav(false);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !navMenu.hidden) setNav(false);
+  });
+
+  $('#tab-menu').addEventListener('click', function () { showTab('menu'); setNav(false); });
+  $('#tab-orders').addEventListener('click', function () { showTab('orders'); setNav(false); });
 
   /* ---------- bartender's choice ---------- */
 
