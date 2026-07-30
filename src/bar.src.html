@@ -149,18 +149,27 @@ button, input, textarea, select { font: inherit; color: inherit; }
 }
 .wordmark {
   margin: 0;
-  /* a rapid triple tap on text otherwise selects it, or zooms, and the
-     browser stops delivering the taps */
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
-  touch-action: manipulation;
   font-family: var(--serif);
   font-size: clamp(1.5rem, 3.4vw, 1.875rem);
   font-weight: 600;
   letter-spacing: -0.015em;
 }
 .wordmark .amp { color: var(--campari); }
+.mark {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+  transition: color .2s;
+}
+.mark:hover { color: #FFF6E8; }
 
 .topbar-right {
   position: relative;
@@ -1301,7 +1310,7 @@ details.notes summary:hover { color: var(--brass); }
 
 <div class="page">
   <header class="topbar">
-    <h1 class="wordmark">Paul<span class="amp">'</span>s Bar</h1>
+    <h1 class="wordmark"><button class="mark" id="mark" type="button">Paul<span class="amp">'</span>s Bar</button></h1>
     <div class="topbar-right">
       <div class="langs" role="group" aria-label="Language">
         <button class="lang" id="lang-en" type="button" aria-pressed="true">EN</button>
@@ -3511,31 +3520,21 @@ __THAI_DATA__
   }
 
   function watchTheName() {
-    var mark = $('.wordmark');
+    var mark = $('#mark');
     if (!mark) return;
-    var knocks = [];
-    var last = 0;
 
-    function knock() {
-      if (secretFound()) return;
-      var now = Date.now();
-      /* pointerup and click both fire for one tap — count it once */
-      if (now - last < 90) return;
-      last = now;
-      knocks = knocks.filter(function (at) { return now - at < 2500; });
-      knocks.push(now);
-      if (knocks.length < 3) return;
-      knocks = [];
+    mark.addEventListener('click', function () {
+      if (secretFound()) {
+        /* already discovered — the name is now just the way back to it */
+        var d = byId['vieux-carre'];
+        if (d) openSheet(d);
+        return;
+      }
       try { localStorage.setItem(FOUND_KEY, '1'); } catch (e) {}
       paintSecret();
       var line = $('#secret');
       if (line) line.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
-    /* whichever the device gives us */
-    mark.addEventListener('pointerup', knock);
-    mark.addEventListener('click', knock);
-    mark.addEventListener('touchend', knock, { passive: true });
+    });
   }
 
   /* ---------- three taps ---------- */
