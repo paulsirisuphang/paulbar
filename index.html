@@ -123,26 +123,6 @@ button, input, textarea, select { font: inherit; color: inherit; }
   letter-spacing: -0.015em;
 }
 .wordmark .amp { color: var(--campari); }
-.hours {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.6875rem;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--text-3);
-}
-/* the little sign in the window */
-.live-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--campari-2);
-  box-shadow: 0 0 0 0 rgba(240,102,58,.5);
-  animation: sign 2.6s ease-out infinite;
-}
-@keyframes sign {
-  0%   { box-shadow: 0 0 0 0 rgba(240,102,58,.55); }
   70%  { box-shadow: 0 0 0 7px rgba(240,102,58,0); }
   100% { box-shadow: 0 0 0 0 rgba(240,102,58,0); }
 }
@@ -1133,7 +1113,6 @@ details.notes summary:hover { color: var(--brass); }
 <div class="page">
   <header class="topbar">
     <h1 class="wordmark">Paul<span class="amp">'</span>s Bar</h1>
-    <span class="hours"><span class="live-dot"></span><span id="hours-text">Open tonight &middot; twenty-five drinks</span></span>
     <div class="langs" role="group" aria-label="Language">
       <button class="lang" id="lang-en" type="button" aria-pressed="true">EN</button>
       <button class="lang" id="lang-th" type="button" aria-pressed="false">ไทย</button>
@@ -1423,6 +1402,79 @@ details.notes summary:hover { color: var(--brass); }
       noSmoke: 'Smoke over fresh citrus reads muddy, and it would bury the honey.',
       glass: 'coupe', color: '#CD9C35', ice: 'none', garnish: 'lemon-twist'
     },
+    {
+      id: 'sidecar', name: 'Sidecar', base: 'Cognac', method: 'Shaken', section: 'shaken',
+      spirits: ['cognac'],
+      note: 'Cognac pulled bright by lemon and orange liqueur.',
+      hook: 'Named for the motorcycle he arrived in.',
+      story: "Both the Ritz in Paris and Harry's New York Bar claim it, and the story attached to both is an army captain who kept being driven to the bar in a motorcycle sidecar. The proportions have been argued over ever since — the French school pours equal parts, the English school pours twice as much brandy.",
+      flavor: { bitter: 1, sweet: 3, citrus: 4, herbal: 1, strength: 4 },
+      build: [['1.5 oz', 'cognac'], ['0.75 oz', 'Cointreau'], ['0.75 oz', 'lemon']],
+      steps: [
+        "Sugar the rim of a chilled coupe first, if you want one.",
+        "Add the cognac, Cointreau and lemon to a shaker with ice.",
+        "Shake hard for 12 seconds.",
+        "Double-strain up into the coupe.",
+        "Garnish with a lemon peel."
+      ],
+      smoke: false,
+      noSmoke: 'Shaken with fresh citrus — never smoke this.',
+      glass: 'coupe', color: '#C98B3A', ice: 'none', garnish: 'lemon-twist'
+    },
+    {
+      id: 'margarita', name: 'Margarita', base: 'Tequila', method: 'Shaken', section: 'shaken',
+      spirits: ['tequila'],
+      note: 'Sharp, salty and green — the loudest citrus on the list.',
+      hook: 'Margarita is Spanish for daisy.',
+      story: "The Daisy was a whole family of sours sweetened with a liqueur instead of syrup, and this is simply the tequila one — which is why at least eight people have credibly claimed to have invented it and none can prove it. Salt only half the rim, so nobody is stuck with a decision they didn't make.",
+      flavor: { bitter: 1, sweet: 3, citrus: 5, herbal: 2, strength: 4 },
+      build: [['2 oz', 'tequila'], ['0.75 oz', 'Cointreau'], ['0.75 oz', 'lime']],
+      steps: [
+        "Salt half the rim of a rocks glass, leaving half bare so there is a choice.",
+        "Add the tequila, Cointreau and lime to a shaker with ice.",
+        "Shake hard for 12 seconds.",
+        "Strain over fresh ice."
+      ],
+      smoke: false,
+      noSmoke: 'Shaken with fresh citrus — never smoke this.',
+      glass: 'rocks', color: '#CBD489', ice: 'cubes', garnish: 'lime-wedge'
+    },
+
+    {
+      id: 'sneaky-pete', name: 'Sneaky Pete', base: 'Rye', method: 'Built', section: 'coffee',
+      spirits: ['rye'],
+      note: 'Coffee and cream over rye. Drinks like dessert.',
+      hook: 'The name used to mean bootleg liquor.',
+      story: "Sneaky Pete was Depression-era slang for whatever rough spirit was going — cheap fortified wine, moonshine, anything that crept up on you quietly. The cocktail keeps the warning in the name: coffee and cream bury the rye completely, and it goes down like pudding.",
+      flavor: { bitter: 2, sweet: 3, citrus: 0, herbal: 1, strength: 3 },
+      build: [['1 oz', 'rye'], ['1 oz', 'coffee liqueur'], ['2 oz', 'milk or cream']],
+      steps: [
+        "Fill a rocks glass with ice.",
+        "Pour in the rye and the coffee liqueur.",
+        "Top with milk or cream.",
+        "Stir gently — you do not want it frothy."
+      ],
+      smoke: false,
+      noSmoke: 'Cream swallows smoke whole. There would be nothing left to smell.',
+      glass: 'rocks', color: '#8D6A4C', ice: 'cubes', garnish: 'none'
+    },
+    {
+      id: 'blind-russian', name: 'Blind Russian', base: 'Vodka', method: 'Built', section: 'coffee',
+      spirits: ['vodka'],
+      note: 'Coffee, chocolate and cream, and barely a drink at all.',
+      hook: 'A White Russian that swapped cream for Baileys.',
+      story: "Same drink, richer: Irish cream in place of the dairy, which brings chocolate and a little more alcohol along with it. The White Russian itself was a forgotten 1960s curiosity until The Big Lebowski turned it into a personality in 1998.",
+      flavor: { bitter: 2, sweet: 4, citrus: 0, herbal: 0, strength: 3 },
+      build: [['1.5 oz', 'vodka'], ['0.75 oz', 'coffee liqueur'], ['1 oz', 'Irish cream']],
+      steps: [
+        "Fill a rocks glass with ice.",
+        "Add the vodka, coffee liqueur and Irish cream.",
+        "Stir until combined."
+      ],
+      smoke: false,
+      noSmoke: 'Cream swallows smoke whole. There would be nothing left to smell.',
+      glass: 'rocks', color: '#7C5B44', ice: 'cubes', garnish: 'none'
+    },
 
     {
       id: 'gin-tonic', name: 'Gin & Tonic', base: 'Gin', method: 'Built', section: 'long', low: true,
@@ -1702,6 +1754,7 @@ details.notes summary:hover { color: var(--brass); }
     { id: 'stirred', title: 'Stirred', sub: 'spirit-forward · smoke works here' },
     { id: 'shaken', title: 'Shaken', sub: 'citrus · bright · no smoke' },
     { id: 'long', title: 'Long & refreshing', sub: 'built in the glass · low ABV' },
+    { id: 'coffee', title: 'Coffee', sub: 'after dinner · built in the glass' },
     { id: 'mocktail', title: 'Mocktails', sub: 'no alcohol · salt in every one' }
   ];
 
@@ -1711,7 +1764,10 @@ details.notes summary:hover { color: var(--brass); }
     { id: 'rye', label: 'Rye' },
     { id: 'campari', label: 'Campari' },
     { id: 'lillet', label: 'Lillet' },
-    { id: 'suze', label: 'Suze' }
+    { id: 'suze', label: 'Suze' },
+    { id: 'cognac', label: 'Cognac' },
+    { id: 'tequila', label: 'Tequila' },
+    { id: 'vodka', label: 'Vodka' }
   ];
 
   var byId = {};
@@ -1747,7 +1803,6 @@ details.notes summary:hover { color: var(--brass); }
   var T_TH = {
     tab_menu: 'เมนู',
     tab_orders: 'ออร์เดอร์',
-    hours: 'เปิดคืนนี้ · 25 เครื่องดื่ม',
     surprise: 'ขอแบบเซอร์ไพรส์',
     narrow: 'กรองรายการ',
 
@@ -1773,6 +1828,9 @@ details.notes summary:hover { color: var(--brass); }
     sp_campari: 'คัมปารี',
     sp_lillet: 'ลิเลต์',
     sp_suze: 'ซูซ',
+    sp_cognac: 'คอนญัก',
+    sp_tequila: 'เตกีลา',
+    sp_vodka: 'วอดก้า',
     takes_smoke: 'รมควันได้',
     count_one: 'เครื่องดื่ม',
     count_many: 'เครื่องดื่ม',
@@ -1785,6 +1843,8 @@ details.notes summary:hover { color: var(--brass); }
     sec_shaken_sub: 'เปรี้ยวสด · ไม่รมควัน',
     sec_long: 'ยาวและสดชื่น',
     sec_long_sub: 'ผสมในแก้ว · แอลกอฮอล์ต่ำ',
+    sec_coffee: 'กาแฟ',
+    sec_coffee_sub: 'หลังอาหาร · ผสมในแก้ว',
     sec_mocktail: 'ม็อกเทล',
     sec_mocktail_sub: 'ไม่มีแอลกอฮอล์ · ใส่เกลือทุกแก้ว',
 
@@ -2041,6 +2101,62 @@ details.notes summary:hover { color: var(--brass); }
       tip: 'ต้องเป็นไซรัปน้ำผึ้ง ไม่ใช่น้ำผึ้งเพียว ๆ เพราะน้ำผึ้งจะจับตัวเป็นก้อนหวาน ๆ เมื่อเจอความเย็น',
       noSmoke: 'ควันกับน้ำผลไม้สดให้รสขุ่น ๆ และจะกลบน้ำผึ้งจนหมด'
     },
+    'sidecar': {
+      base: 'คอนญัก', method: 'เขย่า',
+      note: 'คอนญักที่ถูกเลมอนและลิเคียวส้มดึงให้สดขึ้น',
+      hook: 'ตั้งชื่อตามรถพ่วงข้างที่เขานั่งมา',
+      story: 'ทั้งโรงแรมริตซ์ที่ปารีสและ Harry\'s New York Bar ต่างอ้างว่าเป็นคนคิด และเรื่องที่เล่ากันคือนายทหารที่ถูกขับรถมอเตอร์ไซค์พ่วงข้างมาส่งที่บาร์อยู่เสมอ ส่วนสัดส่วนนั้นเถียงกันมาตลอด ฝ่ายฝรั่งเศสใส่เท่ากันหมด ฝ่ายอังกฤษใส่บรั่นดีเป็นสองเท่า',
+      build: [['1.5 ออนซ์', 'คอนญัก'], ['0.75 ออนซ์', 'คอนโทร'], ['0.75 ออนซ์', 'เลมอน']],
+      steps: [
+        'ถ้าชอบขอบน้ำตาล ให้ป้ายขอบแก้วคูเป้แช่เย็นไว้ก่อน',
+        'ใส่คอนญัก คอนโทร และเลมอนลงในเชคเกอร์พร้อมน้ำแข็ง',
+        'เขย่าแรง 12 วินาที',
+        'กรองสองชั้นลงแก้วคูเป้',
+        'ตกแต่งด้วยเปลือกเลมอน'
+      ],
+      noSmoke: 'เขย่ากับน้ำผลไม้สด แก้วนี้ห้ามรมควัน'
+    },
+    'margarita': {
+      base: 'เตกีลา', method: 'เขย่า',
+      note: 'คม เค็ม และเขียวสด เปรี้ยวที่สุดในเมนู',
+      hook: 'Margarita แปลว่าดอกเดซี่ในภาษาสเปน',
+      story: 'Daisy คือตระกูลค็อกเทลรสเปรี้ยวที่เพิ่มความหวานด้วยลิเคียวแทนไซรัป และแก้วนี้ก็คือเวอร์ชันเตกีลา ซึ่งเป็นเหตุผลว่าทำไมถึงมีคนอ้างว่าเป็นผู้คิดค้นไม่ต่ำกว่าแปดคน และไม่มีใครพิสูจน์ได้สักคน ป้ายเกลือแค่ครึ่งขอบแก้ว คนดื่มจะได้เลือกเอง',
+      build: [['2 ออนซ์', 'เตกีลา'], ['0.75 ออนซ์', 'คอนโทร'], ['0.75 ออนซ์', 'มะนาว']],
+      steps: [
+        'ป้ายเกลือครึ่งขอบแก้วร็อก เหลืออีกครึ่งไว้ให้เลือกได้',
+        'ใส่เตกีลา คอนโทร และมะนาวลงในเชคเกอร์พร้อมน้ำแข็ง',
+        'เขย่าแรง 12 วินาที',
+        'กรองลงบนน้ำแข็งใหม่'
+      ],
+      noSmoke: 'เขย่ากับน้ำผลไม้สด แก้วนี้ห้ามรมควัน'
+    },
+    'sneaky-pete': {
+      base: 'ราย', method: 'ผสมในแก้ว',
+      note: 'กาแฟกับครีมบนราย ดื่มเหมือนของหวาน',
+      hook: 'ชื่อนี้เคยแปลว่าเหล้าเถื่อน',
+      story: 'Sneaky Pete เป็นสแลงยุคเศรษฐกิจตกต่ำ ใช้เรียกเหล้าห่วย ๆ อะไรก็ได้ที่หาได้ตอนนั้น ทั้งไวน์เสริมแอลกอฮอล์ราคาถูกและเหล้าเถื่อน อะไรที่ค่อย ๆ เล่นงานคุณเงียบ ๆ ค็อกเทลแก้วนี้ยังเก็บคำเตือนไว้ในชื่อ กาแฟกับครีมกลบรายจนมิด แล้วมันก็ไหลลงคอเหมือนพุดดิ้ง',
+      build: [['1 ออนซ์', 'ราย'], ['1 ออนซ์', 'ลิเคียวกาแฟ'], ['2 ออนซ์', 'นมหรือครีม']],
+      steps: [
+        'ใส่น้ำแข็งให้เต็มแก้วร็อก',
+        'เทรายและลิเคียวกาแฟลงไป',
+        'เติมนมหรือครีมจนเต็ม',
+        'คนเบา ๆ อย่าให้ขึ้นฟอง'
+      ],
+      noSmoke: 'ครีมกลืนกลิ่นควันจนหมด ไม่เหลืออะไรให้ได้กลิ่น'
+    },
+    'blind-russian': {
+      base: 'วอดก้า', method: 'ผสมในแก้ว',
+      note: 'กาแฟ ช็อกโกแลต และครีม แทบไม่รู้สึกว่าเป็นเหล้า',
+      hook: 'White Russian ที่เปลี่ยนครีมเป็นเบลีย์ส',
+      story: 'แก้วเดียวกันแต่เข้มข้นกว่า ใช้ไอริชครีมแทนครีมสด ซึ่งพาความเป็นช็อกโกแลตและแอลกอฮอล์เพิ่มมาด้วย ส่วน White Russian เองก็เป็นเครื่องดื่มที่ไม่มีใครจำได้จากยุค 60 จนกระทั่งหนัง The Big Lebowski ทำให้มันกลายเป็นบุคลิกของคนคนหนึ่งในปี 1998',
+      build: [['1.5 ออนซ์', 'วอดก้า'], ['0.75 ออนซ์', 'ลิเคียวกาแฟ'], ['1 ออนซ์', 'ไอริชครีม']],
+      steps: [
+        'ใส่น้ำแข็งให้เต็มแก้วร็อก',
+        'เทวอดก้า ลิเคียวกาแฟ และไอริชครีมลงไป',
+        'คนจนเข้ากัน'
+      ],
+      noSmoke: 'ครีมกลืนกลิ่นควันจนหมด ไม่เหลืออะไรให้ได้กลิ่น'
+    },
     'gin-tonic': {
       base: 'จิน', method: 'ผสมในแก้ว',
       note: "ควินินคือยา จินทำให้มันดื่มลงคอ แล้วสุดท้ายก็กลายเป็นเครื่องดื่มที่พึ่งพาได้ที่สุดในโลก",
@@ -2270,7 +2386,6 @@ details.notes summary:hover { color: var(--brass); }
 
   var T_EN = {
     tab_menu: 'Menu', tab_orders: 'Orders',
-    hours: 'Open tonight · twenty-five drinks',
     surprise: 'Surprise me', narrow: 'Narrow it down',
 
     row_taste: 'Flavor', row_heavy: 'How heavy', row_spirit: 'Made with',
@@ -2279,6 +2394,7 @@ details.notes summary:hover { color: var(--brass); }
     heavy_none: 'No alcohol', heavy_light: 'Light & long',
     level_light: 'Light', level_medium: 'Medium', level_strong: 'Strong', heavy_mid: 'In between', heavy_strong: 'Strong & short',
     sp_gin: 'Gin', sp_bourbon: 'Bourbon', sp_rye: 'Rye', sp_campari: 'Campari', sp_lillet: 'Lillet', sp_suze: 'Suze',
+    sp_cognac: 'Cognac', sp_tequila: 'Tequila', sp_vodka: 'Vodka',
     takes_smoke: 'Takes smoke',
     count_one: 'drink', count_many: 'drinks',
     no_match: 'Nothing on the shelf matches that.', show_all: 'Show everything',
@@ -2286,6 +2402,7 @@ details.notes summary:hover { color: var(--brass); }
     sec_stirred: 'Stirred', sec_stirred_sub: 'spirit-forward · smoke works here',
     sec_shaken: 'Shaken', sec_shaken_sub: 'citrus · bright · no smoke',
     sec_long: 'Long & refreshing', sec_long_sub: 'built in the glass · low ABV',
+    sec_coffee: 'Coffee', sec_coffee_sub: 'after dinner · built in the glass',
     sec_mocktail: 'Mocktails', sec_mocktail_sub: 'no alcohol · salt in every one',
 
     the_story: 'The story',
@@ -2391,7 +2508,6 @@ details.notes summary:hover { color: var(--brass); }
   function paintStatic() {
     $('#lang-en').setAttribute('aria-pressed', lang === 'en' ? 'true' : 'false');
     $('#lang-th').setAttribute('aria-pressed', lang === 'th' ? 'true' : 'false');
-    $('#hours-text').textContent = U('hours');
     $('#tab-menu-text').textContent = U('tab_menu');
     $('#tab-orders-text').textContent = U('tab_orders');
     $('#choice-text').textContent = U('surprise');
@@ -2739,7 +2855,7 @@ details.notes summary:hover { color: var(--brass); }
     }
   };
 
-  var CITRUS = { orange: '#E08A2B', lemon: '#E0C64A' };
+  var CITRUS = { orange: '#E08A2B', lemon: '#E0C64A', lime: '#9DC24A' };
 
   /* what the drink actually looks like once the options are applied */
   function visual(drink, opts) {
@@ -2936,8 +3052,9 @@ details.notes summary:hover { color: var(--brass); }
       svg.appendChild(wheel);
       return;
     }
-    if (kind === 'orange-wedge' || kind === 'lemon-wedge') {
-      var c3 = kind === 'orange-wedge' ? CITRUS.orange : CITRUS.lemon;
+    if (kind === 'orange-wedge' || kind === 'lemon-wedge' || kind === 'lime-wedge') {
+      var c3 = kind === 'orange-wedge' ? CITRUS.orange
+        : kind === 'lime-wedge' ? CITRUS.lime : CITRUS.lemon;
       var wedge = s('g', { transform: 'translate(' + (rx - 4) + ',' + (y + 4) + ') rotate(28)' });
       wedge.appendChild(s('path', { d: 'M0,0 A15,15 0 0 1 15,15 L0,15 Z', fill: c3, opacity: '.92' }));
       wedge.appendChild(s('path', { d: 'M0,3 A12,12 0 0 1 12,15 L0,15 Z', fill: 'rgba(255,255,255,.2)' }));
