@@ -1761,6 +1761,9 @@ details.notes summary:hover { color: var(--brass); }
     taste_citrus: 'เปรี้ยวสดชื่น',
     taste_herbal: 'สมุนไพร',
     heavy_none: 'ไม่มีแอลกอฮอล์',
+    level_light: 'เบา',
+    level_medium: 'ปานกลาง',
+    level_strong: 'แรง',
     heavy_light: 'เบาและยาว',
     heavy_mid: 'ปานกลาง',
     heavy_strong: 'แรงและสั้น',
@@ -2273,7 +2276,8 @@ details.notes summary:hover { color: var(--brass); }
     row_taste: 'Flavor', row_heavy: 'How heavy', row_spirit: 'Made with',
     any: 'Anything', any_heavy: 'Any',
     taste_bitter: 'Bitter', taste_sweet: 'Sweet', taste_citrus: 'Citrusy', taste_herbal: 'Herbal',
-    heavy_none: 'No alcohol', heavy_light: 'Light & long', heavy_mid: 'In between', heavy_strong: 'Strong & short',
+    heavy_none: 'No alcohol', heavy_light: 'Light & long',
+    level_light: 'Light', level_medium: 'Medium', level_strong: 'Strong', heavy_mid: 'In between', heavy_strong: 'Strong & short',
     sp_gin: 'Gin', sp_bourbon: 'Bourbon', sp_rye: 'Rye', sp_campari: 'Campari', sp_lillet: 'Lillet', sp_suze: 'Suze',
     takes_smoke: 'Takes smoke',
     count_one: 'drink', count_many: 'drinks',
@@ -2630,6 +2634,27 @@ details.notes summary:hover { color: var(--brass); }
       ol.appendChild(el('li', null, step));
     });
     return ol;
+  }
+
+  /* the two loudest flavors plus how heavy it lands — read off the same
+     scores the meters draw, so the summary can never drift from them */
+  function profileWords(drink) {
+    var f = drink.flavor;
+    var ranked = ['bitter', 'sweet', 'citrus', 'herbal']
+      .map(function (a) { return { axis: a, v: f[a] || 0 }; })
+      .sort(function (x, y) { return y.v - x.v; });
+    /* anything scoring 1 is barely present — naming it would mislead */
+    var top = ranked.filter(function (x) { return x.v >= 2; }).slice(0, 2);
+    if (!top.length) top = ranked.slice(0, 1);
+    top = top.map(function (x) { return U('axis_' + x.axis); });
+
+    var level;
+    if (drink.na && !drink.warning) level = U('heavy_none');
+    else if (f.strength <= 2) level = U('level_light');
+    else if (f.strength === 3) level = U('level_medium');
+    else level = U('level_strong');
+
+    return top.concat([level]).join(' · ');
   }
 
   function buildList(drink) {
@@ -3193,7 +3218,7 @@ details.notes summary:hover { color: var(--brass); }
     var body = el('div', 'card-body');
     var head = el('div', 'card-head');
     head.appendChild(el('div', 'card-name', drink.name));
-    head.appendChild(el('div', 'card-meta', drink.base + ' · ' + drink.method));
+    head.appendChild(el('div', 'card-meta', profileWords(drink)));
     body.appendChild(head);
 
     body.appendChild(el('p', 'card-note', drink.hook || drink.note));
@@ -3294,7 +3319,7 @@ details.notes summary:hover { color: var(--brass); }
     head.appendChild(preview);
 
     var headText = el('div');
-    headText.appendChild(el('div', 'card-meta', drink.base + ' · ' + drink.method));
+    headText.appendChild(el('div', 'card-meta', profileWords(drink)));
     var h2 = el('h2', 'sheet-title', drink.name);
     h2.id = 'sheet-title';
     headText.appendChild(h2);
