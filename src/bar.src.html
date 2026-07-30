@@ -1198,6 +1198,9 @@ details.notes summary:hover { color: var(--brass); }
 .melt {
   transform-box: fill-box;
   transform-origin: 50% 50%;
+  /* composited, so a drink melting for two minutes never asks the sheet
+     to re-lay-out underneath whoever is scrolling it */
+  will-change: transform;
   animation: melt 150s linear forwards;
 }
 @keyframes melt {
