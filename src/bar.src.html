@@ -3433,7 +3433,9 @@ __THAI_DATA__
   function watchForTaps() {
     var box = $('#tenders');
     if (!box) return;
-    box.addEventListener('click', function () {
+    /* pointerup covers finger, mouse and pen — a touch tap does not
+       reliably raise a click here */
+    box.addEventListener('pointerup', function () {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       var now = Date.now();
       taps = taps.filter(function (at) { return now - at < 1800; });
