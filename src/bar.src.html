@@ -1,0 +1,2955 @@
+<title>Paul's Bar</title>
+
+<style>
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url(data:font/woff2;base64,__NEWSREADER__) format('woff2');
+}
+@font-face {
+  font-family: 'Jakarta';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url(data:font/woff2;base64,__JAKARTA__) format('woff2');
+}
+
+:root {
+  color-scheme: dark;
+
+  --bg:        #120E0B;
+  --bg-2:      #1A1411;
+  --bg-3:      #241C16;
+  --line:      #2E2419;
+  --line-2:    #3E3123;
+
+  --text:      #F0E6D6;
+  --text-2:    #B3A18C;
+  --text-3:    #7E6E5D;
+
+  --campari:   #D24A22;
+  --campari-2: #F0663A;
+  --brass:     #D2A24C;
+  --smoke:     #93A3A8;
+  --poured:    #8FA86B;
+
+  /* Newsreader and Jakarta carry no Thai, so Thai glyphs fall through to the
+     system Thai face per character. Nothing to switch — the browser does it. */
+  --serif: 'Newsreader', 'Noto Serif Thai', 'Sukhumvit Set', Thonburi, 'Leelawadee UI', Georgia, serif;
+  --sans: 'Jakarta', 'Noto Sans Thai', 'Sukhumvit Set', Thonburi, 'Leelawadee UI', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --r: 10px;
+  --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 18px 40px -24px rgba(0,0,0,.9);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body, .page {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+.page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 70% at 50% -18%, rgba(214,124,52,.22), transparent 62%),
+    radial-gradient(80% 50% at 88% 6%, rgba(210,74,34,.10), transparent 70%),
+    radial-gradient(70% 55% at 6% 92%, rgba(150,60,30,.07), transparent 72%);
+  z-index: 0;
+  animation: candle 11s ease-in-out infinite;
+}
+/* the room is lit by something with a flame in it */
+@keyframes candle {
+  0%, 100% { opacity: .88; }
+  40%      { opacity: 1; }
+  70%      { opacity: .93; }
+}
+.page::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: .5;
+  z-index: 1;
+  background-image: var(--grain);
+  background-size: 160px 160px;
+}
+.page > * { position: relative; z-index: 2; }
+
+button, input, textarea, select { font: inherit; color: inherit; }
+:focus-visible {
+  outline: 2px solid var(--campari-2);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---------- shell ---------- */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 20px;
+  padding: 16px clamp(16px, 4vw, 40px) 12px;
+  background: linear-gradient(to bottom, rgba(18,14,11,.97) 62%, rgba(18,14,11,0));
+  backdrop-filter: blur(8px);
+}
+.wordmark {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(1.5rem, 3.4vw, 1.875rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+.wordmark .amp { color: var(--campari); }
+.hours {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.6875rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+/* the little sign in the window */
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--campari-2);
+  box-shadow: 0 0 0 0 rgba(240,102,58,.5);
+  animation: sign 2.6s ease-out infinite;
+}
+@keyframes sign {
+  0%   { box-shadow: 0 0 0 0 rgba(240,102,58,.55); }
+  70%  { box-shadow: 0 0 0 7px rgba(240,102,58,0); }
+  100% { box-shadow: 0 0 0 0 rgba(240,102,58,0); }
+}
+
+.langs {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg-2);
+}
+.lang {
+  padding: 5px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--text-3);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  cursor: pointer;
+  transition: color .18s, background-color .18s;
+}
+.lang:hover { color: var(--text-2); }
+.lang[aria-pressed='true'] { background: var(--bg-3); color: var(--brass); }
+
+.tabs {
+  display: flex;
+  gap: 2px;
+  margin-left: 10px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg-2);
+}
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--text-2);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+  cursor: pointer;
+  transition: color .18s, background-color .18s;
+}
+.tab:hover { color: var(--text); }
+.tab[aria-selected='true'] {
+  background: var(--bg-3);
+  color: var(--text);
+  box-shadow: 0 1px 0 rgba(255,255,255,.04) inset;
+}
+.count {
+  min-width: 19px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--campari);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 19px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.count[hidden] { display: none; }
+.count.pulse { animation: pulse .9s ease-out 2; }
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(210,74,34,0); }
+  35%      { box-shadow: 0 0 0 6px rgba(210,74,34,.28); }
+}
+
+main { padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 96px; }
+.view[hidden] { display: none; }
+
+.lede {
+  max-width: 48ch;
+  margin: 0 0 clamp(20px, 3vw, 28px);
+  color: var(--text-2);
+  font-size: 1rem;
+}
+.lede b { color: var(--text); font-weight: 600; }
+
+.rule {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 16px;
+  margin: 46px 0 22px;
+}
+.rule::after {
+  content: '';
+  flex: 1 0 60px;
+  height: 1px;
+  align-self: center;
+  background: linear-gradient(to right, var(--line-2), transparent);
+}
+.rule-title {
+  font-family: var(--serif);
+  font-size: clamp(1.5rem, 3vw, 1.875rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.rule .sub {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+.section[hidden] { display: none; }
+
+/* ---------- filters ---------- */
+
+.filters {
+  display: grid;
+  gap: 10px;
+  padding: 0 0 20px;
+  border-bottom: 1px solid var(--line);
+}
+/* on a phone the drinks come first; the controls stay a tap away */
+.filter-toggle {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: var(--bg-2);
+  color: var(--text-2);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.filter-toggle .caret { transition: transform .22s; }
+.filter-toggle[aria-expanded='true'] { color: var(--text); border-color: var(--text-3); }
+.filter-toggle[aria-expanded='true'] .caret { transform: rotate(90deg); }
+@media (max-width: 620px) {
+  .filter-toggle { display: inline-flex; margin-bottom: 22px; }
+  .filters.collapsed { display: none; }
+  .filter-toggle[aria-expanded='true'] { margin-bottom: 16px; }
+}
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.filter-label {
+  flex: none;
+  width: 6.5rem;
+  padding-right: 8px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+@media (max-width: 620px) {
+  .filter-label { width: 100%; padding: 4px 0 0; }
+  .filter-row + .filter-row { margin-top: 6px; }
+}
+.pill {
+  padding: 6px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: var(--bg-2);
+  color: var(--text-2);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color .18s, border-color .18s, background-color .18s;
+}
+.pill:hover:not(:disabled) { color: var(--text); border-color: #55432F; }
+.pill:disabled { opacity: .3; cursor: default; }
+.pill[aria-pressed='true'] {
+  border-color: var(--campari);
+  background: rgba(210,74,34,.16);
+  color: #F6CDBC;
+}
+.pill.smoke-pill[aria-pressed='true'] {
+  border-color: rgba(147,163,168,.6);
+  background: rgba(147,163,168,.14);
+  color: #D3DCDE;
+}
+.pill.long-pill[aria-pressed='true'] {
+  border-color: rgba(210,162,76,.6);
+  background: rgba(210,162,76,.13);
+  color: #EBD3A0;
+}
+.filter-sep {
+  width: 1px;
+  height: 22px;
+  background: var(--line-2);
+  margin: 0 4px;
+}
+@media (max-width: 620px) {
+  /* the pills wrap to several rows here, where a divider between them reads as debris */
+  .filter-sep { display: none; }
+}
+.filter-count {
+  margin-left: auto;
+  font-size: 0.75rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- menu ---------- */
+
+.menu {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 268px), 1fr));
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 18px 18px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: linear-gradient(to bottom, #1E1613 0%, #150F0D 62%);
+  box-shadow: var(--shadow);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .25s, transform .25s, box-shadow .25s;
+  animation: light-up .55s cubic-bezier(.2,.75,.3,1) backwards;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+/* every drink lights its own card, in its own colour */
+.card::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: -46px;
+  width: 250px;
+  height: 250px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, var(--glow, transparent), transparent 62%);
+  opacity: .8;
+  pointer-events: none;
+  transition: opacity .3s ease, transform .3s ease;
+}
+.card > * { position: relative; z-index: 1; }
+.card:hover {
+  border-color: var(--edge, var(--line-2));
+  transform: translateY(-3px);
+  box-shadow: var(--shadow), 0 0 34px -18px var(--edge, transparent);
+}
+.card:hover::before { opacity: 1; transform: translateX(-50%) scale(1.1); }
+.card:hover .card-name { color: var(--campari-2); }
+.card:hover .glass-art { transform: translateY(-4px) scale(1.05); }
+
+@keyframes light-up {
+  from { opacity: 0; transform: translateY(16px); }
+}
+
+.card-body { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; min-width: 0; }
+.glass-art {
+  width: 122px;
+  height: 170px;
+  margin-bottom: -6px;
+  transition: transform .3s cubic-bezier(.2,.8,.3,1);
+}
+.glass-art svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+.card-head { display: flex; flex-direction: column; gap: 3px; }
+.card-name {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  transition: color .2s;
+}
+.card-meta {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.card-note {
+  margin: 0;
+  min-height: 3.9em;
+  max-width: 30ch;
+  color: var(--text-2);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.profile { display: grid; gap: 5px; width: 100%; text-align: left; }
+.profile-row {
+  display: grid;
+  grid-template-columns: 4.6rem 1fr;
+  align-items: center;
+  gap: 10px;
+}
+.profile-row span {
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.sheet-body .profile { gap: 6px; }
+.sheet-body .profile-row { grid-template-columns: 5.5rem 1fr; }
+.sheet-body .profile-row span { font-size: 0.625rem; }
+.track { height: 3px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(to right, rgba(210,162,76,.5), var(--brass));
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 4px 10px 4px 8px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: var(--bg-3);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+.chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-3); }
+.chip.smoke { color: var(--smoke); border-color: rgba(147,163,168,.3); }
+.chip.smoke .dot { background: var(--smoke); }
+.chip.egg { color: var(--brass); border-color: rgba(210,162,76,.3); }
+.chip.egg .dot { background: var(--brass); }
+.chip.poured { color: var(--poured); border-color: rgba(143,168,107,.3); }
+.chip.poured .dot { background: var(--poured); }
+.chip.low { color: var(--brass); border-color: rgba(210,162,76,.28); }
+.chip.low .dot { background: var(--brass); }
+.chip.na { color: #9CC3B0; border-color: rgba(156,195,176,.3); }
+.chip.na .dot { background: #9CC3B0; }
+.chip.warn { color: #E8A87C; border-color: rgba(232,168,124,.45); background: rgba(232,124,60,.1); }
+.chip.warn .dot { background: #E8A87C; }
+
+/* the one drink on the list that isn't what it looks like */
+.warn-box {
+  display: flex;
+  gap: 12px;
+  padding: 13px 15px;
+  border: 1px solid rgba(232,168,124,.4);
+  border-radius: 10px;
+  background: rgba(232,124,60,.08);
+  color: var(--text-2);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+.warn-box b { color: #F0BC97; font-weight: 600; }
+.aside.warn-aside { box-shadow: inset 2px 0 0 #E8A87C; }
+
+.card-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.card-chips .chip { align-self: center; }
+
+/* can't decide — the button for that point in the evening, in its own frame
+   so the filter rules below never run into it */
+/* no frame — the crew sits straight on the page and the button stands on their bar */
+.cta-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 540px;
+  margin: 0 auto 26px;
+}
+
+/* three of them behind the bar, shaking */
+.tenders { width: 100%; max-width: 510px; }
+.tenders svg { display: block; width: 100%; height: auto; }
+.tender-body {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: t-body var(--d) ease-in-out infinite alternate;
+  animation-delay: var(--t);
+}
+.tender-arms {
+  transform-box: fill-box;
+  transform-origin: 33% 92%;
+  animation: t-arms var(--d) ease-in-out infinite alternate;
+  animation-delay: var(--t);
+}
+@keyframes t-arms {
+  from { transform: rotate(-11deg) translateY(1px); }
+  to   { transform: rotate(8deg) translateY(-2px); }
+}
+@keyframes t-body {
+  from { transform: rotate(-2deg); }
+  to   { transform: rotate(1.6deg) translateY(-1px); }
+}
+/* sits over the lower third of the scene, on the bar itself */
+.choice {
+  position: relative;
+  z-index: 2;
+  margin-top: -26px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 13px 26px;
+  border: 1px solid rgba(255,196,168,.4);
+  border-radius: 999px;
+  background: linear-gradient(to bottom, #D8532A, #A93617);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: .01em;
+  cursor: pointer;
+  box-shadow: 0 14px 30px -12px #000, 0 0 40px -14px rgba(240,102,58,.7);
+  transition: background-color .2s, border-color .2s, transform .2s, box-shadow .2s;
+}
+.choice:hover {
+  border-color: rgba(255,214,192,.7);
+  background: linear-gradient(to bottom, #EA6234, #BC3D18);
+  transform: translateY(-2px);
+  box-shadow: 0 18px 34px -12px #000, 0 0 46px -12px rgba(240,102,58,.85);
+}
+.choice:active { transform: translateY(0); }
+.choice .die {
+  width: 15px;
+  height: 15px;
+  border: 1.5px solid currentColor;
+  border-radius: 4px;
+  position: relative;
+  transition: transform .5s cubic-bezier(.2,.8,.3,1);
+}
+.choice .die::after {
+  content: '';
+  position: absolute;
+  inset: 3.5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.choice:hover .die, .choice.rolling .die { transform: rotate(180deg); }
+.cta-note { color: var(--text-3); font-size: 0.8125rem; }
+
+.no-match {
+  padding: 48px 24px;
+  border: 1px dashed var(--line-2);
+  border-radius: var(--r);
+  text-align: center;
+  color: var(--text-3);
+}
+.next-bottle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: baseline;
+  margin-top: 44px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--text-3);
+  font-size: 0.8125rem;
+}
+.next-bottle b {
+  color: var(--brass);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+/* ---------- order sheet ---------- */
+
+dialog {
+  width: min(560px, calc(100vw - 24px));
+  max-height: min(88dvh, 900px);
+  padding: 0;
+  border: 1px solid var(--line-2);
+  border-radius: 14px;
+  background: var(--bg-2);
+  color: var(--text);
+  box-shadow: 0 40px 80px -30px #000;
+}
+dialog::backdrop { background: rgba(8,5,4,.72); backdrop-filter: blur(3px); }
+dialog[open] { animation: rise .22s cubic-bezier(.2,.8,.3,1); }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+
+.sheet { display: flex; flex-direction: column; max-height: inherit; }
+.sheet-head {
+  position: relative;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  padding: 22px 24px 20px;
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+}
+.sheet-head::before {
+  content: '';
+  position: absolute;
+  inset: -60% -10% auto -10%;
+  height: 200%;
+  pointer-events: none;
+  background: radial-gradient(50% 45% at 22% 55%, rgba(210,120,50,.18), transparent 70%);
+}
+.sheet-head > * { position: relative; }
+.preview {
+  flex: none;
+  width: 108px;
+  height: 152px;
+}
+.preview svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.sheet-title {
+  margin: 6px 0 8px;
+  font-family: var(--serif);
+  font-size: clamp(1.625rem, 5vw, 2rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.sheet-body { display: grid; gap: 20px; padding: 22px 24px; overflow-y: auto; }
+.sheet-foot {
+  display: flex;
+  gap: 10px;
+  padding: 16px 24px 20px;
+  border-top: 1px solid var(--line);
+  background: var(--bg-2);
+}
+
+.build { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
+.build li { display: flex; gap: 12px; align-items: baseline; font-size: 0.9375rem; }
+.build .qty {
+  min-width: 5.5rem;
+  color: var(--brass);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.build .ing { color: var(--text-2); }
+
+/* the method, numbered in the order you do it */
+.steps {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+  max-width: 62ch;
+}
+.steps li {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr;
+  gap: 11px;
+  color: var(--text-2);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+.steps li::before {
+  counter-increment: step;
+  content: counter(step);
+  height: 1.5rem;
+  border: 1px solid var(--line-2);
+  border-radius: 50%;
+  color: var(--brass);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: calc(1.5rem - 2px);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.field { display: grid; gap: 8px; }
+.label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+input[type='text'], textarea {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.9375rem;
+  transition: border-color .18s;
+}
+input[type='text']::placeholder, textarea::placeholder { color: var(--text-3); }
+input[type='text']:focus, textarea:focus { border-color: var(--campari); outline: none; }
+textarea { min-height: 62px; resize: vertical; }
+
+.option {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border: 1px solid var(--line-2);
+  border-radius: 10px;
+  background: var(--bg);
+  cursor: pointer;
+  transition: border-color .2s, background-color .2s;
+}
+.option:hover { border-color: #4B3B2A; }
+.option:has(input:checked) {
+  border-color: rgba(147,163,168,.55);
+  background: rgba(147,163,168,.07);
+}
+.option.egg:has(input:checked) {
+  border-color: rgba(210,162,76,.55);
+  background: rgba(210,162,76,.07);
+}
+.option input { position: absolute; opacity: 0; pointer-events: none; }
+.option .box {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border: 1.5px solid var(--line-2);
+  border-radius: 6px;
+  background: var(--bg-3);
+  transition: background-color .2s, border-color .2s;
+}
+.option:has(input:checked) .box {
+  border-color: var(--smoke);
+  background: var(--smoke) var(--tick) center / 13px no-repeat;
+}
+.option.egg:has(input:checked) .box { border-color: var(--brass); background-color: var(--brass); }
+.option:has(input:focus-visible) { outline: 2px solid var(--campari-2); outline-offset: 2px; }
+.option-text { display: grid; gap: 3px; }
+.option-title { font-weight: 600; font-size: 0.9375rem; }
+.option-why { color: var(--text-3); font-size: 0.8125rem; line-height: 1.45; }
+
+.woods {
+  display: grid;
+  gap: 10px;
+  margin-top: -10px;
+  padding: 14px 16px;
+  border: 1px solid rgba(147,163,168,.28);
+  border-top: 0;
+  border-radius: 0 0 10px 10px;
+  background: rgba(147,163,168,.05);
+}
+.woods[hidden] { display: none; }
+.wood-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.wood {
+  padding: 5px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text-2);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color .18s, color .18s, background-color .18s;
+}
+.wood:hover { color: var(--text); }
+.wood[aria-pressed='true'] {
+  border-color: rgba(147,163,168,.65);
+  background: rgba(147,163,168,.16);
+  color: #DCE4E6;
+}
+.wood-note { margin: 0; color: var(--text-3); font-size: 0.8125rem; line-height: 1.45; }
+
+.no-smoke {
+  display: flex;
+  gap: 12px;
+  padding: 13px 15px;
+  border: 1px dashed var(--line-2);
+  border-radius: 10px;
+  color: var(--text-3);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+.no-smoke b { color: var(--text-2); font-weight: 600; }
+
+.btn {
+  flex: 1;
+  padding: 12px 18px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: .01em;
+  cursor: pointer;
+  transition: background-color .18s, border-color .18s, color .18s;
+}
+.btn-primary { background: var(--campari); color: #fff; }
+.btn-primary:hover { background: var(--campari-2); }
+.btn-ghost { flex: 0 0 auto; border-color: var(--line-2); background: none; color: var(--text-2); }
+.btn-ghost:hover { border-color: var(--text-3); color: var(--text); }
+
+/* ---------- orders ---------- */
+
+#orders-body { max-width: 900px; }
+.tickets { display: grid; gap: 12px; }
+
+.ticket {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--campari);
+  border-radius: var(--r);
+  background: var(--bg-2);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.ticket.smoked { border-left-color: var(--smoke); }
+.ticket.done { border-left-color: var(--line-2); background: #16110E; }
+.ticket.done .ticket-drink { color: var(--text-3); text-decoration: line-through; text-decoration-thickness: 1px; }
+.ticket.done .ticket-guest { color: var(--text-3); }
+.ticket.done .ticket-art { opacity: .4; }
+
+.ticket-main { display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; }
+.pour {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  margin-top: 2px;
+  padding: 0;
+  border: 1.5px solid var(--line-2);
+  border-radius: 7px;
+  background: var(--bg-3);
+  cursor: pointer;
+  transition: border-color .2s, background-color .2s;
+}
+.pour:hover { border-color: var(--poured); }
+.ticket.done .pour {
+  border-color: var(--poured);
+  background: var(--poured) var(--tick-dark) center / 16px no-repeat;
+}
+.ticket-art { flex: none; width: 52px; height: 74px; transition: opacity .2s; }
+.ticket-art svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+.ticket-text { flex: 1; min-width: 0; display: grid; gap: 7px; }
+.ticket-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
+.ticket-drink {
+  font-family: var(--serif);
+  font-size: 1.3125rem;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.ticket-guest {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+.ticket-when {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.ticket-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.ticket-note {
+  margin: 0;
+  padding-left: 11px;
+  border-left: 2px solid var(--line-2);
+  color: var(--text-2);
+  font-size: 0.875rem;
+}
+
+.build-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 18px 10px 58px;
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: none;
+  color: var(--text-3);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  text-align: left;
+  cursor: pointer;
+  transition: color .18s, background-color .18s;
+}
+.build-toggle:hover { color: var(--brass); background: rgba(255,255,255,.02); }
+.build-toggle .caret { transition: transform .22s; }
+.build-toggle[aria-expanded='true'] .caret { transform: rotate(90deg); }
+
+.build-panel { display: grid; gap: 16px; padding: 4px 18px 20px 58px; }
+.build-panel[hidden] { display: none; }
+.method { margin: 0; color: var(--text-2); font-size: 0.9375rem; line-height: 1.6; max-width: 62ch; }
+.aside {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--bg);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--text-2);
+  max-width: 62ch;
+}
+.aside .aside-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.aside.smoke-aside { box-shadow: inset 2px 0 0 var(--smoke); }
+.aside.tip-aside { box-shadow: inset 2px 0 0 var(--brass); }
+
+.empty {
+  padding: 56px 24px;
+  border: 1px dashed var(--line-2);
+  border-radius: var(--r);
+  text-align: center;
+  color: var(--text-3);
+}
+.empty .empty-title { font-family: var(--serif); font-size: 1.375rem; color: var(--text-2); margin-bottom: 4px; }
+
+.orders-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 20px; margin-bottom: 26px; }
+.tally {
+  display: flex;
+  gap: 22px;
+  margin-left: auto;
+  font-size: 0.75rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.tally b {
+  color: var(--text);
+  font-size: 1.125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  margin-right: 6px;
+}
+
+.link-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-3);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.link-btn:hover { color: var(--campari-2); }
+
+details.notes { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 18px; }
+details.notes summary {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  cursor: pointer;
+}
+details.notes summary:hover { color: var(--brass); }
+.notes-grid {
+  display: grid;
+  gap: 18px;
+  margin-top: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  max-width: 900px;
+}
+.notes-grid h3 { margin: 0 0 4px; font-family: var(--serif); font-size: 1.0625rem; font-weight: 600; }
+.notes-grid p { margin: 0; color: var(--text-2); font-size: 0.875rem; line-height: 1.55; }
+
+.wood-table {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+.wood-table th {
+  padding: 0 12px 6px 0;
+  border-bottom: 1px solid var(--line-2);
+  text-align: left;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.wood-table td { padding: 7px 12px 7px 0; border-bottom: 1px solid var(--line); color: var(--text-2); vertical-align: top; }
+.wood-table td:first-child { color: var(--text); font-weight: 600; white-space: nowrap; }
+.table-wrap { overflow-x: auto; max-width: 640px; }
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px 10px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: var(--bg-3);
+  box-shadow: 0 18px 40px -18px #000, 0 0 40px -22px var(--campari-2);
+  font-size: 0.875rem;
+  transform: translate(-50%, 20px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .22s, transform .22s;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--poured); }
+.toast-art { width: 30px; height: 42px; }
+.toast-art:empty { display: none; }
+.toast-art svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* ---------- the glass ---------- */
+
+.liquid { transition: y .5s cubic-bezier(.3,.8,.4,1), height .5s cubic-bezier(.3,.8,.4,1); }
+.bubble { animation: rise-bubble linear infinite; }
+@keyframes rise-bubble {
+  0%   { transform: translateY(0); opacity: 0; }
+  12%  { opacity: .85; }
+  85%  { opacity: .5; }
+  100% { transform: translateY(-46px); opacity: 0; }
+}
+.wisp { animation: wisp 7.5s ease-in-out infinite; transform-origin: center bottom; }
+@keyframes wisp {
+  0%   { opacity: 0; transform: translate(0, 8px) scale(.6); }
+  22%  { opacity: .75; }
+  65%  { opacity: .4; }
+  100% { opacity: 0; transform: translate(11px, -44px) scale(1.9); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  .card:hover { transform: none; }
+  .wisp { opacity: .4; }
+}
+</style>
+
+<div class="page">
+  <header class="topbar">
+    <h1 class="wordmark">Paul<span class="amp">'</span>s Bar</h1>
+    <span class="hours"><span class="live-dot"></span><span id="hours-text">Open tonight &middot; twenty-five drinks</span></span>
+    <div class="langs" role="group" aria-label="Language">
+      <button class="lang" id="lang-en" type="button" aria-pressed="true">EN</button>
+      <button class="lang" id="lang-th" type="button" aria-pressed="false">ไทย</button>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" id="tab-menu" role="tab" aria-selected="true" aria-controls="view-menu" type="button"><span id="tab-menu-text">Menu</span></button>
+      <button class="tab" id="tab-orders" role="tab" aria-selected="false" aria-controls="view-orders" type="button">
+        <span id="tab-orders-text">Orders</span> <span class="count" id="pending-count" hidden>0</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="view" id="view-menu" role="tabpanel" aria-labelledby="tab-menu">
+      <div class="cta-row">
+        <div class="tenders" id="tenders"></div>
+        <button class="choice" id="choice" type="button"><span class="die"></span><span id="choice-text">Surprise me</span></button>
+      </div>
+
+      <button class="filter-toggle" id="filter-toggle" type="button" aria-expanded="false" aria-controls="filters">
+        <span id="filter-toggle-text">Narrow it down</span> <span class="caret">&rsaquo;</span>
+      </button>
+
+      <div class="filters collapsed" id="filters"></div>
+
+      <div id="menu-body"></div>
+
+      <p class="next-bottle" id="next-bottle"></p>
+    </section>
+
+    <section class="view" id="view-orders" role="tabpanel" aria-labelledby="tab-orders" hidden>
+      <div class="orders-head">
+        <p class="lede" style="margin:0" id="orders-lede"></p>
+        <div class="tally">
+          <span><b id="tally-working">0</b><span id="tally-working-label">working</span></span>
+          <span><b id="tally-poured">0</b><span id="tally-poured-label">poured</span></span>
+        </div>
+      </div>
+
+      <div id="orders-body"></div>
+
+      <details class="notes">
+        <summary id="notes-summary">Bar notes</summary>
+        <div id="notes-body"></div>
+      </details>
+    </section>
+  </main>
+</div>
+
+<dialog id="sheet" aria-labelledby="sheet-title"></dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><span class="toast-art" id="toast-art"></span><span id="toast-text"></span></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* phones render at 980px wide without this, and every layout below collapses */
+  if (!document.querySelector('meta[name="viewport"]')) {
+    var vp = document.createElement('meta');
+    vp.name = 'viewport';
+    vp.content = 'width=device-width, initial-scale=1';
+    document.head.appendChild(vp);
+  }
+
+  /* ---------- woods ---------- */
+
+  var WOODS = {
+    'Apple':   'The gentlest of the set. Will not bury anything.',
+    'Pear':    'As gentle as apple, a little rounder.',
+    'Peach':   'The gentlest of the set, faintly sweet.',
+    'Cherry':  'The best match for Campari.',
+    'Oak':     'The neutral whiskey wood.',
+    'Pecan':   'Middle gear, nutty.',
+    'Oak + a pinch of cinnamon': 'Cinnamon blended into oak, never on its own. This drink only.',
+    'Walnut':  'Tannic and assertive — go light. Bourbon drinks only.'
+  };
+
+  /* ---------- the list ---------- */
+
+  var AXES = ['bitter', 'sweet', 'citrus', 'herbal', 'strength'];
+
+  var DRINKS = [
+    {
+      id: 'negroni', name: 'Negroni', base: 'Gin', method: 'Stirred', section: 'stirred',
+      spirits: ['gin', 'campari'],
+      note: 'Bittersweet and bracing, with orange oil across the top.',
+      flavor: { bitter: 5, sweet: 2, citrus: 2, herbal: 4, strength: 4 },
+      build: [['1 oz', 'gin'], ['1 oz', 'Campari'], ['1 oz', 'sweet vermouth']],
+      steps: [
+        "Fill a mixing glass with good ice.",
+        "Add the gin, Campari and sweet vermouth.",
+        "Stir 30 seconds, until the outside of the glass frosts.",
+        "Strain over one large cube in a rocks glass, or straight up.",
+        "Express an orange peel over the surface and drop it in."
+      ],
+      smoke: true, woods: ['Cherry', 'Apple', 'Pear', 'Peach'],
+      smokeNote: 'Cherry is the best match for Campari. Never walnut on this one.',
+      glass: 'rocks', color: '#A8321C', ice: 'cube', garnish: 'orange-twist'
+    },
+    {
+      id: 'boulevardier', name: 'Boulevardier', base: 'Bourbon', method: 'Stirred', section: 'stirred',
+      spirits: ['bourbon', 'campari'],
+      note: "The Negroni's warmer cousin — caramel and oak under the bitterness.",
+      flavor: { bitter: 4, sweet: 3, citrus: 2, herbal: 3, strength: 4 },
+      build: [['1.5 oz', 'bourbon'], ['1 oz', 'Campari'], ['1 oz', 'sweet vermouth']],
+      steps: [
+        "Fill a mixing glass with good ice.",
+        "Add the bourbon, Campari and sweet vermouth.",
+        "Stir 30 seconds.",
+        "Strain over one large cube, or straight up.",
+        "Express an orange peel over the surface and drop it in."
+      ],
+      smoke: true, woods: ['Cherry', 'Oak', 'Pecan', 'Walnut'], best: true,
+      smokeNote: 'The best drink here to smoke. Bourbon gives the smoke caramel and oak to hold onto instead of botanicals to fight.',
+      glass: 'rocks', color: '#92321B', ice: 'cube', garnish: 'orange-twist'
+    },
+    {
+      id: 'old-fashioned', name: 'Old Fashioned', base: 'Bourbon or rye', method: 'Stirred', section: 'stirred',
+      spirits: ['bourbon', 'rye'],
+      note: 'Whiskey, sugar, bitters. Nothing to hide behind.',
+      flavor: { bitter: 2, sweet: 3, citrus: 1, herbal: 1, strength: 5 },
+      build: [['2 oz', 'bourbon or rye'], ['1', 'sugar cube (or 0.25 oz simple syrup)'], ['2 dashes', 'Angostura']],
+      steps: [
+        "Put the sugar cube in the glass with the bitters and a bar spoon of water.",
+        "Muddle until the sugar is mostly dissolved.",
+        "Add the whiskey and one large cube.",
+        "Stir 30 seconds, adding a second cube partway through.",
+        "Express an orange peel and drop it in."
+      ],
+      tip: 'Worth making both ways — Rittenhouse at 100 proof is a noticeably different drink from bourbon.',
+      smoke: true, woods: ['Oak', 'Oak + a pinch of cinnamon', 'Pecan', 'Walnut'],
+      smokeNote: 'The archetype. Sugar and smoke are the entire point.',
+      glass: 'rocks', color: '#A55E22', ice: 'cube', garnish: 'orange-twist'
+    },
+    {
+      id: 'monte-carlo', name: 'Monte Carlo', base: 'Rye', method: 'Stirred', section: 'stirred',
+      spirits: ['rye'],
+      note: 'Honeyed herbs over spicy rye.',
+      flavor: { bitter: 2, sweet: 3, citrus: 1, herbal: 5, strength: 5 },
+      build: [['2 oz', 'rye'], ['0.5 oz', 'Bénédictine'], ['2 dashes', 'Angostura']],
+      steps: [
+        "Fill a mixing glass with good ice.",
+        "Add the rye, Bénédictine and Angostura.",
+        "Stir 30 seconds.",
+        "Strain up into a chilled coupe, or over one large cube.",
+        "Express a lemon peel and drop it in."
+      ],
+      tip: 'A Manhattan with Bénédictine standing in for vermouth — the easiest way to learn what Bénédictine tastes like.',
+      smoke: true, woods: ['Apple', 'Pear', 'Peach', 'Oak'],
+      smokeNote: "Bénédictine's honey against smoke is better than it sounds on paper. Stay gentle here.",
+      glass: 'coupe', color: '#A9722A', ice: 'none', garnish: 'lemon-twist'
+    },
+    {
+      id: 'rye-manhattan', name: 'Rye Manhattan', base: 'Rye', method: 'Stirred', section: 'stirred',
+      spirits: ['rye'],
+      note: 'Silky, spiced, and classic.',
+      flavor: { bitter: 2, sweet: 3, citrus: 1, herbal: 3, strength: 5 },
+      build: [['2 oz', 'rye'], ['1 oz', 'sweet vermouth'], ['2 dashes', 'Angostura']],
+      steps: [
+        "Taste the vermouth before you start. Flat vermouth is what ruins this drink.",
+        "Fill a mixing glass with good ice.",
+        "Add the rye, sweet vermouth and Angostura.",
+        "Stir 30 seconds.",
+        "Strain up into a chilled coupe.",
+        "Garnish with a cherry, or express an orange peel."
+      ],
+      tip: "Taste the vermouth first. Open on the shelf more than a month or two and it's flat — the most common reason a home Manhattan disappoints.",
+      smoke: true, woods: ['Oak', 'Pecan'],
+      smokeNote: 'Reliable, if less interesting than the Monte Carlo.',
+      glass: 'coupe', color: '#8A3B21', ice: 'none', garnish: 'cherry'
+    },
+    {
+      id: 'sazerac', name: 'Sazerac', base: 'Rye', method: 'Stirred', section: 'stirred',
+      spirits: ['rye'],
+      note: 'Lean, dry, and aromatic, with lemon oil overhead.',
+      flavor: { bitter: 3, sweet: 2, citrus: 2, herbal: 2, strength: 5 },
+      build: [['2 oz', 'rye'], ['1', 'sugar cube'], ['4 dashes', "Peychaud's"]],
+      steps: [
+        "Put the sugar cube in a mixing glass with the Peychaud's and a splash of water.",
+        "Muddle until the sugar is mostly dissolved.",
+        "Add the rye and ice, and stir 30 seconds.",
+        "Strain into a chilled rocks glass — no ice.",
+        "Express a lemon peel over the top, then throw the peel away. It does not go in."
+      ],
+      smoke: true, woods: ['Oak', 'Pecan'],
+      smokeNote: 'Smoke stands in for the absinthe rinse we do not have. Different flavor, same job.',
+      glass: 'rocks', color: '#9E5324', ice: 'none', garnish: 'none'
+    },
+    {
+      id: 'white-negroni', name: 'White Negroni', base: 'Gin', method: 'Stirred', section: 'stirred',
+      spirits: ['gin', 'suze', 'lillet'],
+      note: "Pale, dry and floral — gentian bitterness instead of Campari's.",
+      flavor: { bitter: 4, sweet: 2, citrus: 2, herbal: 4, strength: 4 },
+      build: [['1.5 oz', 'gin'], ['0.75 oz', 'Suze'], ['0.75 oz', 'Lillet Blanc']],
+      steps: [
+        "Fill a mixing glass with good ice.",
+        "Add the gin, Suze and Lillet Blanc.",
+        "Stir 30 seconds.",
+        "Strain over one large cube.",
+        "Express a lemon peel and drop it in."
+      ],
+      smoke: false,
+      noSmoke: "The instinct will be strong. Suze's gentian and Lillet's floral character are exactly what smoke destroys.",
+      glass: 'rocks', color: '#BCAE6B', ice: 'cube', garnish: 'lemon-twist'
+    },
+
+    {
+      id: 'whiskey-sour', name: 'Whiskey Sour', base: 'Bourbon', method: 'Shaken', section: 'shaken',
+      spirits: ['bourbon'],
+      note: 'Tart and plush — silky if you take the egg white.',
+      flavor: { bitter: 1, sweet: 3, citrus: 4, herbal: 0, strength: 3 },
+      build: [['2 oz', 'bourbon'], ['0.75 oz', 'lemon'], ['0.75 oz', 'simple syrup']],
+      steps: [
+        "Add the bourbon, lemon and simple syrup to a shaker with ice.",
+        "Shake hard for 12 seconds, until the tin hurts to hold.",
+        "Strain over fresh ice."
+      ],
+      eggSteps: [
+        "Add the bourbon, lemon, simple syrup and egg white to a shaker — no ice yet.",
+        "Dry-shake 10 seconds to build the foam.",
+        "Add ice and shake hard 12 seconds more.",
+        "Double-strain into a chilled glass, no ice.",
+        "Three drops of Angostura on the foam."
+      ],
+      egg: true, smoke: false,
+      noSmoke: 'Smoke over fresh citrus reads muddy, and foam kills the aroma anyway.',
+      glass: 'rocks', color: '#BE8330', ice: 'cubes', garnish: 'none'
+    },
+    {
+      id: 'gin-sour', name: 'Gin Sour', base: 'Gin', method: 'Shaken', section: 'shaken',
+      spirits: ['gin'],
+      note: 'Lighter and more aromatic than the whiskey version.',
+      flavor: { bitter: 1, sweet: 3, citrus: 4, herbal: 2, strength: 3 },
+      build: [['2 oz', 'gin'], ['0.75 oz', 'lemon'], ['0.75 oz', 'simple syrup']],
+      steps: [
+        "Add the gin, lemon and simple syrup to a shaker with ice.",
+        "Shake hard for 12 seconds, until the tin hurts to hold.",
+        "Strain over fresh ice."
+      ],
+      eggSteps: [
+        "Add the gin, lemon, simple syrup and egg white to a shaker — no ice yet.",
+        "Dry-shake 10 seconds to build the foam.",
+        "Add ice and shake hard 12 seconds more.",
+        "Double-strain into a chilled glass, no ice."
+      ],
+      egg: true, smoke: false,
+      tip: 'Worth doing side by side with the whiskey sour once.',
+      noSmoke: 'Smoke over fresh citrus reads muddy, and foam kills the aroma anyway.',
+      glass: 'rocks', color: '#CBBD75', ice: 'cubes', garnish: 'none'
+    },
+    {
+      id: 'bees-knees', name: "Bee's Knees", base: 'Gin', method: 'Shaken', section: 'shaken',
+      spirits: ['gin'],
+      note: 'Honey and lemon over botanical gin.',
+      flavor: { bitter: 0, sweet: 4, citrus: 4, herbal: 2, strength: 3 },
+      build: [['2 oz', 'gin'], ['0.75 oz', 'honey syrup'], ['0.75 oz', 'lemon']],
+      steps: [
+        "Check you're using honey syrup, not straight honey — honey seizes in the cold.",
+        "Add the gin, honey syrup and lemon to a shaker with ice.",
+        "Shake hard for 12 seconds.",
+        "Double-strain up into a chilled coupe.",
+        "Garnish with a lemon peel."
+      ],
+      tip: 'Honey syrup, not straight honey — honey seizes in the cold and leaves sweet lumps.',
+      smoke: false,
+      noSmoke: 'Smoke over fresh citrus reads muddy, and it would bury the honey.',
+      glass: 'coupe', color: '#CD9C35', ice: 'none', garnish: 'lemon-twist'
+    },
+
+    {
+      id: 'gin-tonic', name: 'Gin & Tonic', base: 'Gin', method: 'Built', section: 'long', low: true,
+      spirits: ['gin'],
+      note: 'Cold, dry and juniper-bright. The default for a reason.',
+      flavor: { bitter: 2, sweet: 2, citrus: 3, herbal: 3, strength: 2 },
+      build: [['2 oz', 'gin'], ['4–5 oz', 'tonic'], ['', 'lemon wedge']],
+      steps: [
+        "Fill a tall glass completely with ice.",
+        "Pour in the gin.",
+        "Top with tonic.",
+        "Stir once, no more — over-stirring flattens it.",
+        "Squeeze a lemon wedge over the top and drop it in."
+      ],
+      smoke: false, noSmoke: 'Nothing long and fizzy takes smoke — the bubbles carry it straight off.',
+      glass: 'tall', color: '#B9CBD0', ice: 'tall', garnish: 'lemon-wedge', bubbles: true
+    },
+    {
+      id: 'lillet-tonic', name: 'Lillet Tonic', base: 'Lillet', method: 'Built', section: 'long', low: true,
+      spirits: ['lillet'],
+      note: 'Soft, floral and barely there. The easiest thing on the shelf.',
+      flavor: { bitter: 1, sweet: 3, citrus: 2, herbal: 2, strength: 1 },
+      build: [['2 oz', 'Lillet Blanc'], ['3 oz', 'tonic'], ['', 'orange slice']],
+      steps: [
+        "Fill a tall glass completely with ice.",
+        "Pour in the Lillet Blanc.",
+        "Top with tonic.",
+        "Stir once and garnish with an orange slice."
+      ],
+      tip: 'Around 6% ABV — the lightest drink on the list.',
+      smoke: false, noSmoke: 'Far too delicate, and the bubbles would carry the smoke off anyway.',
+      glass: 'tall', color: '#CDB77C', ice: 'tall', garnish: 'orange-slice', bubbles: true
+    },
+    {
+      id: 'campari-tonic', name: 'Campari & Tonic', base: 'Campari', method: 'Built', section: 'long', low: true,
+      spirits: ['campari'],
+      note: 'All the bitterness you like about a Negroni, at a third of the strength.',
+      flavor: { bitter: 4, sweet: 2, citrus: 2, herbal: 3, strength: 2 },
+      build: [['1.5 oz', 'Campari'], ['4 oz', 'tonic'], ['', 'orange wedge']],
+      steps: [
+        "Fill a tall glass completely with ice.",
+        "Pour in the Campari.",
+        "Top with tonic.",
+        "Stir once and garnish with an orange wedge."
+      ],
+      smoke: false, noSmoke: 'The bubbles carry smoke straight off. Smoke a Negroni instead.',
+      glass: 'tall', color: '#BB3627', ice: 'tall', garnish: 'orange-wedge', bubbles: true
+    },
+    {
+      id: 'suze-tonic', name: 'Suze & Tonic', base: 'Suze', method: 'Built', section: 'long', low: true,
+      spirits: ['suze'],
+      note: 'Sharp gentian and bitter root. The best way to learn Suze on its own.',
+      flavor: { bitter: 5, sweet: 1, citrus: 2, herbal: 4, strength: 2 },
+      build: [['1.5 oz', 'Suze'], ['4 oz', 'tonic'], ['', 'lemon wedge']],
+      steps: [
+        "Fill a tall glass completely with ice.",
+        "Pour in the Suze.",
+        "Top with tonic — low-sugar if you have it.",
+        "Squeeze a lemon wedge over the top and drop it in."
+      ],
+      smoke: false, noSmoke: 'Gentian is exactly what smoke destroys.',
+      glass: 'tall', color: '#C4C075', ice: 'tall', garnish: 'lemon-wedge', bubbles: true
+    },
+    {
+      id: 'americano', name: 'Americano', base: 'Campari', method: 'Built', section: 'long', low: true,
+      spirits: ['campari'],
+      note: 'The drink the Negroni was invented from — same flavor, about 8% ABV.',
+      flavor: { bitter: 4, sweet: 3, citrus: 2, herbal: 4, strength: 2 },
+      build: [['1.5 oz', 'Campari'], ['1.5 oz', 'sweet vermouth'], ['', 'top with soda'], ['', 'orange slice']],
+      steps: [
+        "Fill a tall glass completely with ice.",
+        "Add the Campari and sweet vermouth.",
+        "Top with soda.",
+        "Stir once and garnish with an orange slice."
+      ],
+      tip: 'Someone asked for this with gin instead of soda, and that was the Negroni.',
+      smoke: false, noSmoke: 'The soda carries smoke straight off. Smoke the Negroni instead.',
+      glass: 'tall', color: '#AE3527', ice: 'tall', garnish: 'orange-slice', bubbles: true
+    },
+    {
+      id: 'tom-collins', name: 'Tom Collins', base: 'Gin', method: 'Shaken + soda', section: 'long', low: true,
+      spirits: ['gin'],
+      note: 'A gin sour stretched long and cold.',
+      flavor: { bitter: 0, sweet: 3, citrus: 4, herbal: 2, strength: 2 },
+      build: [['2 oz', 'gin'], ['1 oz', 'lemon'], ['0.75 oz', 'simple syrup'], ['', 'top with soda']],
+      steps: [
+        "Add the gin, lemon and simple syrup to a shaker with ice.",
+        "Shake hard for 12 seconds.",
+        "Strain into a tall glass filled with fresh ice.",
+        "Top with soda."
+      ],
+      tip: 'Swap bourbon for a John Collins, or rye for more bite.',
+      smoke: false, noSmoke: 'Shaken with fresh citrus — never smoke this.',
+      glass: 'tall', color: '#D0C384', ice: 'tall', garnish: 'none', bubbles: true
+    },
+    {
+      id: 'whiskey-highball', name: 'Whiskey Highball', base: 'Rye', method: 'Built', section: 'long', low: true,
+      spirits: ['rye'],
+      note: 'Two ingredients and a long peel. Nowhere to hide.',
+      flavor: { bitter: 1, sweet: 1, citrus: 2, herbal: 1, strength: 2 },
+      build: [['2 oz', 'Rittenhouse'], ['4 oz', 'soda'], ['1', 'long lemon peel']],
+      steps: [
+        "Fill a tall glass completely with ice.",
+        "Pour in the Rittenhouse.",
+        "Top with soda.",
+        "Stir once.",
+        "Drop in one long lemon peel."
+      ],
+      tip: 'The 100 proof holds up where a softer bourbon disappears.',
+      smoke: false, noSmoke: 'The soda carries the smoke straight off. Smoke an Old Fashioned instead.',
+      glass: 'tall', color: '#B4823F', ice: 'tall', garnish: 'lemon-twist', bubbles: true
+    },
+    {
+      id: 'honey-collins', name: 'Honey Collins', base: 'Gin', method: 'Shaken + soda', section: 'long', low: true,
+      spirits: ['gin'],
+      note: "Your Bee's Knees, lengthened.",
+      flavor: { bitter: 0, sweet: 4, citrus: 4, herbal: 2, strength: 2 },
+      build: [['2 oz', 'gin'], ['0.75 oz', 'honey syrup'], ['0.75 oz', 'lemon'], ['', 'top with soda']],
+      steps: [
+        "Add the gin, honey syrup and lemon to a shaker with ice.",
+        "Shake hard for 12 seconds.",
+        "Strain into a tall glass filled with fresh ice.",
+        "Top with soda."
+      ],
+      smoke: false, noSmoke: 'Shaken with fresh citrus — never smoke this.',
+      glass: 'tall', color: '#C79C4C', ice: 'tall', garnish: 'none', bubbles: true
+    },
+    {
+      id: 'lillet-spritz', name: 'Lillet Spritz', base: 'Lillet', method: 'Built', section: 'long', low: true,
+      spirits: ['lillet'],
+      note: 'Lighter than the tonic version, and more floral for it.',
+      flavor: { bitter: 1, sweet: 3, citrus: 2, herbal: 2, strength: 1 },
+      build: [['3 oz', 'Lillet'], ['2 oz', 'soda'], ['', 'lemon wheel']],
+      steps: [
+        "Fill a tall glass completely with ice.",
+        "Pour in the Lillet.",
+        "Top with soda.",
+        "Garnish with a lemon wheel."
+      ],
+      smoke: false, noSmoke: 'Far too delicate.',
+      glass: 'tall', color: '#D2BE85', ice: 'tall', garnish: 'lemon-wheel', bubbles: true
+    },
+    {
+      id: 'garibaldi', name: 'Garibaldi', base: 'Campari', method: 'Whipped', section: 'long', low: true,
+      spirits: ['campari'],
+      note: 'Two ingredients, fluffy orange, drinks like breakfast.',
+      flavor: { bitter: 3, sweet: 4, citrus: 5, herbal: 2, strength: 2 },
+      build: [['1.5 oz', 'Campari'], ['4 oz', 'fresh orange juice']],
+      steps: [
+        "Shake the orange juice hard on its own, or blitz it, until it turns fluffy. The froth is the whole drink.",
+        "Fill a tall glass completely with ice.",
+        "Pour in the Campari.",
+        "Top with the whipped orange juice."
+      ],
+      tip: 'Flat juice makes a flat Garibaldi. The froth is the whole drink.',
+      smoke: false, noSmoke: 'Fresh citrus, and the froth would kill the aroma anyway.',
+      glass: 'tall', color: '#D9701C', ice: 'tall', garnish: 'none', foam: '#F2B366'
+    },
+
+    {
+      id: 'smoked-tea-sour', name: 'Smoked Tea Sour', base: 'Tea', method: 'Shaken', section: 'mocktail', na: true,
+      spirits: [],
+      note: 'The most convincing thing here — tea tannin does what alcohol usually does.',
+      flavor: { bitter: 2, sweet: 3, citrus: 4, herbal: 2, strength: 0 },
+      build: [['2 oz', 'strong cold-brewed black tea'], ['0.75 oz', 'lemon'], ['0.75 oz', 'honey syrup'], ['pinch', 'salt']],
+      steps: [
+        "Brew the tea at double strength — 2 bags in 6 oz of hot water for 5 minutes — then chill it.",
+        "Add the tea, lemon, honey syrup and salt to a shaker with ice.",
+        "Shake hard for 12 seconds.",
+        "Strain over one large cube.",
+        "Express a lemon peel over the top."
+      ],
+      tip: 'Tea tannin gives you the structure alcohol usually provides.',
+      smoke: true, woods: ['Apple', 'Cherry', 'Pear', 'Peach'],
+      smokeNote: 'Smoke is the one flavor tool here that needs no alcohol. It makes a mocktail taste intentional rather than apologetic.',
+      glass: 'rocks', color: '#A8763A', ice: 'cube', garnish: 'lemon-twist'
+    },
+    {
+      id: 'honey-lemon-fizz', name: 'Honey Lemon Fizz', base: 'Honey', method: 'Shaken + soda', section: 'mocktail', na: true,
+      spirits: [],
+      note: 'A Honey Collins minus the gin, and it holds up better than you would expect.',
+      flavor: { bitter: 0, sweet: 4, citrus: 4, herbal: 1, strength: 0 },
+      build: [['1 oz', 'honey syrup'], ['0.75 oz', 'lemon'], ['pinch', 'salt'], ['3 oz', 'club soda']],
+      steps: [
+        "Shake the honey syrup, lemon and salt with ice.",
+        "Strain into a tall glass over fresh ice.",
+        "Top with soda.",
+        "Garnish with a lemon wheel."
+      ],
+      smoke: true, woods: ['Apple', 'Pear', 'Peach'],
+      smokeNote: 'Gentle wood only. There is no alcohol here to stand up to anything heavier.',
+      glass: 'tall', color: '#D9C07E', ice: 'tall', garnish: 'lemon-wheel', bubbles: true
+    },
+    {
+      id: 'orange-tonic', name: 'Orange Tonic', base: 'Orange', method: 'Built', section: 'mocktail', na: true,
+      spirits: [],
+      note: "Tonic's quinine supplies the bitterness that would otherwise be missing.",
+      flavor: { bitter: 2, sweet: 3, citrus: 5, herbal: 1, strength: 0 },
+      build: [['2 oz', 'fresh orange juice'], ['4 oz', 'tonic'], ['pinch', 'salt']],
+      steps: [
+        "Fill a tall glass completely with ice.",
+        "Add the orange juice and the salt.",
+        "Top with tonic and stir once.",
+        "Torch an orange peel over the surface and drop it in."
+      ],
+      smoke: false,
+      noSmoke: 'The torched peel already does that job here, and bubbles would carry a smoked glass away.',
+      glass: 'tall', color: '#E08A2B', ice: 'tall', garnish: 'orange-slice', bubbles: true
+    },
+    {
+      id: 'whipped-orange', name: 'Whipped Orange', base: 'Orange', method: 'Whipped', section: 'mocktail', na: true,
+      spirits: [],
+      note: 'The Garibaldi technique without the Campari. The whipping is doing all the work.',
+      flavor: { bitter: 0, sweet: 4, citrus: 5, herbal: 0, strength: 0 },
+      build: [['4 oz', 'fresh orange juice'], ['2 oz', 'club soda'], ['pinch', 'salt']],
+      steps: [
+        "Shake the orange juice hard on its own with ice — nothing else in the tin — for about 15 seconds, until it goes pale and frothy.",
+        "Strain into a tall glass over fresh ice.",
+        "Top with soda.",
+        "Stir in the pinch of salt."
+      ],
+      tip: 'Whipping is doing all the work, so do not skip it.',
+      smoke: false,
+      noSmoke: 'Fresh citrus and froth. The froth would kill the aroma before it reached you.',
+      glass: 'tall', color: '#E88A2E', ice: 'tall', garnish: 'none', foam: '#F6C48A', bubbles: true
+    },
+    {
+      id: 'bitters-soda', name: 'Bitters & Soda', base: 'Angostura', method: 'Built', section: 'mocktail', na: true,
+      spirits: [],
+      note: 'Bracing, spiced and almost clear. The Angostura carries the whole thing.',
+      flavor: { bitter: 4, sweet: 1, citrus: 2, herbal: 4, strength: 1 },
+      build: [['8 dashes', 'Angostura'], ['5 oz', 'club soda'], ['', 'lemon wedge']],
+      steps: [
+        "Fill a tall glass with ice.",
+        "Add 8 dashes of Angostura.",
+        "Top with soda and stir gently.",
+        "Squeeze a lemon wedge over the top and drop it in."
+      ],
+      warning: 'Not alcohol-free. Angostura is 44% ABV, so this lands at roughly a fifth of a non-alcoholic beer — fine for most people, but not for anyone avoiding alcohol strictly.',
+      smoke: false,
+      noSmoke: 'Angostura is already carrying all the aroma this needs.',
+      glass: 'tall', color: '#C3937B', ice: 'tall', garnish: 'lemon-wedge', bubbles: true
+    }
+  ];
+
+  var SECTIONS = [
+    { id: 'stirred', title: 'Stirred', sub: 'spirit-forward · smoke works here' },
+    { id: 'shaken', title: 'Shaken', sub: 'citrus · bright · no smoke' },
+    { id: 'long', title: 'Long & refreshing', sub: 'built in the glass · low ABV' },
+    { id: 'mocktail', title: 'Mocktails', sub: 'no alcohol · salt in every one' }
+  ];
+
+  var SPIRITS = [
+    { id: 'gin', label: 'Gin' },
+    { id: 'bourbon', label: 'Bourbon' },
+    { id: 'rye', label: 'Rye' },
+    { id: 'campari', label: 'Campari' },
+    { id: 'lillet', label: 'Lillet' },
+    { id: 'suze', label: 'Suze' }
+  ];
+
+  var byId = {};
+  DRINKS.forEach(function (d) { byId[d.id] = d; });
+
+__THAI_DATA__
+
+
+  /* ---------- language ---------- */
+
+  var T_EN = {
+    tab_menu: 'Menu', tab_orders: 'Orders',
+    hours: 'Open tonight · twenty-five drinks',
+    surprise: 'Surprise me', narrow: 'Narrow it down',
+
+    row_taste: 'Flavor', row_heavy: 'How heavy', row_spirit: 'Made with',
+    any: 'Anything', any_heavy: 'Any',
+    taste_bitter: 'Bitter', taste_sweet: 'Sweet', taste_citrus: 'Citrusy', taste_herbal: 'Herbal',
+    heavy_none: 'No alcohol', heavy_light: 'Light & long', heavy_mid: 'In between', heavy_strong: 'Strong & short',
+    sp_gin: 'Gin', sp_bourbon: 'Bourbon', sp_rye: 'Rye', sp_campari: 'Campari', sp_lillet: 'Lillet', sp_suze: 'Suze',
+    takes_smoke: 'Takes smoke',
+    count_one: 'drink', count_many: 'drinks',
+    no_match: 'Nothing on the shelf matches that.', show_all: 'Show everything',
+
+    sec_stirred: 'Stirred', sec_stirred_sub: 'spirit-forward · smoke works here',
+    sec_shaken: 'Shaken', sec_shaken_sub: 'citrus · bright · no smoke',
+    sec_long: 'Long & refreshing', sec_long_sub: 'built in the glass · low ABV',
+    sec_mocktail: 'Mocktails', sec_mocktail_sub: 'no alcohol · salt in every one',
+
+    whats_in_it: "What's in it", tastes_like: 'Tastes like', how_made: "How it's made",
+    your_name: 'Your name', anything_else: 'Anything else',
+    back: 'Back', send: 'Send to the bar',
+    name_ph: 'So the bar knows whose drink this is',
+    name_ph_err: 'The bar needs a name for this one',
+    note_ph: 'Optional — light on the vermouth, no garnish, make it two…',
+
+    smoke_it: 'Smoke it', wood: 'Wood', egg_white: 'Egg white',
+    egg_why: 'Dry-shaken first, served up with a thick white foam. Skip it for a leaner, tarter drink over ice.',
+    no_smoke_here: 'No smoke on this one. ', heads_up: 'Heads up. ',
+
+    axis_bitter: 'bitter', axis_sweet: 'sweet', axis_citrus: 'citrus',
+    axis_herbal: 'herbal', axis_strength: 'strength',
+
+    orders_lede_a: 'Tickets land here as they come in. Open ',
+    orders_lede_b: 'the build',
+    orders_lede_c: " for the recipe, tick the box when it's poured.",
+    working: 'working', poured: 'poured',
+    on_the_rail: 'On the rail', poured_title: 'Poured', clear: 'Clear',
+    the_build: 'The build',
+    bar_quiet: 'The bar is quiet', bar_quiet_sub: 'Orders from the menu show up here.',
+    bar_notes: 'Bar notes',
+
+    chip_no_smoke: 'No smoke', chip_smoke: 'Smoke — ', chip_smoke_best: 'Smoke — the best of them',
+    chip_smoked: 'Smoked — ', chip_low: 'Low ABV', chip_na: 'No alcohol',
+    chip_warn: 'Not alcohol-free', chip_egg_opt: 'Egg white optional', chip_egg: 'Egg white',
+    chip_poured: 'Poured',
+
+    toast_ordered: 'Ordered — ', toast_poured: 'Poured — ', toast_back: 'Back on the rail',
+    toast_for: ' for ',
+
+    aside_smoke: 'Smoke — ', aside_tip: 'Worth knowing', aside_warn: 'Not alcohol-free',
+
+    smoke_step: function (chip, blended) {
+      return 'Smoke the empty glass: invert it over the ' + chip +
+        ' chip for 10–20 seconds, then build in it. Never smoke the finished drink.' +
+        (blended ? ' Blend the pinch of cinnamon into the oak — never burn it on its own.' : '');
+    },
+
+    next_bottle_label: 'Next bottle',
+    next_bottle: 'Cognac, any VS around $30 — three of these bottles are already Vieux Carré ingredients. Then Crodino or Sanbitter (~$12 for eight), the only cheap source of real bitterness without alcohol: Crodino Spritz, Bitter Tonic, or an NA Garibaldi. Also limes, grapefruit juice and verjus. Skip the $35 NA gins — mostly flavored water at cocktail dilution.',
+
+    notes: [
+      { h: 'Simple syrup', p: 'Equal parts sugar and hot water, stirred until clear. Keeps a month in the fridge.' },
+      { h: 'Honey syrup', p: "Two parts honey to one part warm water. Raw honey is too thick to mix cold, so this step isn't optional. Keeps a month." },
+      { h: 'Stir or shake', p: "Stir anything that's all spirits — about 30 seconds in a mixing glass with good ice. Shake anything with citrus, egg, or syrup — 12 hard seconds, until the tin hurts to hold." },
+      { h: 'The long ones', p: 'Fill the glass completely with ice. A half-full glass dilutes faster, not slower.' },
+      { h: 'Every mocktail gets salt', p: 'A pinch, free, and it does more to stop a drink tasting like flat juice than any expensive non-alcoholic spirit.' },
+      { h: 'Push the acid higher', p: 'Without booze most people underdo the lemon by half. And use the smoker — it is the one flavor tool that needs no alcohol, and it makes a mocktail taste intentional rather than apologetic.' },
+      { h: 'Smoking a glass', p: 'Smoke the empty glass, never the finished drink. Invert it over the chip for 10–20 seconds, then build or pour in. Never smoke anything shaken with fresh citrus — smoke plus fresh lemon reads muddy, and foam kills the aroma anyway.' }
+    ],
+    wood_table_head: ['Wood', 'Use on'],
+    wood_table: [
+      ['Apple, pear, peach', "The gentlest. Monte Carlo, anything you don't want to bury"],
+      ['Cherry', 'Negroni, Boulevardier. Best match for Campari'],
+      ['Oak', 'The neutral whiskey wood. Old Fashioned, Sazerac, Manhattan'],
+      ['Pecan', 'Middle gear, nutty. Sazerac, Manhattan'],
+      ['Cinnamon', 'A pinch blended into oak, never solo. Old Fashioned only'],
+      ['Walnut', 'Go light — tannic and assertive. Bourbon drinks only, never the Negroni']
+    ]
+  };
+
+  var LANG_KEY = 'paulsbar.lang.v1';
+  var lang = 'en';
+  try { if (localStorage.getItem(LANG_KEY) === 'th') lang = 'th'; } catch (e) {}
+
+  function U(key) { return (lang === 'th' ? T_TH : T_EN)[key]; }
+  function woodLabel(w) { return lang === 'th' && WOOD_TH[w] ? WOOD_TH[w] : w; }
+  function woodNote(w) { return (lang === 'th' ? WOODS_TH : WOODS)[w] || ''; }
+
+  /* Swapping the fields on the drink objects themselves means every render
+     path below stays language-agnostic. */
+  var EN_DRINKS = DRINKS.map(function (d) {
+    var copy = {};
+    Object.keys(d).forEach(function (k) { copy[k] = d[k]; });
+    return copy;
+  });
+
+  function applyLang() {
+    DRINKS.forEach(function (d, i) {
+      var en = EN_DRINKS[i];
+      Object.keys(en).forEach(function (k) { d[k] = en[k]; });
+      if (lang === 'th' && TH[d.id]) {
+        Object.keys(TH[d.id]).forEach(function (k) { d[k] = TH[d.id][k]; });
+      }
+    });
+    document.documentElement.setAttribute('lang', lang);
+  }
+
+  function setLang(next) {
+    lang = next;
+    try { localStorage.setItem(LANG_KEY, next); } catch (e) {}
+    applyLang();
+    paintStatic();
+    renderFilters();
+    renderMenu();
+    renderOrders();
+  }
+
+  /* the chrome that isn't rebuilt by a render function */
+  function paintStatic() {
+    $('#lang-en').setAttribute('aria-pressed', lang === 'en' ? 'true' : 'false');
+    $('#lang-th').setAttribute('aria-pressed', lang === 'th' ? 'true' : 'false');
+    $('#hours-text').textContent = U('hours');
+    $('#tab-menu-text').textContent = U('tab_menu');
+    $('#tab-orders-text').textContent = U('tab_orders');
+    $('#choice-text').textContent = U('surprise');
+    $('#filter-toggle-text').textContent = U('narrow');
+    $('#notes-summary').textContent = U('bar_notes');
+
+    var lede = $('#orders-lede');
+    lede.innerHTML = '';
+    lede.appendChild(document.createTextNode(U('orders_lede_a')));
+    lede.appendChild(el('b', null, U('orders_lede_b')));
+    lede.appendChild(document.createTextNode(U('orders_lede_c')));
+    $('#tally-working-label').textContent = U('working');
+    $('#tally-poured-label').textContent = U('poured');
+
+    var nb = $('#next-bottle');
+    nb.innerHTML = '';
+    nb.appendChild(el('b', null, U('next_bottle_label')));
+    nb.appendChild(el('span', null, U('next_bottle')));
+
+    var notes = $('#notes-body');
+    notes.innerHTML = '';
+    var grid = el('div', 'notes-grid');
+    U('notes').forEach(function (n) {
+      var cell = el('div');
+      cell.appendChild(el('h3', null, n.h));
+      cell.appendChild(el('p', null, n.p));
+      grid.appendChild(cell);
+    });
+    notes.appendChild(grid);
+
+    var wrap = el('div', 'table-wrap');
+    wrap.style.marginTop = '26px';
+    var table = el('table', 'wood-table');
+    var thead = el('thead');
+    var hrow = el('tr');
+    U('wood_table_head').forEach(function (h) { hrow.appendChild(el('th', null, h)); });
+    thead.appendChild(hrow);
+    table.appendChild(thead);
+    var tbody = el('tbody');
+    U('wood_table').forEach(function (r) {
+      var tr = el('tr');
+      r.forEach(function (c) { tr.appendChild(el('td', null, c)); });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    wrap.appendChild(table);
+    notes.appendChild(wrap);
+  }
+
+  /* ---------- storage ---------- */
+
+  var ORDERS_KEY = 'paulsbar.orders.v1';
+  var GUEST_KEY = 'paulsbar.guest.v1';
+  var orders = [];
+  var lastPending = 0;
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(ORDERS_KEY);
+      orders = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(orders)) orders = [];
+    } catch (e) { orders = []; }
+  }
+  function save() {
+    try { localStorage.setItem(ORDERS_KEY, JSON.stringify(orders)); } catch (e) {}
+  }
+  function guestName() {
+    try { return localStorage.getItem(GUEST_KEY) || ''; } catch (e) { return ''; }
+  }
+  function rememberGuest(n) {
+    try { localStorage.setItem(GUEST_KEY, n); } catch (e) {}
+  }
+
+  /* ---------- helpers ---------- */
+
+  var $ = function (sel, root) { return (root || document).querySelector(sel); };
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function chip(cls, text) {
+    var c = el('span', 'chip ' + cls);
+    c.appendChild(el('span', 'dot'));
+    c.appendChild(document.createTextNode(text));
+    return c;
+  }
+
+  function profileEl(drink) {
+    var wrap = el('div', 'profile');
+    AXES.forEach(function (axis) {
+      var v = drink.flavor[axis] || 0;
+      var row = el('div', 'profile-row');
+      row.appendChild(el('span', null, U('axis_' + axis)));
+      var track = el('div', 'track');
+      track.setAttribute('role', 'img');
+      track.setAttribute('aria-label', U('axis_' + axis) + ' ' + v + ' / 5');
+      var fill = el('div', 'fill');
+      fill.style.width = (v / 5 * 100) + '%';
+      track.appendChild(fill);
+      row.appendChild(track);
+      wrap.appendChild(row);
+    });
+    return wrap;
+  }
+
+  /* the method, in the order you actually do it — smoking the glass comes
+     first, and egg white swaps in the dry-shake sequence */
+  function stepsFor(drink, opts) {
+    opts = opts || {};
+    var list = (opts.egg && drink.eggSteps ? drink.eggSteps : drink.steps).slice();
+    if (opts.smoke) {
+      var wood = opts.wood || drink.woods[0];
+      /* the blend gets its own sentence — "the oak + a pinch of cinnamon chip" doesn't read */
+      var blended = wood.indexOf('+') !== -1;
+      var chipName = blended ? woodLabel('Oak') : woodLabel(wood);
+      if (lang === 'en') chipName = chipName.toLowerCase();
+      list.unshift(U('smoke_step')(chipName, blended));
+    }
+    return list;
+  }
+
+  function stepsList(drink, opts) {
+    var ol = el('ol', 'steps');
+    stepsFor(drink, opts).forEach(function (step) {
+      ol.appendChild(el('li', null, step));
+    });
+    return ol;
+  }
+
+  function buildList(drink) {
+    var ul = el('ul', 'build');
+    drink.build.forEach(function (pair) {
+      var li = el('li');
+      li.appendChild(el('span', 'qty', pair[0]));
+      li.appendChild(el('span', 'ing', pair[1]));
+      ul.appendChild(li);
+    });
+    return ul;
+  }
+
+  function ago(ts) {
+    var m = Math.floor((Date.now() - ts) / 60000);
+    if (m < 1) return 'just now';
+    if (m === 1) return '1 min ago';
+    if (m < 60) return m + ' min ago';
+    var h = Math.floor(m / 60);
+    return h === 1 ? '1 hr ago' : h + ' hrs ago';
+  }
+
+  var toastTimer;
+  function toast(msg, drink, opts) {
+    $('#toast-text').textContent = msg;
+    var art = $('#toast-art');
+    art.innerHTML = '';
+    if (drink) art.appendChild(drawGlass(drink, opts || {}, 'static'));
+    var t = $('#toast');
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2800);
+  }
+
+  function ruleEl(title, sub) {
+    var h = el('h2', 'rule');
+    h.appendChild(el('span', 'rule-title', title));
+    if (sub) h.appendChild(el('span', 'sub', sub));
+    return h;
+  }
+
+  /* the drink's own colour, softened, for the light it throws on its card */
+  function glowOf(hex, alpha) {
+    var n = parseInt(hex.slice(1), 16);
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + alpha + ')';
+  }
+
+  /* ================================================================
+     THE ILLUSTRATOR
+     Each drink is drawn from its own data: glass shape, liquid colour,
+     ice, bubbles, foam, garnish. Options change the drawing — egg white
+     moves a sour into a coupe and caps it with foam; smoke sends wisps
+     off the rim.
+     ================================================================ */
+
+  var NS = 'http://www.w3.org/2000/svg';
+  var uid = 0;
+
+  function s(tag, attrs) {
+    var n = document.createElementNS(NS, tag);
+    for (var k in attrs) if (attrs.hasOwnProperty(k)) n.setAttribute(k, attrs[k]);
+    return n;
+  }
+
+  /* glass geometry: outline to stroke, inner shape to clip the liquid to,
+     rim y, and the half-width of the bowl at a given height */
+  var GLASS = {
+    rocks: {
+      outline: 'M30,50 L34.5,141 Q35,147 41,147 L79,147 Q85,147 85.5,141 L90,50',
+      inner: 'M32.5,52 L36.5,144 L83.5,144 L87.5,52 Z',
+      rim: 50, bottom: 144, full: 68, halfTop: 29
+    },
+    tall: {
+      outline: 'M39,22 L42,141 Q42.5,147 48.5,147 L71.5,147 Q77.5,147 78,141 L81,22',
+      inner: 'M41.5,24 L44.5,144 L75.5,144 L78.5,24 Z',
+      rim: 22, bottom: 144, full: 34, halfTop: 21
+    },
+    coupe: {
+      outline: 'M26,44 Q26,86 60,88 Q94,86 94,44 M60,88 L60,130 M42,133 Q60,127 78,133',
+      inner: 'M28.5,46 Q28.5,84 60,86 Q91.5,84 91.5,46 Z',
+      rim: 44, bottom: 88, full: 50, halfTop: 32
+    }
+  };
+
+  var CITRUS = { orange: '#E08A2B', lemon: '#E0C64A' };
+
+  /* what the drink actually looks like once the options are applied */
+  function visual(drink, opts) {
+    opts = opts || {};
+    var v = {
+      glass: drink.glass,
+      color: drink.color,
+      ice: drink.ice,
+      garnish: drink.garnish,
+      bubbles: !!drink.bubbles,
+      foam: drink.foam || null,
+      angostura: false,
+      smoke: !!opts.smoke
+    };
+    /* a sour with egg goes up in a coupe, no ice, thick foam on top */
+    if (drink.egg && opts.egg) {
+      v.glass = 'coupe';
+      v.ice = 'none';
+      v.foam = '#F2E9DB';
+      v.angostura = drink.id === 'whiskey-sour';
+    }
+    return v;
+  }
+
+  /* mode: 'static' (ticket, toast) · 'live' (menu card — it fizzes) · 'pour' (sheet — it fills) */
+  function drawGlass(drink, opts, mode) {
+    var animate = mode === 'pour';
+    var fizz = mode !== 'static';
+    var v = visual(drink, opts);
+    var g = GLASS[v.glass];
+    var id = 'g' + (++uid);
+
+    var svg = s('svg', { viewBox: '0 0 120 170', 'aria-hidden': 'true', focusable: 'false' });
+
+    var defs = s('defs');
+    var clip = s('clipPath', { id: 'clip' + id });
+    clip.appendChild(s('path', { d: g.inner }));
+    defs.appendChild(clip);
+
+    var grad = s('linearGradient', { id: 'lg' + id, x1: '0', y1: '0', x2: '0', y2: '1' });
+    grad.appendChild(s('stop', { offset: '0', 'stop-color': v.color, 'stop-opacity': '.78' }));
+    grad.appendChild(s('stop', { offset: '1', 'stop-color': v.color, 'stop-opacity': '1' }));
+    defs.appendChild(grad);
+    svg.appendChild(defs);
+
+    /* liquid + everything suspended in it, clipped to the bowl */
+    var inside = s('g', { 'clip-path': 'url(#clip' + id + ')' });
+
+    var top = g.full;
+    var liquid = s('rect', {
+      class: 'liquid', x: '20', width: '80',
+      y: animate ? String(g.bottom) : String(top),
+      height: animate ? '0' : String(g.bottom - top),
+      fill: 'url(#lg' + id + ')'
+    });
+    inside.appendChild(liquid);
+
+    if (v.ice === 'cube') {
+      inside.appendChild(iceCube(60, 112, 30, -8));
+    } else if (v.ice === 'cubes') {
+      inside.appendChild(iceCube(52, 118, 22, -12));
+      inside.appendChild(iceCube(70, 96, 20, 14));
+    } else if (v.ice === 'tall') {
+      inside.appendChild(iceCube(60, 128, 20, -10));
+      inside.appendChild(iceCube(57, 100, 19, 16));
+      inside.appendChild(iceCube(63, 72, 18, -6));
+      inside.appendChild(iceCube(59, 48, 17, 10));
+    }
+
+    if (v.bubbles) {
+      var seeds = [[50, 3.2, 0], [58, 4.1, .8], [66, 3.6, 1.6], [54, 4.6, 2.3], [70, 3.9, .4], [62, 4.4, 1.2]];
+      seeds.forEach(function (b, i) {
+        var c = s('circle', {
+          class: fizz ? 'bubble' : '',
+          cx: String(b[0]), cy: String(g.bottom - 8 - (i % 3) * 6),
+          r: String(1.1 + (i % 3) * 0.35),
+          fill: 'rgba(255,255,255,.5)'
+        });
+        if (fizz) {
+          c.style.animationDuration = b[1] + 's';
+          c.style.animationDelay = b[2] + 's';
+        }
+        inside.appendChild(c);
+      });
+    }
+
+    if (v.foam) {
+      var fw = g.halfTop - 2;
+      inside.appendChild(s('rect', { x: String(60 - fw), y: String(top - 2), width: String(fw * 2), height: '9', fill: v.foam }));
+      inside.appendChild(s('ellipse', { cx: '60', cy: String(top - 2), rx: String(fw), ry: '4.5', fill: v.foam }));
+      if (v.angostura) {
+        [[52, -3.5], [60, -5], [68, -3]].forEach(function (d) {
+          inside.appendChild(s('circle', { cx: String(d[0]), cy: String(top + d[1]), r: '1.5', fill: '#8C2B18', opacity: '.85' }));
+        });
+      }
+    }
+
+    /* the glass itself */
+    svg.appendChild(inside);
+    svg.appendChild(s('path', {
+      d: g.outline, fill: 'none',
+      stroke: 'rgba(244,234,218,.44)', 'stroke-width': '2',
+      'stroke-linecap': 'round', 'stroke-linejoin': 'round'
+    }));
+    /* a highlight down the inside of the left wall */
+    svg.appendChild(s('path', {
+      d: v.glass === 'coupe' ? 'M33,50 Q33,74 48,82' : (v.glass === 'tall' ? 'M45,30 L47,132' : 'M36,56 L39,134'),
+      fill: 'none', stroke: 'rgba(255,255,255,.16)', 'stroke-width': '1.6', 'stroke-linecap': 'round'
+    }));
+
+    garnishEl(svg, v.garnish, g);
+
+    if (v.smoke) {
+      var blur = s('filter', { id: 'sm' + id, x: '-60%', y: '-60%', width: '220%', height: '220%' });
+      blur.appendChild(s('feGaussianBlur', { stdDeviation: '3.2' }));
+      defs.appendChild(blur);
+
+      var smoke = s('g', { filter: 'url(#sm' + id + ')' });
+      [[48, 0], [61, 2.5], [72, 5]].forEach(function (w, i) {
+        var p = s('ellipse', {
+          class: animate ? 'wisp' : '',
+          /* static (card and ticket) sits clear of the glass; animated rises from the rim */
+          cx: String(w[0]), cy: String(g.rim - (animate ? 12 : 24) - i * 4),
+          rx: String((animate ? 10 : 6) + i * 2), ry: String((animate ? 6 : 4) + i * 1.5),
+          fill: 'rgba(160,176,181,.62)'
+        });
+        if (animate) p.style.animationDelay = w[1] + 's';
+        else p.setAttribute('opacity', '.3');
+        smoke.appendChild(p);
+      });
+      svg.appendChild(smoke);
+    }
+
+    if (animate) {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          liquid.setAttribute('y', String(top));
+          liquid.setAttribute('height', String(g.bottom - top));
+        });
+      });
+    }
+
+    return svg;
+  }
+
+  function iceCube(cx, cy, size, rot) {
+    var half = size / 2;
+    var g = s('g', { transform: 'rotate(' + rot + ' ' + cx + ' ' + cy + ')' });
+    g.appendChild(s('rect', {
+      x: String(cx - half), y: String(cy - half), width: String(size), height: String(size), rx: '4',
+      fill: 'rgba(255,255,255,.13)', stroke: 'rgba(255,255,255,.2)', 'stroke-width': '1.2'
+    }));
+    g.appendChild(s('path', {
+      d: 'M' + (cx - half + 4) + ',' + (cy + half - 5) + ' L' + (cx + half - 5) + ',' + (cy - half + 4),
+      stroke: 'rgba(255,255,255,.14)', 'stroke-width': '1.4', fill: 'none', 'stroke-linecap': 'round'
+    }));
+    return g;
+  }
+
+  function garnishEl(svg, kind, g) {
+    if (!kind || kind === 'none') return;
+    var y = g.rim;
+    var rx = 60 + g.halfTop;
+
+    if (kind === 'orange-twist' || kind === 'lemon-twist') {
+      var col = kind === 'orange-twist' ? CITRUS.orange : CITRUS.lemon;
+      var tw = s('path', {
+        d: 'M' + (rx - 12) + ',' + (y - 2) + ' q14,-12 20,0 q5,11 -7,13 q-10,1 -7,-8',
+        fill: 'none', stroke: col, 'stroke-width': '3.6', 'stroke-linecap': 'round', 'stroke-linejoin': 'round'
+      });
+      svg.appendChild(tw);
+      return;
+    }
+    if (kind === 'cherry') {
+      svg.appendChild(s('path', {
+        d: 'M' + (rx - 6) + ',' + (y + 2) + ' q6,14 -2,26',
+        fill: 'none', stroke: '#7A5A32', 'stroke-width': '1.6', 'stroke-linecap': 'round'
+      }));
+      svg.appendChild(s('circle', { cx: String(rx - 9), cy: String(y + 31), r: '6.5', fill: '#9E1F2B' }));
+      svg.appendChild(s('circle', { cx: String(rx - 11), cy: String(y + 29), r: '2', fill: 'rgba(255,255,255,.3)' }));
+      return;
+    }
+    if (kind === 'orange-slice' || kind === 'lemon-wheel') {
+      var c2 = kind === 'orange-slice' ? CITRUS.orange : CITRUS.lemon;
+      var wheel = s('g', { transform: 'translate(' + (rx - 2) + ',' + (y + 6) + ')' });
+      wheel.appendChild(s('circle', { r: '12', fill: c2, opacity: '.9' }));
+      wheel.appendChild(s('circle', { r: '9', fill: 'rgba(255,255,255,.22)' }));
+      for (var i = 0; i < 6; i++) {
+        wheel.appendChild(s('path', {
+          d: 'M0,0 L0,-9', stroke: c2, 'stroke-width': '1.6',
+          transform: 'rotate(' + (i * 60) + ')', opacity: '.9'
+        }));
+      }
+      svg.appendChild(wheel);
+      return;
+    }
+    if (kind === 'orange-wedge' || kind === 'lemon-wedge') {
+      var c3 = kind === 'orange-wedge' ? CITRUS.orange : CITRUS.lemon;
+      var wedge = s('g', { transform: 'translate(' + (rx - 4) + ',' + (y + 4) + ') rotate(28)' });
+      wedge.appendChild(s('path', { d: 'M0,0 A15,15 0 0 1 15,15 L0,15 Z', fill: c3, opacity: '.92' }));
+      wedge.appendChild(s('path', { d: 'M0,3 A12,12 0 0 1 12,15 L0,15 Z', fill: 'rgba(255,255,255,.2)' }));
+      svg.appendChild(wedge);
+    }
+  }
+
+  /* ================================================================
+     THREE BEHIND THE BAR
+     Backlit silhouettes, brass tins, each on its own rhythm so they
+     never fall into lockstep.
+     ================================================================ */
+
+  var TENDER_SKIN = '#150E0A';
+  var TENDER_EDGE = 'rgba(224,178,104,.55)';
+
+  function tender(cfg) {
+    var flip = cfg.flip ? -1 : 1;
+    var g = s('g', {
+      transform: 'translate(' + cfg.x + ',' + cfg.y + ') scale(' + (cfg.scale * flip) + ',' + cfg.scale + ')'
+    });
+
+    var body = s('g', { class: 'tender-body' });
+    body.style.setProperty('--d', cfg.dur + 's');
+    body.style.setProperty('--t', cfg.delay + 's');
+
+    /* Two swing groups on identical timing: the far arm goes behind the body,
+       the near arm and tin in front. Sharing one group turned them into mush. */
+    function swingGroup() {
+      var pivot = s('g', { transform: 'translate(0,-44)' });
+      var g2 = s('g', { class: 'tender-arms' });
+      g2.style.setProperty('--d', cfg.dur + 's');
+      g2.style.setProperty('--t', cfg.delay + 's');
+      pivot.appendChild(g2);
+      return { pivot: pivot, inner: g2 };
+    }
+
+    /* far arm — drawn first so the torso and head sit over it */
+    var far = swingGroup();
+    far.inner.appendChild(s('path', {
+      d: 'M-13,3 C-2,1 12,-6 20,-28', fill: 'none', stroke: TENDER_SKIN,
+      'stroke-width': '7', 'stroke-linecap': 'round'
+    }));
+    far.inner.appendChild(s('path', {
+      d: 'M-13,3 C-2,1 12,-6 20,-28', fill: 'none', stroke: TENDER_EDGE,
+      'stroke-width': '1', 'stroke-linecap': 'round', opacity: '.45'
+    }));
+    body.appendChild(far.pivot);
+
+    /* torso, from the counter up — sloped shoulders, or it reads as a slab */
+    body.appendChild(s('path', {
+      d: 'M-18,0 L-17,-25 Q-16,-37 -7.5,-42 Q-3.5,-44 0,-44 Q3.5,-44 7.5,-42 Q16,-37 17,-25 L18,0 Z',
+      fill: TENDER_SKIN, stroke: TENDER_EDGE, 'stroke-width': '1.1', 'stroke-linejoin': 'round'
+    }));
+    /* apron */
+    body.appendChild(s('path', {
+      d: 'M-12,0 L-12,-15 Q0,-19 12,-15 L12,0',
+      fill: 'none', stroke: 'rgba(224,178,104,.26)', 'stroke-width': '1.1', 'stroke-linejoin': 'round'
+    }));
+    /* bow tie — the one spot of colour on each of them */
+    body.appendChild(s('path', {
+      d: 'M-6,-43.5 L-0.9,-40 L-0.9,-36.5 L-6,-33 Z M6,-43.5 L0.9,-40 L0.9,-36.5 L6,-33 Z',
+      fill: cfg.tie
+    }));
+    body.appendChild(s('rect', { x: '-1.6', y: '-40.4', width: '3.2', height: '4.4', rx: '1', fill: cfg.tie }));
+    /* neck + head */
+    body.appendChild(s('rect', { x: '-3.6', y: '-51', width: '7.2', height: '9', fill: TENDER_SKIN }));
+    body.appendChild(s('circle', {
+      cx: '0', cy: '-59', r: '10.5',
+      fill: TENDER_SKIN, stroke: TENDER_EDGE, 'stroke-width': '1.1'
+    }));
+    body.appendChild(s('path', {
+      d: cfg.hair, fill: TENDER_SKIN, stroke: TENDER_EDGE, 'stroke-width': '1.1', 'stroke-linejoin': 'round'
+    }));
+
+    /* near arm, tin and hands — in front of everything */
+    var near = swingGroup();
+    var arms = near.inner;
+
+    arms.appendChild(s('path', {
+      d: 'M13,2 Q23,-6 25,-18', fill: 'none', stroke: TENDER_SKIN,
+      'stroke-width': '8.5', 'stroke-linecap': 'round'
+    }));
+    arms.appendChild(s('path', {
+      d: 'M13,2 Q23,-6 25,-18', fill: 'none', stroke: TENDER_EDGE,
+      'stroke-width': '1', 'stroke-linecap': 'round', opacity: '.45'
+    }));
+
+    /* the tin, held up and clear of the face — a Boston tin, wider at the mouth */
+    arms.appendChild(s('path', {
+      d: 'M21.5,-16 L30.5,-16 L33,-40 L19,-40 Z',
+      fill: 'url(#tinGrad)', stroke: 'rgba(242,218,176,.55)', 'stroke-width': '1', 'stroke-linejoin': 'round'
+    }));
+    arms.appendChild(s('path', {
+      d: 'M19.6,-36.5 L32.4,-36.5', stroke: 'rgba(255,238,206,.4)', 'stroke-width': '1.1'
+    }));
+    arms.appendChild(s('path', {
+      d: 'M24,-19 L25.6,-37', stroke: 'rgba(255,238,206,.5)', 'stroke-width': '1.5', 'stroke-linecap': 'round'
+    }));
+
+    /* hands on the tin */
+    arms.appendChild(s('circle', { cx: '26', cy: '-19', r: '4.3', fill: TENDER_SKIN, stroke: TENDER_EDGE, 'stroke-width': '1' }));
+    arms.appendChild(s('circle', { cx: '23', cy: '-32', r: '4.1', fill: TENDER_SKIN, stroke: TENDER_EDGE, 'stroke-width': '1' }));
+
+    body.appendChild(near.pivot);
+    g.appendChild(body);
+    return g;
+  }
+
+  function renderTenders() {
+    /* cropped tight to the three of them */
+    var svg = s('svg', { viewBox: '20 28 300 100', 'aria-hidden': 'true', focusable: 'false' });
+
+    var defs = s('defs');
+    var lamp = s('radialGradient', { id: 'lampGrad' });
+    lamp.appendChild(s('stop', { offset: '0', 'stop-color': 'rgba(226,146,66,.4)' }));
+    lamp.appendChild(s('stop', { offset: '1', 'stop-color': 'rgba(226,146,66,0)' }));
+    defs.appendChild(lamp);
+
+    var tinGrad = s('linearGradient', { id: 'tinGrad', x1: '0', y1: '0', x2: '1', y2: '0.4' });
+    tinGrad.appendChild(s('stop', { offset: '0', 'stop-color': '#8A6A34' }));
+    tinGrad.appendChild(s('stop', { offset: '.45', 'stop-color': '#D9AC5E' }));
+    tinGrad.appendChild(s('stop', { offset: '1', 'stop-color': '#8A6A34' }));
+    defs.appendChild(tinGrad);
+
+    var barGrad = s('linearGradient', { id: 'barGrad', x1: '0', y1: '0', x2: '1', y2: '0' });
+    barGrad.appendChild(s('stop', { offset: '0', 'stop-color': 'rgba(224,178,104,0)' }));
+    barGrad.appendChild(s('stop', { offset: '.5', 'stop-color': 'rgba(224,178,104,.55)' }));
+    barGrad.appendChild(s('stop', { offset: '1', 'stop-color': 'rgba(224,178,104,0)' }));
+    defs.appendChild(barGrad);
+    svg.appendChild(defs);
+
+    /* the light they're standing in front of — kept inside the viewBox, or the
+       gradient clips against the edge and leaves a seam */
+    svg.appendChild(s('ellipse', { cx: '170', cy: '80', rx: '148', ry: '50', fill: 'url(#lampGrad)' }));
+
+    [
+      { x: 66, y: 116, scale: 0.9, dur: 0.46, delay: 0, tie: '#D24A22', hair: 'M-10.5,-62 Q-8.5,-71 0,-70.5 Q8.5,-70 10.5,-61 Q6,-65.5 -2,-64.5 Q-8,-64 -10.5,-62 Z' },
+      { x: 158, y: 121, scale: 1.05, dur: 0.53, delay: -0.21, tie: '#D2A24C', hair: 'M-11,-59 Q-11,-72 0,-71 Q11,-70 11,-59 Q9,-66 0,-66.5 Q-9,-67 -11,-59 Z' },
+      { x: 278, y: 115, scale: 0.87, dur: 0.49, delay: -0.36, flip: true, tie: '#93A3A8', hair: 'M-10.5,-61 Q-9,-72 0,-70.5 Q9,-69 10.5,-63 Q5,-67 -3,-66 Q-8,-65.5 -10.5,-61 Z' }
+    ].forEach(function (cfg) { svg.appendChild(tender(cfg)); });
+
+    /* the bar they're working behind */
+    svg.appendChild(s('rect', { x: '24', y: '120', width: '292', height: '2', rx: '1', fill: 'url(#barGrad)' }));
+
+    var box = $('#tenders');
+    box.appendChild(svg);
+  }
+
+  function artBox(cls, drink, opts, mode) {
+    var box = el('div', cls);
+    box.appendChild(drawGlass(drink, opts, mode));
+    return box;
+  }
+
+  /* ---------- menu ---------- */
+
+  /* The filters are the same five meters printed on every card: four flavors,
+     plus strength as "how heavy". Nobody needs to know a spirit to order. */
+  var TASTES = {
+    bitter: function (d) { return d.flavor.bitter >= 4; },
+    sweet: function (d) { return d.flavor.sweet >= 4 || (d.flavor.sweet >= 3 && d.flavor.bitter <= 1); },
+    citrus: function (d) { return d.flavor.citrus >= 4; },
+    herbal: function (d) { return d.flavor.herbal >= 4; }
+  };
+  var HEAVY = {
+    none: function (d) { return !!d.na; },
+    light: function (d) { return !d.na && d.flavor.strength <= 2; },
+    mid: function (d) { return d.flavor.strength === 3; },
+    strong: function (d) { return d.flavor.strength >= 4; }
+  };
+
+  var filters = { taste: 'any', heavy: 'any', spirit: 'all', smoke: false };
+
+  function passes(d, f) {
+    if (f.taste !== 'any' && !TASTES[f.taste](d)) return false;
+    if (f.heavy !== 'any' && !HEAVY[f.heavy](d)) return false;
+    if (f.spirit !== 'all' && d.spirits.indexOf(f.spirit) === -1) return false;
+    if (f.smoke && !d.smoke) return false;
+    return true;
+  }
+
+  function matches(d) { return passes(d, filters); }
+
+  /* how many drinks would be left if this one control changed */
+  function countWith(key, value) {
+    var trial = { taste: filters.taste, heavy: filters.heavy, spirit: filters.spirit, smoke: filters.smoke };
+    trial[key] = value;
+    return DRINKS.filter(function (d) { return passes(d, trial); }).length;
+  }
+
+  function rows() {
+    return [
+      {
+        key: 'taste', label: U('row_taste'), any: 'any',
+        options: [
+          { id: 'any', label: U('any') },
+          { id: 'bitter', label: U('taste_bitter') },
+          { id: 'sweet', label: U('taste_sweet') },
+          { id: 'citrus', label: U('taste_citrus') },
+          { id: 'herbal', label: U('taste_herbal') }
+        ]
+      },
+      {
+        key: 'heavy', label: U('row_heavy'), any: 'any',
+        options: [
+          { id: 'any', label: U('any_heavy') },
+          { id: 'none', label: U('heavy_none') },
+          { id: 'light', label: U('heavy_light') },
+          { id: 'mid', label: U('heavy_mid') },
+          { id: 'strong', label: U('heavy_strong') }
+        ]
+      },
+      {
+        key: 'spirit', label: U('row_spirit'), any: 'all',
+        options: [{ id: 'all', label: U('any') }].concat(SPIRITS.map(function (s) {
+          return { id: s.id, label: U('sp_' + s.id) };
+        }))
+      }
+    ];
+  }
+
+  function renderFilters() {
+    var bar = $('#filters');
+    bar.innerHTML = '';
+
+    rows().forEach(function (rowDef) {
+      var row = el('div', 'filter-row');
+      row.appendChild(el('span', 'filter-label', rowDef.label));
+
+      rowDef.options.forEach(function (opt) {
+        var b = el('button', 'pill', opt.label);
+        b.type = 'button';
+        /* three rows each offer "Anything" — the row has to be in the name */
+        b.setAttribute('aria-label', rowDef.label + ': ' + opt.label);
+        b.setAttribute('aria-pressed', filters[rowDef.key] === opt.id ? 'true' : 'false');
+        /* a control that would empty the list is a dead end — grey it out */
+        if (opt.id !== rowDef.any && countWith(rowDef.key, opt.id) === 0) b.disabled = true;
+        b.addEventListener('click', function () {
+          filters[rowDef.key] = opt.id;
+          renderFilters();
+          renderMenu();
+        });
+        row.appendChild(b);
+      });
+
+      if (rowDef.key === 'spirit') {
+        row.appendChild(el('span', 'filter-sep'));
+        var smokeBtn = el('button', 'pill smoke-pill', U('takes_smoke'));
+        smokeBtn.type = 'button';
+        smokeBtn.setAttribute('aria-pressed', filters.smoke ? 'true' : 'false');
+        if (!filters.smoke && countWith('smoke', true) === 0) smokeBtn.disabled = true;
+        smokeBtn.addEventListener('click', function () {
+          filters.smoke = !filters.smoke;
+          renderFilters();
+          renderMenu();
+        });
+        row.appendChild(smokeBtn);
+
+        var n = DRINKS.filter(matches).length;
+        row.appendChild(el('span', 'filter-count', n + ' ' + (n === 1 ? U('count_one') : U('count_many'))));
+      }
+
+      bar.appendChild(row);
+    });
+  }
+
+  function drinkCard(drink, index) {
+    var card = el('button', 'card');
+    card.type = 'button';
+    card.setAttribute('aria-label', drink.name);
+    card.style.setProperty('--glow', glowOf(drink.color, 0.4));
+    card.style.setProperty('--edge', glowOf(drink.color, 0.55));
+    card.style.setProperty('--i', String(index));
+
+    card.appendChild(artBox('glass-art', drink, {}, 'live'));
+
+    var body = el('div', 'card-body');
+    var head = el('div', 'card-head');
+    head.appendChild(el('div', 'card-name', drink.name));
+    head.appendChild(el('div', 'card-meta', drink.base + ' · ' + drink.method));
+    body.appendChild(head);
+
+    body.appendChild(el('p', 'card-note', drink.note));
+    body.appendChild(profileEl(drink));
+
+    var chips = el('div', 'card-chips');
+    chips.appendChild(drink.smoke
+      ? chip('smoke', drink.best ? U('chip_smoke_best') : U('chip_smoke') + woodLabel(drink.woods[0]))
+      : chip('', U('chip_no_smoke')));
+    if (drink.low) chips.appendChild(chip('low', U('chip_low')));
+    if (drink.na && !drink.warning) chips.appendChild(chip('na', U('chip_na')));
+    if (drink.warning) chips.appendChild(chip('warn', U('chip_warn')));
+    if (drink.egg) chips.appendChild(chip('egg', U('chip_egg_opt')));
+    body.appendChild(chips);
+    card.appendChild(body);
+
+    card.addEventListener('click', function () { openSheet(drink); });
+    return card;
+  }
+
+  function renderMenu() {
+    var body = $('#menu-body');
+    body.innerHTML = '';
+    var shown = 0;
+
+    SECTIONS.forEach(function (sec) {
+      var list = DRINKS.filter(function (d) { return d.section === sec.id && matches(d); });
+      if (!list.length) return;
+
+      body.appendChild(ruleEl(U('sec_' + sec.id), U('sec_' + sec.id + '_sub')));
+
+      var grid = el('div', 'menu');
+      list.forEach(function (d, i) { grid.appendChild(drinkCard(d, shown + i)); });
+      body.appendChild(grid);
+      shown += list.length;
+    });
+
+    if (!shown) {
+      var none = el('div', 'no-match');
+      none.appendChild(el('div', null, U('no_match')));
+      var reset = el('button', 'link-btn', U('show_all'));
+      reset.type = 'button';
+      reset.style.marginTop = '10px';
+      reset.addEventListener('click', function () {
+        filters = { taste: 'any', heavy: 'any', spirit: 'all', smoke: false };
+        renderFilters();
+        renderMenu();
+      });
+      none.appendChild(reset);
+      body.appendChild(none);
+    }
+  }
+
+  /* ---------- order sheet ---------- */
+
+  var sheet = $('#sheet');
+
+  function optionRow(cls, title, why) {
+    var label = el('label', 'option ' + cls);
+    var input = el('input');
+    input.type = 'checkbox';
+    label.appendChild(input);
+    label.appendChild(el('span', 'box'));
+    var text = el('span', 'option-text');
+    text.appendChild(el('span', 'option-title', title));
+    text.appendChild(el('span', 'option-why', why));
+    label.appendChild(text);
+    return label;
+  }
+
+  function openSheet(drink) {
+    sheet.innerHTML = '';
+
+    var state = { smoke: false, egg: false, wood: drink.woods ? drink.woods[0] : null };
+
+    var form = el('form', 'sheet');
+    form.method = 'dialog';
+
+    /* head — the drink, drawn */
+    var head = el('div', 'sheet-head');
+    var preview = artBox('preview', drink, state, 'pour');
+    head.appendChild(preview);
+
+    var headText = el('div');
+    headText.appendChild(el('div', 'card-meta', drink.base + ' · ' + drink.method));
+    var h2 = el('h2', 'sheet-title', drink.name);
+    h2.id = 'sheet-title';
+    headText.appendChild(h2);
+    headText.appendChild(el('p', 'card-note', drink.note));
+    head.appendChild(headText);
+    form.appendChild(head);
+
+    /* the method lives below the options and follows them — tick smoke and
+       step one becomes smoking the glass */
+    var howBox = el('div');
+
+    function redraw() {
+      var next = drawGlass(drink, state, 'pour');
+      preview.innerHTML = '';
+      preview.appendChild(next);
+      howBox.innerHTML = '';
+      howBox.appendChild(stepsList(drink, state));
+    }
+
+    /* body */
+    var body = el('div', 'sheet-body');
+
+    if (drink.warning) {
+      var warn = el('div', 'warn-box');
+      warn.appendChild(el('b', null, U('heads_up')));
+      warn.appendChild(document.createTextNode(drink.warning));
+      body.appendChild(warn);
+    }
+
+    var whatField = el('div', 'field');
+    whatField.appendChild(el('div', 'label', U('whats_in_it')));
+    whatField.appendChild(buildList(drink));
+    body.appendChild(whatField);
+
+    var tasteField = el('div', 'field');
+    tasteField.appendChild(el('div', 'label', U('tastes_like')));
+    tasteField.appendChild(profileEl(drink));
+    body.appendChild(tasteField);
+
+    if (drink.smoke) {
+      var block = el('div');
+      var smokeRow = optionRow('smoke', U('smoke_it'), drink.smokeNote);
+      var smokeInput = $('input', smokeRow);
+      block.appendChild(smokeRow);
+
+      var woods = el('div', 'woods');
+      woods.hidden = true;
+      woods.appendChild(el('div', 'label', U('wood')));
+      var row = el('div', 'wood-row');
+      var note = el('p', 'wood-note', woodNote(state.wood));
+
+      drink.woods.forEach(function (w) {
+        var b = el('button', 'wood', woodLabel(w));
+        b.type = 'button';
+        b.setAttribute('data-wood', w);
+        b.setAttribute('aria-pressed', w === state.wood ? 'true' : 'false');
+        b.addEventListener('click', function () {
+          state.wood = w;
+          Array.prototype.forEach.call(row.children, function (c) {
+            c.setAttribute('aria-pressed', c.getAttribute('data-wood') === w ? 'true' : 'false');
+          });
+          note.textContent = woodNote(w);
+          redraw(); /* step one names the wood */
+        });
+        row.appendChild(b);
+      });
+      woods.appendChild(row);
+      woods.appendChild(note);
+      block.appendChild(woods);
+
+      smokeInput.addEventListener('change', function () {
+        state.smoke = smokeInput.checked;
+        woods.hidden = !smokeInput.checked;
+        redraw();
+      });
+      body.appendChild(block);
+    } else {
+      var no = el('div', 'no-smoke');
+      no.appendChild(el('b', null, U('no_smoke_here')));
+      no.appendChild(document.createTextNode(drink.noSmoke));
+      body.appendChild(no);
+    }
+
+    if (drink.egg) {
+      var eggRow = optionRow('egg', U('egg_white'), U('egg_why'));
+      var eggInput = $('input', eggRow);
+      eggInput.addEventListener('change', function () {
+        state.egg = eggInput.checked;
+        redraw();
+      });
+      body.appendChild(eggRow);
+    }
+
+    var howField = el('div', 'field');
+    howField.appendChild(el('div', 'label', U('how_made')));
+    howField.appendChild(howBox);
+    body.appendChild(howField);
+    redraw();
+
+    var nameField = el('div', 'field');
+    nameField.appendChild(el('div', 'label', U('your_name')));
+    var nameInput = el('input');
+    nameInput.type = 'text';
+    nameInput.placeholder = U('name_ph');
+    nameInput.value = guestName();
+    nameInput.maxLength = 40;
+    nameField.appendChild(nameInput);
+    body.appendChild(nameField);
+
+    var noteField = el('div', 'field');
+    noteField.appendChild(el('div', 'label', U('anything_else')));
+    var noteInput = el('textarea');
+    noteInput.placeholder = U('note_ph');
+    noteInput.maxLength = 200;
+    noteField.appendChild(noteInput);
+    body.appendChild(noteField);
+
+    form.appendChild(body);
+
+    var foot = el('div', 'sheet-foot');
+    var cancel = el('button', 'btn btn-ghost', U('back'));
+    cancel.type = 'button';
+    cancel.addEventListener('click', function () { sheet.close(); });
+    var send = el('button', 'btn btn-primary', U('send'));
+    send.type = 'submit';
+    foot.appendChild(cancel);
+    foot.appendChild(send);
+    form.appendChild(foot);
+
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var who = nameInput.value.trim();
+      if (!who) {
+        nameInput.focus();
+        nameInput.placeholder = U('name_ph_err');
+        return;
+      }
+      rememberGuest(who);
+      placeOrder({
+        id: 'o' + Date.now() + Math.random().toString(36).slice(2, 6),
+        drink: drink.id,
+        guest: who,
+        smoke: state.smoke,
+        wood: state.smoke ? state.wood : null,
+        egg: state.egg,
+        note: noteInput.value.trim(),
+        at: Date.now(),
+        done: false
+      });
+      sheet.close();
+      toast(U('toast_ordered') + drink.name + U('toast_for') + who, drink, state);
+    });
+
+    sheet.appendChild(form);
+    sheet.showModal();
+    nameInput.value ? send.focus() : nameInput.focus();
+  }
+
+  function placeOrder(order) {
+    orders.unshift(order);
+    save();
+    renderOrders(true);
+  }
+
+  /* ---------- orders ---------- */
+
+  function ticketEl(order) {
+    var drink = byId[order.drink];
+    if (!drink) return null;
+
+    var wrap = el('article', 'ticket' + (order.smoke ? ' smoked' : '') + (order.done ? ' done' : ''));
+    var main = el('div', 'ticket-main');
+
+    var pour = el('button', 'pour');
+    pour.type = 'button';
+    pour.setAttribute('role', 'checkbox');
+    pour.setAttribute('aria-checked', order.done ? 'true' : 'false');
+    pour.setAttribute('aria-label', (order.done ? U('toast_back') : U('toast_poured') + drink.name) +
+      U('toast_for') + order.guest);
+    pour.addEventListener('click', function () {
+      order.done = !order.done;
+      order.doneAt = order.done ? Date.now() : null;
+      save();
+      renderOrders();
+      toast(order.done ? U('toast_poured') + drink.name + U('toast_for') + order.guest : U('toast_back'),
+        drink, { smoke: order.smoke, egg: order.egg });
+    });
+    main.appendChild(pour);
+
+    main.appendChild(artBox('ticket-art', drink, { smoke: order.smoke, egg: order.egg }, 'static'));
+
+    var text = el('div', 'ticket-text');
+
+    var line = el('div', 'ticket-line');
+    line.appendChild(el('span', 'ticket-drink', drink.name));
+    line.appendChild(el('span', 'ticket-guest', order.guest));
+    var when = el('span', 'ticket-when', ago(order.at));
+    when.setAttribute('data-at', order.at);
+    line.appendChild(when);
+    text.appendChild(line);
+
+    var chips = el('div', 'ticket-chips');
+    chips.appendChild(order.smoke
+      ? chip('smoke', U('chip_smoked') + woodLabel(order.wood || drink.woods[0]))
+      : chip('', drink.smoke ? U('chip_no_smoke') : drink.method));
+    if (order.egg) chips.appendChild(chip('egg', U('chip_egg')));
+    if (order.done) chips.appendChild(chip('poured', U('chip_poured')));
+    text.appendChild(chips);
+
+    if (order.note) text.appendChild(el('p', 'ticket-note', order.note));
+
+    main.appendChild(text);
+    wrap.appendChild(main);
+
+    var panelId = 'build-' + order.id;
+    var toggle = el('button', 'build-toggle');
+    toggle.type = 'button';
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-controls', panelId);
+    toggle.appendChild(el('span', 'caret', '›'));
+    toggle.appendChild(document.createTextNode(U('the_build')));
+
+    var panel = el('div', 'build-panel');
+    panel.id = panelId;
+    panel.hidden = true;
+
+    panel.appendChild(buildList(drink));
+    panel.appendChild(stepsList(drink, { smoke: order.smoke, egg: order.egg, wood: order.wood }));
+
+    if (order.smoke) {
+      var wood = order.wood || drink.woods[0];
+      var sm = el('div', 'aside smoke-aside');
+      sm.appendChild(el('div', 'aside-label', U('aside_smoke') + woodLabel(wood)));
+      sm.appendChild(el('div', null, woodNote(wood)));
+      panel.appendChild(sm);
+    }
+    if (drink.warning) {
+      var wn = el('div', 'aside warn-aside');
+      wn.appendChild(el('div', 'aside-label', U('aside_warn')));
+      wn.appendChild(el('div', null, drink.warning));
+      panel.appendChild(wn);
+    }
+    if (drink.tip) {
+      var tp = el('div', 'aside tip-aside');
+      tp.appendChild(el('div', 'aside-label', U('aside_tip')));
+      tp.appendChild(el('div', null, drink.tip));
+      panel.appendChild(tp);
+    }
+
+    toggle.addEventListener('click', function () {
+      var open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', open ? 'false' : 'true');
+      panel.hidden = open;
+    });
+
+    wrap.appendChild(toggle);
+    wrap.appendChild(panel);
+    return wrap;
+  }
+
+  function renderOrders(isNew) {
+    var body = $('#orders-body');
+    body.innerHTML = '';
+
+    var working = orders.filter(function (o) { return !o.done; });
+    var poured = orders.filter(function (o) { return o.done; });
+
+    $('#tally-working').textContent = working.length;
+    $('#tally-poured').textContent = poured.length;
+
+    var badge = $('#pending-count');
+    badge.textContent = working.length;
+    badge.hidden = working.length === 0;
+    if (isNew && working.length > lastPending && $('#tab-orders').getAttribute('aria-selected') !== 'true') {
+      badge.classList.remove('pulse');
+      void badge.offsetWidth;
+      badge.classList.add('pulse');
+    }
+    lastPending = working.length;
+
+    if (!orders.length) {
+      var empty = el('div', 'empty');
+      empty.appendChild(el('div', 'empty-title', U('bar_quiet')));
+      empty.appendChild(el('div', null, U('bar_quiet_sub')));
+      body.appendChild(empty);
+      return;
+    }
+
+    if (working.length) {
+      var w = ruleEl(U('on_the_rail'));
+      w.style.marginTop = '0';
+      body.appendChild(w);
+      var wl = el('div', 'tickets');
+      working.forEach(function (o) {
+        var t = ticketEl(o);
+        if (t) wl.appendChild(t);
+      });
+      body.appendChild(wl);
+    }
+
+    if (poured.length) {
+      var p = ruleEl(U('poured_title'));
+      if (!working.length) p.style.marginTop = '0';
+      var clear = el('button', 'link-btn', U('clear'));
+      clear.type = 'button';
+      clear.addEventListener('click', function () {
+        orders = orders.filter(function (o) { return !o.done; });
+        save();
+        renderOrders();
+      });
+      var sub = el('span', 'sub');
+      sub.appendChild(clear);
+      p.appendChild(sub);
+      body.appendChild(p);
+      var pl = el('div', 'tickets');
+      poured.forEach(function (o) {
+        var t = ticketEl(o);
+        if (t) pl.appendChild(t);
+      });
+      body.appendChild(pl);
+    }
+  }
+
+  /* ---------- tabs ---------- */
+
+  function showTab(which) {
+    var isMenu = which === 'menu';
+    $('#tab-menu').setAttribute('aria-selected', isMenu ? 'true' : 'false');
+    $('#tab-orders').setAttribute('aria-selected', isMenu ? 'false' : 'true');
+    $('#view-menu').hidden = !isMenu;
+    $('#view-orders').hidden = isMenu;
+    if (!isMenu) $('#pending-count').classList.remove('pulse');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+  $('#tab-menu').addEventListener('click', function () { showTab('menu'); });
+  $('#tab-orders').addEventListener('click', function () { showTab('orders'); });
+
+  /* ---------- bartender's choice ---------- */
+
+  var filterToggle = $('#filter-toggle');
+  filterToggle.addEventListener('click', function () {
+    var open = filterToggle.getAttribute('aria-expanded') === 'true';
+    filterToggle.setAttribute('aria-expanded', open ? 'false' : 'true');
+    $('#filters').classList.toggle('collapsed', open);
+  });
+
+  var choice = $('#choice');
+  choice.addEventListener('click', function () {
+    var pool = DRINKS.filter(matches);
+    if (!pool.length) return;
+    choice.classList.add('rolling');
+    setTimeout(function () { choice.classList.remove('rolling'); }, 500);
+    openSheet(pool[Math.floor(Math.random() * pool.length)]);
+  });
+
+  /* ---------- grain + tick marks ---------- */
+
+  function makeGrain() {
+    var size = 160;
+    var c = document.createElement('canvas');
+    c.width = c.height = size;
+    var ctx = c.getContext('2d');
+    var img = ctx.createImageData(size, size);
+    for (var i = 0; i < img.data.length; i += 4) {
+      var v = 120 + Math.random() * 135;
+      img.data[i] = v;
+      img.data[i + 1] = v * 0.92;
+      img.data[i + 2] = v * 0.8;
+      img.data[i + 3] = Math.random() * 13;
+    }
+    ctx.putImageData(img, 0, 0);
+    document.documentElement.style.setProperty('--grain', 'url(' + c.toDataURL() + ')');
+  }
+
+  function tick(color) {
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="' + color +
+      '" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+    return 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")';
+  }
+
+  /* ---------- go ---------- */
+
+  document.documentElement.style.setProperty('--tick', tick('#12100F'));
+  document.documentElement.style.setProperty('--tick-dark', tick('#141109'));
+  makeGrain();
+
+  $('#lang-en').addEventListener('click', function () { if (lang !== 'en') setLang('en'); });
+  $('#lang-th').addEventListener('click', function () { if (lang !== 'th') setLang('th'); });
+
+  load();
+  applyLang();
+  paintStatic();
+  renderTenders();
+  renderFilters();
+  renderMenu();
+  renderOrders();
+
+  setInterval(function () {
+    Array.prototype.forEach.call(document.querySelectorAll('.ticket-when'), function (n) {
+      n.textContent = ago(Number(n.getAttribute('data-at')));
+    });
+  }, 30000);
+
+  window.addEventListener('storage', function (e) {
+    if (e.key === ORDERS_KEY) { load(); renderOrders(true); }
+  });
+})();
+</script>
