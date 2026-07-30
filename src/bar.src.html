@@ -608,24 +608,6 @@ main { padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 96px; }
   text-align: center;
   color: var(--text-3);
 }
-.next-bottle {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 10px;
-  align-items: baseline;
-  margin-top: 44px;
-  padding-top: 18px;
-  border-top: 1px solid var(--line);
-  color: var(--text-3);
-  font-size: 0.8125rem;
-}
-.next-bottle b {
-  color: var(--brass);
-  font-size: 0.625rem;
-  font-weight: 700;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-}
 
 /* ---------- order sheet ---------- */
 
@@ -1179,7 +1161,6 @@ details.notes summary:hover { color: var(--brass); }
 
       <div id="menu-body"></div>
 
-      <p class="next-bottle" id="next-bottle"></p>
     </section>
 
     <section class="view" id="view-orders" role="tabpanel" aria-labelledby="tab-orders" hidden>
@@ -1801,8 +1782,6 @@ __THAI_DATA__
         (blended ? ' Blend the pinch of cinnamon into the oak — never burn it on its own.' : '');
     },
 
-    next_bottle_label: 'Next bottle',
-    next_bottle: 'Cognac, any VS around $30 — three of these bottles are already Vieux Carré ingredients. Then Crodino or Sanbitter (~$12 for eight), the only cheap source of real bitterness without alcohol: Crodino Spritz, Bitter Tonic, or an NA Garibaldi. Also limes, grapefruit juice and verjus. Skip the $35 NA gins — mostly flavored water at cocktail dilution.',
 
     notes: [
       { h: 'Simple syrup', p: 'Equal parts sugar and hot water, stirred until clear. Keeps a month in the fridge.' },
@@ -1879,11 +1858,6 @@ __THAI_DATA__
     lede.appendChild(document.createTextNode(U('orders_lede_c')));
     $('#tally-working-label').textContent = U('working');
     $('#tally-poured-label').textContent = U('poured');
-
-    var nb = $('#next-bottle');
-    nb.innerHTML = '';
-    nb.appendChild(el('b', null, U('next_bottle_label')));
-    nb.appendChild(el('span', null, U('next_bottle')));
 
     var notes = $('#notes-body');
     notes.innerHTML = '';
