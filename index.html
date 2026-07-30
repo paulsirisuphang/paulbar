@@ -149,6 +149,12 @@ button, input, textarea, select { font: inherit; color: inherit; }
 }
 .wordmark {
   margin: 0;
+  /* a rapid triple tap on text otherwise selects it, or zooms, and the
+     browser stops delivering the taps */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
   font-family: var(--serif);
   font-size: clamp(1.5rem, 3.4vw, 1.875rem);
   font-weight: 600;
@@ -4133,17 +4139,28 @@ details.notes summary:hover { color: var(--brass); }
     var mark = $('.wordmark');
     if (!mark) return;
     var knocks = [];
-    mark.addEventListener('pointerup', function () {
+    var last = 0;
+
+    function knock() {
       if (secretFound()) return;
       var now = Date.now();
-      knocks = knocks.filter(function (at) { return now - at < 1800; });
+      /* pointerup and click both fire for one tap — count it once */
+      if (now - last < 90) return;
+      last = now;
+      knocks = knocks.filter(function (at) { return now - at < 2500; });
       knocks.push(now);
       if (knocks.length < 3) return;
       knocks = [];
       try { localStorage.setItem(FOUND_KEY, '1'); } catch (e) {}
       paintSecret();
-      $('#secret').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    });
+      var line = $('#secret');
+      if (line) line.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    /* whichever the device gives us */
+    mark.addEventListener('pointerup', knock);
+    mark.addEventListener('click', knock);
+    mark.addEventListener('touchend', knock, { passive: true });
   }
 
   /* ---------- three taps ---------- */
