@@ -274,13 +274,14 @@ main { padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 96px; }
 .filter-toggle {
   display: none;
   align-items: center;
-  gap: 8px;
-  padding: 11px 18px;
+  gap: 7px;
+  /* sized to match the filter pills it opens */
+  padding: 6px 14px;
   border: 1px solid var(--line-2);
   border-radius: 999px;
   background: var(--bg-2);
   color: var(--text-2);
-  font-size: 0.9375rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   cursor: pointer;
 }
@@ -648,7 +649,7 @@ dialog[open] { animation: rise .22s cubic-bezier(.2,.8,.3,1); }
   display: flex;
   gap: 18px;
   align-items: center;
-  padding: 22px 24px 20px;
+  padding: 22px 56px 20px 24px;
   border-bottom: 1px solid var(--line);
   overflow: hidden;
 }
@@ -667,6 +668,27 @@ dialog[open] { animation: rise .22s cubic-bezier(.2,.8,.3,1); }
   height: 152px;
 }
 .preview svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.sheet-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--line-2);
+  border-radius: 50%;
+  background: rgba(18,14,11,.55);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: color .18s, border-color .18s, background-color .18s;
+}
+.sheet-close:hover { color: var(--text); border-color: var(--text-3); background: var(--bg-3); }
+.sheet-close svg { display: block; width: 15px; height: 15px; }
+
 .sheet-title {
   margin: 6px 0 8px;
   font-family: var(--serif);
@@ -1788,7 +1810,7 @@ details.notes summary:hover { color: var(--brass); }
     how_made: 'วิธีทำ',
     your_name: 'ชื่อคุณ',
     anything_else: 'อย่างอื่นอีกไหม',
-    back: 'ย้อนกลับ',
+    close: 'ปิด',
     send: 'ส่งไปที่บาร์',
     name_ph: 'บาร์จะได้รู้ว่าแก้วนี้ของใคร',
     name_ph_err: 'ใส่ชื่อด้วยนะ',
@@ -2286,7 +2308,7 @@ details.notes summary:hover { color: var(--brass); }
     the_story: 'The story',
     whats_in_it: "What's in it", tastes_like: 'Tastes like', how_made: "How it's made",
     your_name: 'Your name', anything_else: 'Anything else',
-    back: 'Back', send: 'Send to the bar',
+    close: 'Close', send: 'Send to the bar',
     name_ph: 'So the bar knows whose drink this is',
     name_ph_err: 'The bar needs a name for this one',
     note_ph: 'Optional — light on the vermouth, no garnish, make it two…',
@@ -3257,6 +3279,11 @@ details.notes summary:hover { color: var(--brass); }
 
   var sheet = $('#sheet');
 
+  /* the form fills the dialog, so the dialog itself is only ever the backdrop */
+  sheet.addEventListener('click', function (e) {
+    if (e.target === sheet) sheet.close();
+  });
+
   function optionRow(cls, title, why) {
     var label = el('label', 'option ' + cls);
     var input = el('input');
@@ -3280,6 +3307,17 @@ details.notes summary:hover { color: var(--brass); }
 
     /* head — the drink, drawn */
     var head = el('div', 'sheet-head');
+
+    var close = el('button', 'sheet-close');
+    close.type = 'button';
+    close.setAttribute('aria-label', U('close'));
+    var x = s('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor',
+      'stroke-width': '2.4', 'stroke-linecap': 'round' });
+    x.appendChild(s('path', { d: 'M6 6 L18 18 M18 6 L6 18' }));
+    close.appendChild(x);
+    close.addEventListener('click', function () { sheet.close(); });
+    head.appendChild(close);
+
     var preview = artBox('preview', drink, state, 'pour');
     head.appendChild(preview);
 
@@ -3404,12 +3442,8 @@ details.notes summary:hover { color: var(--brass); }
     form.appendChild(body);
 
     var foot = el('div', 'sheet-foot');
-    var cancel = el('button', 'btn btn-ghost', U('back'));
-    cancel.type = 'button';
-    cancel.addEventListener('click', function () { sheet.close(); });
     var send = el('button', 'btn btn-primary', U('send'));
     send.type = 'submit';
-    foot.appendChild(cancel);
     foot.appendChild(send);
     form.appendChild(foot);
 
