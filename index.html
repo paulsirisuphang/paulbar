@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Paul's Bar</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23120E0B'/%3E%3Cpath d='M9 7h14l-1.6 18a2 2 0 0 1-2 1.8h-6.8a2 2 0 0 1-2-1.8Z' fill='%23A8321C'/%3E%3Cpath d='M9 7h14l-.5 5.5h-13Z' fill='%23D24A22'/%3E%3Cpath d='M9 7h14l-1.6 18a2 2 0 0 1-2 1.8h-6.8a2 2 0 0 1-2-1.8Z' fill='none' stroke='%23F0E6D6' stroke-opacity='.45' stroke-width='1.4'/%3E%3C/svg%3E">
 
@@ -976,6 +977,19 @@ textarea { min-height: 62px; resize: vertical; }
 .empty .empty-title { font-family: var(--serif); font-size: 1.375rem; color: var(--text-2); margin-bottom: 4px; }
 
 .orders-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 20px; margin-bottom: 26px; }
+.sync {
+  align-self: center;
+  padding: 4px 11px 4px 9px;
+  border: 1px solid rgba(143,168,107,.3);
+  border-radius: 999px;
+  color: var(--poured);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+.sync.off { border-color: rgba(232,168,124,.4); color: #E8A87C; }
+.sync[hidden] { display: none; }
+
 .tally {
   display: flex;
   gap: 22px;
@@ -1138,6 +1152,7 @@ details.notes summary:hover { color: var(--brass); }
     <section class="view" id="view-orders" role="tabpanel" aria-labelledby="tab-orders" hidden>
       <div class="orders-head">
         <p class="lede" style="margin:0" id="orders-lede"></p>
+        <span class="sync" id="sync" hidden></span>
         <div class="tally">
           <span><b id="tally-working">0</b><span id="tally-working-label">working</span></span>
           <span><b id="tally-poured">0</b><span id="tally-poured-label">poured</span></span>
@@ -1733,6 +1748,8 @@ details.notes summary:hover { color: var(--brass); }
     orders_lede_a: 'ออร์เดอร์จะเข้ามาที่นี่ กด ',
     orders_lede_b: 'วิธีทำ',
     orders_lede_c: ' เพื่อดูสูตร แล้วติ๊กช่องเมื่อทำเสร็จ',
+    sync_on: 'เชื่อมกับทุกเครื่องแล้ว',
+    sync_off: 'ออฟไลน์ — เก็บไว้ในเครื่องนี้',
     working: 'กำลังทำ',
     poured: 'เสร็จแล้ว',
     on_the_rail: 'กำลังทำ',
@@ -2172,6 +2189,7 @@ details.notes summary:hover { color: var(--brass); }
     orders_lede_b: 'the build',
     orders_lede_c: " for the recipe, tick the box when it's poured.",
     working: 'working', poured: 'poured',
+    sync_on: 'Shared with every phone', sync_off: 'Offline — saved on this device',
     on_the_rail: 'On the rail', poured_title: 'Poured', clear: 'Clear',
     the_build: 'The build',
     bar_quiet: 'The bar is quiet', bar_quiet_sub: 'Orders from the menu show up here.',
@@ -2309,6 +2327,21 @@ details.notes summary:hover { color: var(--brass); }
 
   /* ---------- storage ---------- */
 
+  /* ---------------------------------------------------------------
+     THE SHARED ORDER BOOK
+
+     Fill these two in and every phone reads and writes the same list.
+     Leave them empty and the bar runs exactly as before: orders live in
+     whatever browser placed them. The key below is Supabase's *public*
+     anon key — it is meant to ship in the page, and the table's policies
+     are what actually govern access.
+
+     Note: this only works on a normally-hosted copy (your GitHub Pages
+     link). The Claude artifact preview blocks outside connections.
+     --------------------------------------------------------------- */
+  var SUPABASE = { url: '', key: '' };
+  var shared = !!(SUPABASE.url && SUPABASE.key);
+
   var ORDERS_KEY = 'paulsbar.orders.v1';
   var GUEST_KEY = 'paulsbar.guest.v1';
   var orders = [];
@@ -2329,6 +2362,104 @@ details.notes summary:hover { color: var(--brass); }
   }
   function rememberGuest(n) {
     try { localStorage.setItem(GUEST_KEY, n); } catch (e) {}
+  }
+
+  /* ---------- talking to the order book ---------- */
+
+  var online = true;
+
+  function api(path, opts) {
+    opts = opts || {};
+    return fetch(SUPABASE.url + '/rest/v1/orders' + path, {
+      method: opts.method || 'GET',
+      headers: {
+        apikey: SUPABASE.key,
+        Authorization: 'Bearer ' + SUPABASE.key,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal'
+      },
+      body: opts.body ? JSON.stringify(opts.body) : undefined
+    }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      setOnline(true);
+      return r.status === 204 ? null : r.json();
+    }).catch(function (e) {
+      setOnline(false);
+      throw e;
+    });
+  }
+
+  function toRow(o) {
+    return {
+      id: o.id, drink: o.drink, guest: o.guest, smoke: !!o.smoke, wood: o.wood || null,
+      egg: !!o.egg, note: o.note || '', at: o.at, done: !!o.done, done_at: o.doneAt || null
+    };
+  }
+  function fromRow(r) {
+    return {
+      id: r.id, drink: r.drink, guest: r.guest, smoke: !!r.smoke, wood: r.wood,
+      egg: !!r.egg, note: r.note || '', at: Number(r.at), done: !!r.done, doneAt: r.done_at
+    };
+  }
+
+  function setOnline(next) {
+    if (online === next) return;
+    online = next;
+    paintSync();
+  }
+
+  function paintSync() {
+    var el2 = $('#sync');
+    if (!el2) return;
+    el2.hidden = !shared;
+    if (!shared) return;
+    el2.className = 'sync' + (online ? '' : ' off');
+    el2.textContent = U(online ? 'sync_on' : 'sync_off');
+  }
+
+  /* the whole book, newest first — local-only orders that have not landed
+     yet are kept so a dropped connection never loses someone's drink */
+  function pull() {
+    if (!shared) return;
+    api('?select=*&order=at.desc&limit=200').then(function (rows) {
+      if (!rows) return;
+      var seen = {};
+      rows.forEach(function (r) { seen[r.id] = true; });
+      var pending = orders.filter(function (o) { return o.pending && !seen[o.id]; });
+      orders = rows.map(fromRow).concat(pending);
+      orders.sort(function (a, b) { return b.at - a.at; });
+      save();
+      renderOrders(true);
+      flushPending();
+    }).catch(function () {});
+  }
+
+  var inflight = {};
+
+  function push(order) {
+    if (!shared || inflight[order.id]) return;
+    order.pending = true;
+    inflight[order.id] = true;
+    api('', { method: 'POST', body: toRow(order) })
+      .then(function () { delete inflight[order.id]; order.pending = false; save(); })
+      .catch(function () { delete inflight[order.id]; /* retried on the next pull */ });
+  }
+
+  /* anything ordered while the wifi was out goes up as soon as it returns */
+  function flushPending() {
+    orders.forEach(function (o) { if (o.pending) push(o); });
+  }
+
+  function pushDone(order) {
+    if (!shared) return;
+    api('?id=eq.' + encodeURIComponent(order.id), {
+      method: 'PATCH', body: { done: !!order.done, done_at: order.doneAt || null }
+    }).catch(function () {});
+  }
+
+  function pushClear() {
+    if (!shared) return;
+    api('?done=eq.true', { method: 'DELETE' }).catch(function () {});
   }
 
   /* ---------- helpers ---------- */
@@ -3200,6 +3331,7 @@ details.notes summary:hover { color: var(--brass); }
     orders.unshift(order);
     save();
     renderOrders(true);
+    push(order);
   }
 
   /* ---------- orders ---------- */
@@ -3222,6 +3354,7 @@ details.notes summary:hover { color: var(--brass); }
       order.doneAt = order.done ? Date.now() : null;
       save();
       renderOrders();
+      if (order.pending) push(order); else pushDone(order);
       toast(order.done ? U('toast_poured') + drink.name + U('toast_for') + order.guest : U('toast_back'),
         drink, { smoke: order.smoke, egg: order.egg });
     });
@@ -3347,6 +3480,7 @@ details.notes summary:hover { color: var(--brass); }
         orders = orders.filter(function (o) { return !o.done; });
         save();
         renderOrders();
+        pushClear();
       });
       var sub = el('span', 'sub');
       sub.appendChild(clear);
@@ -3430,6 +3564,7 @@ details.notes summary:hover { color: var(--brass); }
   load();
   applyLang();
   paintStatic();
+  paintSync();
   renderTenders();
   renderFilters();
   renderMenu();
@@ -3444,5 +3579,15 @@ details.notes summary:hover { color: var(--brass); }
   window.addEventListener('storage', function (e) {
     if (e.key === ORDERS_KEY) { load(); renderOrders(true); }
   });
+
+  /* the shared book: read it now, then keep an eye on it */
+  if (shared) {
+    paintSync();
+    pull();
+    setInterval(pull, 3000);
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) pull();
+    });
+  }
 })();
 </script>
