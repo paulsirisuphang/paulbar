@@ -157,20 +157,24 @@ button, input, textarea, select { font: inherit; color: inherit; }
   letter-spacing: -0.015em;
 }
 .wordmark .amp { color: var(--campari); }
+/* it stands in for the exclamation mark in Paul's Bar! — so it sits on the
+   baseline, hard against the r, and scales with the type */
 .tee {
-  display: block;
-  padding: 4px 6px;
-  margin-left: -2px;
+  display: inline-block;
+  padding: 8px 4px;
+  margin: -8px -3px -8px -3px;
   border: 0;
   background: none;
   cursor: pointer;
-  line-height: 0;
+  line-height: 1;
+  vertical-align: baseline;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 .tee svg {
-  width: 15px;
-  height: 22px;
+  width: auto;
+  height: 0.82em;
+  vertical-align: -0.06em;
   transform-box: fill-box;
   transform-origin: 50% 92%;
   animation: tee-shiver 3.4s ease-in-out infinite;
@@ -339,18 +343,20 @@ main { padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 96px; }
 .jumps {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   padding: 4px 0 20px;
   border-bottom: 1px solid var(--line);
 }
 .jump {
-  padding: 7px 16px;
+  padding: 6px 13px;
   border: 1px solid var(--line-2);
   border-radius: 999px;
   background: var(--bg-2);
   color: var(--text-2);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   font-weight: 600;
+  letter-spacing: .01em;
+  white-space: nowrap;
   cursor: pointer;
   transition: color .18s, border-color .18s, background-color .18s;
 }
@@ -1318,15 +1324,14 @@ details.notes summary:hover { color: var(--brass); }
 
 <div class="page">
   <header class="topbar">
-    <h1 class="wordmark">Paul<span class="amp">'</span>s Bar</h1>
-    <button class="tee" id="tee" type="button" aria-label="A golf tee">
+    <h1 class="wordmark">Paul<span class="amp">'</span>s Bar<button class="tee" id="tee" type="button" aria-label="A golf tee">
       <svg viewBox="0 0 24 34" aria-hidden="true">
         <path d="M3.5,5.5 L9,12 L15,12 L20.5,5.5 Z" fill="#C79A4E"/>
         <ellipse cx="12" cy="5.5" rx="8.6" ry="3" fill="#E8C27A"/>
         <ellipse cx="12" cy="5.2" rx="5.4" ry="1.7" fill="#7A5A2E"/>
         <path d="M10.1,12 L11.5,29.5 Q12,32 12.5,29.5 L13.9,12 Z" fill="#C79A4E"/>
       </svg>
-    </button>
+    </button></h1>
     <div class="topbar-right">
       <div class="langs" role="group" aria-label="Language">
         <button class="lang" id="lang-en" type="button" aria-pressed="true">EN</button>
@@ -2009,7 +2014,8 @@ __THAI_DATA__
     sec_mocktail: 'Mocktails', sec_mocktail_sub: 'no alcohol · salt in every one',
 
     secret_line: 'There is one more.',
-    all_drinks: 'Everything',
+    chip_stirred: 'Spirit', chip_shaken: 'Sour', chip_long: 'Long',
+    chip_coffee: 'Coffee', chip_mocktail: 'Mocktails',
     the_story: 'The story',
     whats_in_it: "What's in it", tastes_like: 'Tastes like', how_made: "How it's made",
     your_name: 'Your name', anything_else: 'Anything else',
@@ -2936,23 +2942,19 @@ __THAI_DATA__
     var bar = $('#jumps');
     bar.innerHTML = '';
 
-    function chip(id, label) {
-      var b = el('button', 'jump', label);
+    orderedSections().forEach(function (sec) {
+      if (!DRINKS.some(function (d) { return d.section === sec.id && !d.hidden; })) return;
+      var b = el('button', 'jump', U('chip_' + sec.id));
       b.type = 'button';
-      b.setAttribute('aria-pressed', showing === id ? 'true' : 'false');
+      b.setAttribute('aria-pressed', showing === sec.id ? 'true' : 'false');
       b.addEventListener('click', function () {
-        showing = id;
+        /* nothing selected means everything, so tapping the live one clears it */
+        showing = (showing === sec.id) ? 'all' : sec.id;
         renderJumps();
         renderMenu();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
       bar.appendChild(b);
-    }
-
-    chip('all', U('all_drinks'));
-    orderedSections().forEach(function (sec) {
-      if (!DRINKS.some(function (d) { return d.section === sec.id && !d.hidden; })) return;
-      chip(sec.id, U('sec_' + sec.id));
     });
   }
 
