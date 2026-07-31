@@ -46,11 +46,6 @@ var T_TH = {
   sec_mocktail_sub: 'ไม่มีแอลกอฮอล์ · ใส่เกลือทุกแก้ว',
 
   secret_line: 'ยังมีอีกแก้วหนึ่ง',
-  chip_stirred: 'สปิริต',
-  chip_shaken: 'เปรี้ยว',
-  chip_long: 'ยาว',
-  chip_coffee: 'กาแฟ',
-  chip_mocktail: 'ม็อกเทล',
   the_story: 'เรื่องเล่า',
   whats_in_it: 'ส่วนผสม',
   tastes_like: 'รสชาติ',

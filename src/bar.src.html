@@ -342,13 +342,23 @@ main { padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 96px; }
 
 .jumps {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  flex-wrap: nowrap;
+  gap: 5px;
   padding: 4px 0 20px;
   border-bottom: 1px solid var(--line);
+  /* the full names stay on one line; narrow phones swipe rather than wrap */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.jumps::-webkit-scrollbar { display: none; }
+/* only faded while there is genuinely more to swipe to */
+.jumps.more {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 30px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 30px), transparent);
 }
 .jump {
-  padding: 6px 13px;
+  flex: none;
+  padding: 6px 11px;
   border: 1px solid var(--line-2);
   border-radius: 999px;
   background: var(--bg-2);
@@ -2014,8 +2024,6 @@ __THAI_DATA__
     sec_mocktail: 'Mocktails', sec_mocktail_sub: 'no alcohol · salt in every one',
 
     secret_line: 'There is one more.',
-    chip_stirred: 'Spirit', chip_shaken: 'Sour', chip_long: 'Long',
-    chip_coffee: 'Coffee', chip_mocktail: 'Mocktails',
     the_story: 'The story',
     whats_in_it: "What's in it", tastes_like: 'Tastes like', how_made: "How it's made",
     your_name: 'Your name', anything_else: 'Anything else',
@@ -2944,7 +2952,7 @@ __THAI_DATA__
 
     orderedSections().forEach(function (sec) {
       if (!DRINKS.some(function (d) { return d.section === sec.id && !d.hidden; })) return;
-      var b = el('button', 'jump', U('chip_' + sec.id));
+      var b = el('button', 'jump', U('sec_' + sec.id));
       b.type = 'button';
       b.setAttribute('aria-pressed', showing === sec.id ? 'true' : 'false');
       b.addEventListener('click', function () {
@@ -2956,6 +2964,13 @@ __THAI_DATA__
       });
       bar.appendChild(b);
     });
+    paintJumpFade();
+  }
+
+  function paintJumpFade() {
+    var bar = $('#jumps');
+    if (!bar) return;
+    bar.classList.toggle('more', bar.scrollLeft + bar.clientWidth < bar.scrollWidth - 2);
   }
 
   function drinkCard(drink, index) {
@@ -3557,6 +3572,9 @@ __THAI_DATA__
   $('#tab-orders').addEventListener('click', function () { showTab('orders'); setNav(false); });
 
   /* ---------- bartender's choice ---------- */
+
+  $('#jumps').addEventListener('scroll', paintJumpFade, { passive: true });
+  window.addEventListener('resize', paintJumpFade);
 
   var choice = $('#choice');
   choice.addEventListener('click', function () {
