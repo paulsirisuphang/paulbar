@@ -149,6 +149,19 @@ button, input, textarea, select { font: inherit; color: inherit; }
   background: linear-gradient(to bottom, rgba(18,14,11,.97) 62%, rgba(18,14,11,0));
   backdrop-filter: blur(8px);
 }
+.home {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: color .2s;
+}
+.home:hover { color: var(--brass); }
 .wordmark {
   margin: 0;
   font-family: var(--serif);
@@ -722,19 +735,43 @@ main { padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 96px; }
   text-align: center;
 }
 .secret[hidden] { display: none; }
-.secret button {
-  padding: 6px 10px;
-  border: 0;
-  background: none;
-  color: var(--text-3);
-  font-family: var(--serif);
-  font-size: clamp(1.125rem, 2.4vw, 1.375rem);
-  letter-spacing: .01em;
-  cursor: pointer;
-  transition: color .3s;
+/* the eighteenth: the flag is the way back to the drink that is not listed */
+.green {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
   animation: surface 1.4s ease both;
 }
-.secret button:hover { color: var(--brass); }
+.green svg { display: block; width: 100%; height: auto; }
+.green text { font-family: var(--sans); letter-spacing: .02em; }
+.pennant {
+  transform-box: fill-box;
+  transform-origin: 0% 50%;
+  animation: pennant 3.8s ease-in-out infinite;
+}
+@keyframes pennant {
+  0%, 100% { transform: scaleX(1) skewY(0deg); }
+  34%      { transform: scaleX(.92) skewY(-3deg); }
+  68%      { transform: scaleX(1.03) skewY(2deg); }
+}
+.flag-hit {
+  position: absolute;
+  left: 55%;
+  top: 6%;
+  width: 26%;
+  height: 64%;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.flag-hit:focus-visible { outline: 2px solid var(--campari-2); outline-offset: 2px; }
+.pennant path { fill: var(--campari); transition: fill .2s; }
+.green:has(.flag-hit:hover) .pennant path { fill: var(--campari-2); }
 @keyframes surface {
   from { opacity: 0; transform: translateY(10px); }
 }
@@ -1375,7 +1412,7 @@ details.notes summary:hover { color: var(--brass); }
 
 <div class="page">
   <header class="topbar">
-    <h1 class="wordmark">Paul<span class="amp">'</span>s Bar<button class="tee" id="tee" type="button" aria-label="A golf tee">
+    <h1 class="wordmark"><button class="home" id="home" type="button">Paul<span class="amp">'</span>s Bar</button><button class="tee" id="tee" type="button" aria-label="A golf tee">
       <svg viewBox="0 0 24 34" aria-hidden="true">
         <path d="M3.5,5.5 L9,12 L15,12 L20.5,5.5 Z" fill="#C79A4E"/>
         <ellipse cx="12" cy="5.5" rx="8.6" ry="3" fill="#E8C27A"/>
@@ -1414,7 +1451,7 @@ details.notes summary:hover { color: var(--brass); }
 
       <div id="menu-body"></div>
 
-      <p class="secret" id="secret" hidden></p>
+      <div class="secret" id="secret" hidden></div>
 
     </section>
 
@@ -3609,14 +3646,58 @@ __THAI_DATA__
     if (!secretFound()) { line.hidden = true; return; }
     line.hidden = false;
     line.innerHTML = '';
-    var b = el('button', null, U('secret_line'));
-    b.type = 'button';
-    b.addEventListener('click', function () {
+
+    var green = el('div', 'green');
+    green.innerHTML =
+      '<svg viewBox="0 0 320 130" aria-hidden="true" focusable="false">' +
+      '<defs>' +
+        '<radialGradient id="turf" cx="50%" cy="42%" r="62%">' +
+          '<stop offset="0" stop-color="#3B5530"/>' +
+          '<stop offset=".68" stop-color="#26361F"/>' +
+          '<stop offset="1" stop-color="rgba(22,31,19,0)"/>' +
+        '</radialGradient>' +
+        '<linearGradient id="stick" x1="0" y1="0" x2="1" y2="0">' +
+          '<stop offset="0" stop-color="#F2E9D8"/><stop offset="1" stop-color="#8A7E6E"/>' +
+        '</linearGradient>' +
+      '</defs>' +
+      '<ellipse cx="160" cy="92" rx="148" ry="31" fill="url(#turf)"/>' +
+      /* the same lamp that lights the crew, spilling onto the turf */
+      '<ellipse cx="160" cy="84" rx="96" ry="17" fill="rgba(226,146,66,.06)"/>' +
+      /* mown stripes, barely there */
+      '<path d="M58,99 Q160,83 262,99" fill="none" stroke="rgba(0,0,0,.07)" stroke-width="5"/>' +
+      '<path d="M74,107 Q160,95 246,107" fill="none" stroke="rgba(0,0,0,.06)" stroke-width="4"/>' +
+      '<ellipse cx="196" cy="88" rx="9" ry="3.4" fill="#0B0806"/>' +
+      '<path d="M187.5,87.4 A9,3.4 0 0 1 204.5,87.4" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="1"/>' +
+      '<path d="M197,87 L224,95" stroke="rgba(0,0,0,.32)" stroke-width="3" stroke-linecap="round"/>' +
+      '<rect x="194.8" y="17" width="2.4" height="71" rx="1.2" fill="url(#stick)"/>' +
+      '<g class="pennant">' +
+        '<path d="M197,19 L236,27.5 L197,38 Z"/>' +
+        '<text x="205" y="32" font-size="9.5" font-weight="700" fill="#FCEFE7">18</text>' +
+      '</g>' +
+      '<ellipse cx="148" cy="95" rx="5" ry="1.7" fill="rgba(0,0,0,.4)"/>' +
+      '<circle cx="148" cy="91" r="4.2" fill="#EFE8DA"/>' +
+      '<path d="M146,89.4 A4.2,4.2 0 0 1 150.4,88.8" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="0.9"/>' +
+      '</svg>';
+
+    var flag = el('button', 'flag-hit');
+    flag.type = 'button';
+    flag.setAttribute('aria-label', U('secret_line'));
+    flag.addEventListener('click', function () {
       var d = byId['vieux-carre'];
       if (d) openSheet(d);
     });
-    line.appendChild(b);
+    green.appendChild(flag);
+    line.appendChild(green);
   }
+
+  $('#home').addEventListener('click', function () {
+    showing = 'all';
+    renderJumps();
+    renderMenu();
+    showTab('menu');
+    setNav(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 
   function watchTheName() {
     var mark = $('#tee');
@@ -3766,14 +3847,9 @@ __THAI_DATA__
     var veil = $('#arrival');
     if (!veil) return;
 
-    var seen = false;
-    try { seen = sessionStorage.getItem('paulsbar.arrived') === '1'; } catch (e) {}
-    var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    /* already been in tonight, or asked for no motion: the door is just open */
-    if (seen || still) { veil.remove(); return; }
-
-    try { sessionStorage.setItem('paulsbar.arrived', '1'); } catch (e) {}
+    /* every arrival gets the match, however many times you come back through
+       the door — only a request for no motion skips it */
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { veil.remove(); return; }
 
     var done = false;
     function open() {
