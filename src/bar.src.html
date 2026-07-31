@@ -554,7 +554,7 @@ main { padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 96px; }
 }
 
 /* three of them behind the bar, shaking */
-.tenders { width: 100%; max-width: 510px; --busy: 1; }
+.tenders { position: relative; width: 100%; max-width: 510px; --busy: 1; }
 @media (min-width: 700px) {
   /* room to be half again as big once there is a desktop to be big on */
   .cta-row { max-width: 800px; }
@@ -566,7 +566,19 @@ main { padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 96px; }
 .tenders.busy { --busy: .55; }
 
 /* click one of them and they do their party piece for ten seconds */
-.tender-hit { cursor: pointer; }
+/* a phone will not reliably fire a tap on an SVG shape, so the three of
+   them are covered by real buttons — which a keyboard can reach too */
+.tender-taps { position: absolute; inset: 8% 0 0; z-index: 1; display: flex; }
+.tender-tap {
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.tender-tap:focus-visible { outline: 2px solid var(--campari-2); outline-offset: -4px; }
 .act { display: none; }
 .acting .tender-arms { visibility: hidden; }
 .acting.act-juggle .juggle,
@@ -2085,6 +2097,7 @@ __THAI_DATA__
     name_ph_err: 'The bar needs a name for this one',
     note_ph: 'Optional — light on the vermouth, no garnish, make it two…',
 
+    tender_tap: 'Get their attention',
     smoke_it: 'Smoke it', wood: 'Wood', egg_white: 'Egg white',
     zero_sugar: 'Zero-sugar syrup',
     egg_why: 'Dry-shaken first, served up with a thick white foam. Skip it for a leaner, tarter drink over ice.',
@@ -2186,6 +2199,9 @@ __THAI_DATA__
     $('#tab-menu-text').textContent = U('tab_menu');
     $('#tab-orders-text').textContent = U('tab_orders');
     $('#choice-text').textContent = U('surprise');
+    Array.prototype.forEach.call(document.querySelectorAll('.tender-tap'), function (b) {
+      b.setAttribute('aria-label', U('tender_tap'));
+    });
     $('#notes-summary').textContent = U('bar_notes');
 
     var lede = $('#orders-lede');
@@ -2973,11 +2989,6 @@ __THAI_DATA__
       g.appendChild(golf);
     }
 
-    g.appendChild(s('rect', {
-      class: 'tender-hit', x: '-26', y: '-88', width: '56', height: '92',
-      fill: 'transparent', 'pointer-events': 'all'
-    }));
-
     return g;
   }
 
@@ -3019,6 +3030,17 @@ __THAI_DATA__
 
     var box = $('#tenders');
     box.appendChild(svg);
+
+    /* one button each, split where the gap between them falls */
+    var taps = el('div', 'tender-taps');
+    ['0 0 31%', '0 0 35%', '0 0 34%'].forEach(function (w) {
+      var b = el('button', 'tender-tap');
+      b.type = 'button';
+      b.style.flex = w;
+      b.setAttribute('aria-label', U('tender_tap'));
+      taps.appendChild(b);
+    });
+    box.appendChild(taps);
   }
 
   function artBox(cls, drink, opts, mode) {
@@ -3620,8 +3642,11 @@ __THAI_DATA__
     var box = $('#tenders');
     if (!box) return;
     var timers = {};
-    Array.prototype.forEach.call(box.querySelectorAll('.tender'), function (fig, i) {
-      fig.addEventListener('pointerup', function () {
+    var figures = box.querySelectorAll('.tender');
+    Array.prototype.forEach.call(box.querySelectorAll('.tender-tap'), function (btn, i) {
+      var fig = figures[i];
+      if (!fig) return;
+      btn.addEventListener('click', function () {
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         fig.classList.add('acting');
         clearTimeout(timers[i]);
