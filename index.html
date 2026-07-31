@@ -755,7 +755,7 @@ dialog[open] { animation: rise .22s cubic-bezier(.2,.8,.3,1); }
   display: flex;
   gap: 18px;
   align-items: center;
-  padding: 22px 56px 20px 24px;
+  padding: 32px 56px 24px 24px;
   border-bottom: 1px solid var(--line);
   overflow: hidden;
 }
@@ -3196,6 +3196,13 @@ details.notes summary:hover { color: var(--brass); }
         smoke.appendChild(p);
       });
       svg.appendChild(smoke);
+    }
+
+    if (v.glass === 'tall') {
+      /* the tall glass otherwise runs the full height of its box */
+      var shrink = s('g', { transform: 'translate(60,85) scale(0.9) translate(-60,-85)' });
+      while (svg.childNodes.length > 1) shrink.appendChild(svg.childNodes[1]);
+      svg.appendChild(shrink);
     }
 
     if (animate) {
