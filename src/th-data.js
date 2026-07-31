@@ -46,6 +46,7 @@ var T_TH = {
   sec_mocktail_sub: 'ไม่มีแอลกอฮอล์ · ใส่เกลือทุกแก้ว',
 
   secret_line: 'ยังมีอีกแก้วหนึ่ง',
+  all_drinks: 'ทั้งหมด',
   the_story: 'เรื่องเล่า',
   whats_in_it: 'ส่วนผสม',
   tastes_like: 'รสชาติ',

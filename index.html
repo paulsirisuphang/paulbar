@@ -340,6 +340,11 @@ main { padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 96px; }
   transition: color .18s, border-color .18s, background-color .18s;
 }
 .jump:hover { color: var(--text); border-color: #55432F; background: var(--bg-3); }
+.jump[aria-pressed='true'] {
+  border-color: var(--campari);
+  background: rgba(210,74,34,.16);
+  color: #F6CDBC;
+}
 
 
 /* ---------- menu ---------- */
@@ -517,39 +522,82 @@ main { padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 96px; }
 
 /* three of them behind the bar, shaking */
 .tenders { width: 100%; max-width: 510px; --busy: 1; }
+/* overflow visible so a pair of legs can leave the top of the frame */
+.tenders svg { display: block; width: 100%; height: auto; overflow: visible; }
 /* an order lands and they pick up the pace for a few seconds */
 .tenders.busy { --busy: .55; }
 
-/* three taps and they lose it for ten seconds */
-.tenders.dancing .tender-body {
-  animation-name: t-dance;
-  animation-duration: calc(var(--d) * 1.9);
-}
-.tenders.dancing .tender-arms {
-  animation-name: t-dance-arms;
-  animation-duration: calc(var(--d) * 1.9);
-}
-@keyframes t-dance {
-  from { transform: rotate(-8deg) translate(-3px, 0); }
-  to   { transform: rotate(8deg) translate(3px, -5px); }
-}
-@keyframes t-dance-arms {
-  from { transform: rotate(-30deg) translateY(3px); }
-  to   { transform: rotate(22deg) translateY(-7px); }
-}
-.tenders svg { display: block; width: 100%; height: auto; }
-.tender-body {
+/* click one of them and they do their party piece for ten seconds */
+.tender-hit { cursor: pointer; }
+.act { display: none; }
+.acting .tender-arms { visibility: hidden; }
+.acting.act-juggle .juggle,
+.acting.act-golf .golf { display: block; }
+.acting.act-headstand .legs { display: block; }
+
+/* left: three bottles round a loop */
+.bottle {
   transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: t-body calc(var(--d) * var(--tempo) * var(--busy, 1)) ease-in-out infinite alternate;
-  animation-delay: var(--t);
+  transform-origin: 50% 50%;
+  animation: juggle 1.25s linear infinite;
 }
-.tender-arms {
+@keyframes juggle {
+  0%   { transform: translate(-15px, 22px) rotate(0deg); }
+  25%  { transform: translate(-11px, -16px) rotate(180deg); }
+  50%  { transform: translate(12px, -24px) rotate(360deg); }
+  75%  { transform: translate(16px, 16px) rotate(540deg); }
+  100% { transform: translate(-15px, 22px) rotate(720deg); }
+}
+
+/* centre: backswing, strike, follow through */
+.swing {
   transform-box: fill-box;
-  transform-origin: 33% 92%;
-  animation: t-arms calc(var(--d) * var(--tempo) * var(--busy, 1)) ease-in-out infinite alternate;
-  animation-delay: var(--t);
+  transform-origin: 50% 4%;
+  animation: swing 2.4s ease-in-out infinite;
 }
+@keyframes swing {
+  0%   { transform: rotate(6deg); }
+  28%  { transform: rotate(-78deg); }
+  40%  { transform: rotate(18deg); }
+  50%  { transform: rotate(84deg); }
+  76%  { transform: rotate(84deg); }
+  100% { transform: rotate(6deg); }
+}
+.golf-ball {
+  transform-box: fill-box;
+  animation: golf-ball 2.4s ease-out infinite;
+}
+@keyframes golf-ball {
+  0%, 39%   { transform: translate(0, 0); opacity: 1; }
+  70%       { transform: translate(120px, -80px); opacity: 0; }
+  71%, 99%  { transform: translate(0, 0); opacity: 0; }
+  100%      { transform: translate(0, 0); opacity: 1; }
+}
+
+/* right: up onto the head, hold, back down */
+.acting.act-headstand .tender-body {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: headstand 10s ease-in-out 1 both;
+}
+@keyframes headstand {
+  0%       { transform: rotate(0deg) translate(0, 0); }
+  11%      { transform: rotate(186deg) translate(0, 15px); }
+  15%      { transform: rotate(174deg) translate(0, 15px); }
+  19%, 86% { transform: rotate(180deg) translate(0, 15px); }
+  100%     { transform: rotate(0deg) translate(0, 0); }
+}
+.legs {
+  display: none;
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+  animation: legs 1.9s ease-in-out infinite alternate;
+}
+@keyframes legs {
+  from { transform: rotate(-8deg); }
+  to   { transform: rotate(8deg); }
+}
+
 @keyframes t-arms {
   from { transform: rotate(-11deg) translateY(1px); }
   to   { transform: rotate(8deg) translateY(-2px); }
@@ -1220,7 +1268,7 @@ details.notes summary:hover { color: var(--brass); }
 
 @media (prefers-reduced-motion: reduce) {
   .arrival { display: none; }
-  .tenders.dancing .tender-body, .tenders.dancing .tender-arms { animation-name: none; }
+  .acting .tender-body, .bottle, .swing, .golf-ball, .legs { animation: none; }
   .page-smoke { display: none; }
   .melt { animation: none; }
   *, *::before, *::after {
@@ -1950,6 +1998,7 @@ details.notes summary:hover { color: var(--brass); }
     sec_mocktail_sub: 'ไม่มีแอลกอฮอล์ · ใส่เกลือทุกแก้ว',
 
     secret_line: 'ยังมีอีกแก้วหนึ่ง',
+    all_drinks: 'ทั้งหมด',
     the_story: 'เรื่องเล่า',
     whats_in_it: 'ส่วนผสม',
     tastes_like: 'รสชาติ',
@@ -2507,6 +2556,7 @@ details.notes summary:hover { color: var(--brass); }
     sec_mocktail: 'Mocktails', sec_mocktail_sub: 'no alcohol · salt in every one',
 
     secret_line: 'There is one more.',
+    all_drinks: 'Everything',
     the_story: 'The story',
     whats_in_it: "What's in it", tastes_like: 'Tastes like', how_made: "How it's made",
     your_name: 'Your name', anything_else: 'Anything else',
@@ -3180,6 +3230,7 @@ details.notes summary:hover { color: var(--brass); }
   function tender(cfg) {
     var flip = cfg.flip ? -1 : 1;
     var g = s('g', {
+      class: 'tender act-' + cfg.act,
       transform: 'translate(' + cfg.x + ',' + cfg.y + ') scale(' + (cfg.scale * flip) + ',' + cfg.scale + ')'
     });
 
@@ -3313,7 +3364,67 @@ details.notes summary:hover { color: var(--brass); }
     arms.appendChild(s('circle', { cx: '23', cy: '-32', r: '4.1', fill: TENDER_SKIN, stroke: TENDER_EDGE, 'stroke-width': '1' }));
 
     body.appendChild(near.pivot);
+
+    /* legs, only ever seen upside down */
+    if (cfg.act === 'headstand') {
+      var legs = s('g', { class: 'legs' });
+      ['M-5,-2 L-9,26 M5,-2 L11,24'].forEach(function (d) {
+        legs.appendChild(s('path', { d: d, fill: 'none', stroke: TENDER_SKIN, 'stroke-width': '8', 'stroke-linecap': 'round' }));
+        legs.appendChild(s('path', { d: d, fill: 'none', stroke: TENDER_EDGE, 'stroke-width': '1', 'stroke-linecap': 'round', opacity: '.5' }));
+      });
+      body.appendChild(legs);
+    }
+
     g.appendChild(body);
+
+    if (cfg.act === 'juggle') {
+      var jug = s('g', { class: 'act juggle' });
+      jug.appendChild(s('path', {
+        d: 'M-13,-42 Q-21,-53 -18,-62 M13,-42 Q21,-53 18,-62', fill: 'none',
+        stroke: TENDER_SKIN, 'stroke-width': '8', 'stroke-linecap': 'round'
+      }));
+      for (var bi = 0; bi < 3; bi++) {
+        var bot = s('g', { class: 'bottle' });
+        bot.style.animationDelay = (-bi * (1.25 / 3)).toFixed(2) + 's';
+        bot.appendChild(s('path', {
+          d: 'M-3.4,-62 L3.4,-62 L3.4,-72 Q3.4,-75 1.6,-77 L1.6,-82 L-1.6,-82 L-1.6,-77 Q-3.4,-75 -3.4,-72 Z',
+          fill: '#1B1410', stroke: TENDER_EDGE, 'stroke-width': '1', 'stroke-linejoin': 'round'
+        }));
+        bot.appendChild(s('rect', { x: '-3', y: '-69', width: '6', height: '3.4', fill: 'rgba(224,178,104,.55)' }));
+        jug.appendChild(bot);
+      }
+      g.appendChild(jug);
+    }
+
+    if (cfg.act === 'golf') {
+      var golf = s('g', { class: 'act golf' });
+      golf.appendChild(s('path', {
+        d: 'M-13,-42 Q0,-47 11,-41 M13,-42 Q6,-45 11,-41', fill: 'none',
+        stroke: TENDER_SKIN, 'stroke-width': '8', 'stroke-linecap': 'round'
+      }));
+      /* the translate must live on a wrapper: a CSS transform on the same
+         element would replace the transform attribute outright */
+      var grip = s('g', { transform: 'translate(11,-41)' });
+      var swing = s('g', { class: 'swing' });
+      swing.appendChild(s('path', { d: 'M0,0 L2,25', fill: 'none', stroke: 'rgba(232,216,192,.8)', 'stroke-width': '1.8', 'stroke-linecap': 'round' }));
+      swing.appendChild(s('path', { d: 'M2,25 L9,27 L9,30 L1.5,28.5 Z', fill: 'rgba(232,216,192,.85)' }));
+      grip.appendChild(swing);
+      golf.appendChild(grip);
+      /* teed up on the bar top, clear of the button below */
+      golf.appendChild(s('path', {
+        d: 'M20,-11 L20,-1', stroke: 'rgba(224,178,104,.5)', 'stroke-width': '1.6', 'stroke-linecap': 'round'
+      }));
+      var ball = s('g', { class: 'golf-ball' });
+      ball.appendChild(s('circle', { cx: '20', cy: '-14', r: '3.2', fill: '#F4EEE2' }));
+      golf.appendChild(ball);
+      g.appendChild(golf);
+    }
+
+    g.appendChild(s('rect', {
+      class: 'tender-hit', x: '-26', y: '-88', width: '56', height: '92',
+      fill: 'transparent', 'pointer-events': 'all'
+    }));
+
     return g;
   }
 
@@ -3345,9 +3456,9 @@ details.notes summary:hover { color: var(--brass); }
     svg.appendChild(s('ellipse', { cx: '170', cy: '80', rx: '148', ry: '50', fill: 'url(#lampGrad)' }));
 
     [
-      { x: 66, y: 116, scale: 0.9, dur: 0.46, delay: 0, costume: 'somm', tie: '#D24A22', hair: 'M-10.5,-62 Q-8.5,-71 0,-70.5 Q8.5,-70 10.5,-61 Q6,-65.5 -2,-64.5 Q-8,-64 -10.5,-62 Z' },
-      { x: 158, y: 121, scale: 1.05, dur: 0.53, delay: -0.21, costume: 'golf', tie: '#D2A24C', hair: 'M-11,-59 Q-11,-72 0,-71 Q11,-70 11,-59 Q9,-66 0,-66.5 Q-9,-67 -11,-59 Z' },
-      { x: 278, y: 115, scale: 0.87, dur: 0.49, delay: -0.36, flip: true, costume: 'yoga', tie: '#93A3A8', hair: 'M-10.5,-61 Q-9,-72 0,-70.5 Q9,-69 10.5,-63 Q5,-67 -3,-66 Q-8,-65.5 -10.5,-61 Z' }
+      { x: 66, y: 116, scale: 0.9, dur: 0.46, delay: 0, costume: 'somm', act: 'juggle', tie: '#D24A22', hair: 'M-10.5,-62 Q-8.5,-71 0,-70.5 Q8.5,-70 10.5,-61 Q6,-65.5 -2,-64.5 Q-8,-64 -10.5,-62 Z' },
+      { x: 158, y: 121, scale: 1.05, dur: 0.53, delay: -0.21, costume: 'golf', act: 'golf', tie: '#D2A24C', hair: 'M-11,-59 Q-11,-72 0,-71 Q11,-70 11,-59 Q9,-66 0,-66.5 Q-9,-67 -11,-59 Z' },
+      { x: 278, y: 115, scale: 0.87, dur: 0.49, delay: -0.36, flip: true, costume: 'yoga', act: 'headstand', tie: '#93A3A8', hair: 'M-10.5,-61 Q-9,-72 0,-70.5 Q9,-69 10.5,-63 Q5,-67 -3,-66 Q-8,-65.5 -10.5,-61 Z' }
     ].forEach(function (cfg) { svg.appendChild(tender(cfg)); });
 
     /* the bar they're working behind */
@@ -3365,18 +3476,30 @@ details.notes summary:hover { color: var(--brass); }
 
   /* ---------- menu ---------- */
 
+  /* the section chips filter the list rather than scrolling to it */
+  var showing = 'all';
+
   function renderJumps() {
     var bar = $('#jumps');
     bar.innerHTML = '';
-    orderedSections().forEach(function (sec) {
-      if (!DRINKS.some(function (d) { return d.section === sec.id && !d.hidden; })) return;
-      var b = el('button', 'jump', U('sec_' + sec.id));
+
+    function chip(id, label) {
+      var b = el('button', 'jump', label);
       b.type = 'button';
+      b.setAttribute('aria-pressed', showing === id ? 'true' : 'false');
       b.addEventListener('click', function () {
-        var head = document.getElementById('sec-' + sec.id);
-        if (head) head.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        showing = id;
+        renderJumps();
+        renderMenu();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
       bar.appendChild(b);
+    }
+
+    chip('all', U('all_drinks'));
+    orderedSections().forEach(function (sec) {
+      if (!DRINKS.some(function (d) { return d.section === sec.id && !d.hidden; })) return;
+      chip(sec.id, U('sec_' + sec.id));
     });
   }
 
@@ -3420,6 +3543,7 @@ details.notes summary:hover { color: var(--brass); }
     var shown = 0;
 
     orderedSections().forEach(function (sec) {
+      if (showing !== 'all' && showing !== sec.id) return;
       var list = DRINKS.filter(function (d) { return d.section === sec.id && !d.hidden; });
       if (!list.length) return;
 
@@ -3906,26 +4030,19 @@ details.notes summary:hover { color: var(--brass); }
     });
   }
 
-  /* ---------- three taps ---------- */
-
-  var taps = [];
-  var danceTimer;
+  /* ---------- each of them has a party piece ---------- */
 
   function watchForTaps() {
     var box = $('#tenders');
     if (!box) return;
-    /* pointerup covers finger, mouse and pen — a touch tap does not
-       reliably raise a click here */
-    box.addEventListener('pointerup', function () {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      var now = Date.now();
-      taps = taps.filter(function (at) { return now - at < 1800; });
-      taps.push(now);
-      if (taps.length < 3) return;
-      taps = [];
-      box.classList.add('dancing');
-      clearTimeout(danceTimer);
-      danceTimer = setTimeout(function () { box.classList.remove('dancing'); }, 10000);
+    var timers = {};
+    Array.prototype.forEach.call(box.querySelectorAll('.tender'), function (fig, i) {
+      fig.addEventListener('pointerup', function () {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        fig.classList.add('acting');
+        clearTimeout(timers[i]);
+        timers[i] = setTimeout(function () { fig.classList.remove('acting'); }, 10000);
+      });
     });
   }
 
