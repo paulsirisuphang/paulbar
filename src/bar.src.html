@@ -93,7 +93,9 @@ body, .page {
   position: relative;
   min-height: 100vh;
   min-height: 100dvh;
-  overflow-x: hidden;
+  /* clip, not hidden: overflow:hidden makes this a scroll container and
+     silently kills position:sticky on the header inside it */
+  overflow-x: clip;
 }
 .page::before {
   content: '';
@@ -319,57 +321,15 @@ main { padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 96px; }
 
 /* ---------- filters ---------- */
 
-.filters {
-  display: grid;
-  gap: 10px;
-  padding: 0 0 20px;
-  border-bottom: 1px solid var(--line);
-}
-/* on a phone the drinks come first; the controls stay a tap away */
-.filter-toggle {
-  display: none;
-  align-items: center;
-  gap: 7px;
-  /* sized to match the filter pills it opens */
-  padding: 6px 14px;
-  border: 1px solid var(--line-2);
-  border-radius: 999px;
-  background: var(--bg-2);
-  color: var(--text-2);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-.filter-toggle .caret { transition: transform .22s; }
-.filter-toggle[aria-expanded='true'] { color: var(--text); border-color: var(--text-3); }
-.filter-toggle[aria-expanded='true'] .caret { transform: rotate(90deg); }
-@media (max-width: 620px) {
-  .filter-toggle { display: inline-flex; margin-bottom: 22px; }
-  .filters.collapsed { display: none; }
-  .filter-toggle[aria-expanded='true'] { margin-bottom: 16px; }
-}
-.filter-row {
+.jumps {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 8px;
+  padding: 4px 0 20px;
+  border-bottom: 1px solid var(--line);
 }
-.filter-label {
-  flex: none;
-  width: 6.5rem;
-  padding-right: 8px;
-  font-size: 0.625rem;
-  font-weight: 700;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  color: var(--text-3);
-}
-@media (max-width: 620px) {
-  .filter-label { width: 100%; padding: 4px 0 0; }
-  .filter-row + .filter-row { margin-top: 6px; }
-}
-.pill {
-  padding: 6px 14px;
+.jump {
+  padding: 7px 16px;
   border: 1px solid var(--line-2);
   border-radius: 999px;
   background: var(--bg-2);
@@ -379,41 +339,8 @@ main { padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 96px; }
   cursor: pointer;
   transition: color .18s, border-color .18s, background-color .18s;
 }
-.pill:hover:not(:disabled) { color: var(--text); border-color: #55432F; }
-.pill:disabled { opacity: .3; cursor: default; }
-.pill[aria-pressed='true'] {
-  border-color: var(--campari);
-  background: rgba(210,74,34,.16);
-  color: #F6CDBC;
-}
-.pill.smoke-pill[aria-pressed='true'] {
-  border-color: rgba(147,163,168,.6);
-  background: rgba(147,163,168,.14);
-  color: #D3DCDE;
-}
-.pill.long-pill[aria-pressed='true'] {
-  border-color: rgba(210,162,76,.6);
-  background: rgba(210,162,76,.13);
-  color: #EBD3A0;
-}
-.filter-sep {
-  width: 1px;
-  height: 22px;
-  background: var(--line-2);
-  margin: 0 4px;
-}
-@media (max-width: 620px) {
-  /* the pills wrap to several rows here, where a divider between them reads as debris */
-  .filter-sep { display: none; }
-}
-.filter-count {
-  margin-left: auto;
-  font-size: 0.75rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--text-3);
-  font-variant-numeric: tabular-nums;
-}
+.jump:hover { color: var(--text); border-color: #55432F; background: var(--bg-3); }
+
 
 /* ---------- menu ---------- */
 
@@ -1338,11 +1265,7 @@ details.notes summary:hover { color: var(--brass); }
         <button class="choice" id="choice" type="button"><span class="die"></span><span id="choice-text">Surprise me</span></button>
       </div>
 
-      <button class="filter-toggle" id="filter-toggle" type="button" aria-expanded="false" aria-controls="filters">
-        <span id="filter-toggle-text">Narrow it down</span> <span class="caret">&rsaquo;</span>
-      </button>
-
-      <div class="filters collapsed" id="filters"></div>
+      <nav class="jumps" id="jumps" aria-label="Jump to a section"></nav>
 
       <div id="menu-body"></div>
 
@@ -1546,6 +1469,26 @@ details.notes summary:hover { color: var(--brass); }
       glass: 'rocks', color: '#8E4A24', ice: 'cube', garnish: 'lemon-twist'
     },
     {
+      id: 'de-la-louisiane', name: 'De La Louisiane', base: 'Rye', method: 'Stirred', section: 'stirred',
+      spirits: ['rye'],
+      note: 'A Sazerac that stayed for dinner — sweeter, rounder, more herbal.',
+      hook: "It is the house drink of a New Orleans restaurant that opened in 1881.",
+      story: "Named for Restaurant de la Louisiane in the French Quarter, and built like a Sazerac that sat down to eat: the same rye and Peychaud's, sweetened with Bénédictine and lengthened with vermouth. It wants an absinthe rinse too, so the smoker covers it.",
+      flavor: { bitter: 3, sweet: 4, citrus: 1, herbal: 5, strength: 5 },
+      build: [['2 oz', 'rye'], ['0.75 oz', 'sweet vermouth'], ['0.75 oz', 'Bénédictine'], ['3 dashes', "Peychaud's"]],
+      steps: [
+        "Fill a mixing glass with good ice.",
+        "Add the rye, sweet vermouth and Bénédictine.",
+        "Add three dashes of Peychaud's.",
+        "Stir 30 seconds.",
+        "Strain up into a chilled coupe.",
+        "Garnish with a cherry."
+      ],
+      smoke: true, woods: ['Oak', 'Pecan'],
+      smokeNote: 'Standing in for the absinthe rinse, the same job it does in the Sazerac.',
+      glass: 'coupe', color: '#93502A', ice: 'none', garnish: 'cherry'
+    },
+    {
       id: 'white-negroni', name: 'White Negroni', base: 'Gin', method: 'Stirred', section: 'stirred',
       spirits: ['gin', 'suze', 'lillet'],
       note: "Gentian where the Campari should be, florals where the orange was. Pale, dry, and the one drink here you must not smoke.",
@@ -1671,42 +1614,64 @@ details.notes summary:hover { color: var(--brass); }
       glass: 'rocks', color: '#CBD489', ice: 'cubes', garnish: 'lime-wedge'
     },
 
-    {
-      id: 'sneaky-pete', name: 'Sneaky Pete', base: 'Rye', method: 'Built', section: 'coffee',
-      spirits: ['rye'],
-      note: 'Coffee and cream over rye. Drinks like dessert.',
-      hook: "The name used to mean whatever bootleg liquor you could find.",
-      story: "It meant cheap fortified wine, moonshine, anything that crept up on you quietly. The cocktail keeps the warning in the name: coffee and cream bury the rye completely, and it goes down like pudding.",
-      flavor: { bitter: 2, sweet: 3, citrus: 0, herbal: 1, strength: 3 },
-      build: [['1 oz', 'rye'], ['1 oz', 'coffee liqueur'], ['2 oz', 'milk or cream']],
-      steps: [
-        "Fill a rocks glass with ice.",
-        "Pour in the rye and the coffee liqueur.",
-        "Top with milk or cream.",
-        "Stir gently — you do not want it frothy."
-      ],
-      smoke: false,
-      noSmoke: 'Cream swallows smoke whole. There would be nothing left to smell.',
-      glass: 'rocks', color: '#8D6A4C', ice: 'cubes', garnish: 'none'
-    },
-    {
-      id: 'blind-russian', name: 'Blind Russian', base: 'Vodka', method: 'Built', section: 'coffee',
-      spirits: ['vodka'],
-      note: 'Coffee, chocolate and cream, and barely a drink at all.',
-      hook: "It is a White Russian with Baileys where the cream should be.",
-      story: "The White Russian was a forgotten 1960s curiosity until The Big Lebowski turned it into a personality in 1998. Irish cream in place of the dairy brings chocolate, and a little more alcohol, along with it.",
-      flavor: { bitter: 2, sweet: 4, citrus: 0, herbal: 0, strength: 3 },
-      build: [['1.5 oz', 'vodka'], ['0.75 oz', 'coffee liqueur'], ['1 oz', 'Irish cream']],
-      steps: [
-        "Fill a rocks glass with ice.",
-        "Add the vodka, coffee liqueur and Irish cream.",
-        "Stir until combined."
-      ],
-      smoke: false,
-      noSmoke: 'Cream swallows smoke whole. There would be nothing left to smell.',
-      glass: 'rocks', color: '#7C5B44', ice: 'cubes', garnish: 'none'
-    },
 
+    {
+      id: 'corpse-reviver', name: 'Corpse Reviver №2', base: 'Gin', method: 'Shaken', section: 'shaken',
+      spirits: ['gin'],
+      note: 'Four equal parts, and none of them backing down.',
+      hook: "It was published as a hangover cure, with a warning printed underneath.",
+      story: "The Savoy Cocktail Book put it in print in 1930 as a morning restorative, then added that four taken in swift succession will unrevive the corpse again. It should have an absinthe rinse, which we do not have.",
+      flavor: { bitter: 2, sweet: 3, citrus: 4, herbal: 3, strength: 4 },
+      build: [['0.75 oz', 'gin'], ['0.75 oz', 'Cointreau'], ['0.75 oz', 'Lillet Blanc'], ['0.75 oz', 'lemon']],
+      steps: [
+        "Add everything to a shaker with ice.",
+        "Shake hard for 12 seconds.",
+        "Double-strain up into a chilled coupe.",
+        "Express a lemon peel over the top."
+      ],
+      tip: 'Equal parts, so nothing hides. Measure it properly.',
+      smoke: true, woods: ['Apple', 'Pear', 'Peach'],
+      smokeNote: 'This breaks the rule about smoke and fresh citrus on purpose — the smoke is standing in for an absinthe rinse. Gentle wood only, and try it once before you decide.',
+      glass: 'coupe', color: '#D9CE8E', ice: 'none', garnish: 'lemon-twist'
+    },
+    {
+      id: 'pegu-club', name: 'Pegu Club', base: 'Gin', method: 'Shaken', section: 'shaken',
+      spirits: ['gin'],
+      note: 'Lime and orange liqueur over gin, sharpened by two different bitters.',
+      hook: "It is named after a British officers' club in Rangoon.",
+      story: "The club stood in Rangoon and this was its house drink, carried back to London and New York by members who missed it. The two bitters do most of the work — Angostura for spice, orange for lift.",
+      flavor: { bitter: 2, sweet: 3, citrus: 5, herbal: 3, strength: 4 },
+      build: [['2 oz', 'gin'], ['0.75 oz', 'Cointreau'], ['0.75 oz', 'lime'],
+              ['1 dash', 'Angostura'], ['1 dash', 'orange bitters']],
+      steps: [
+        "Add the gin, Cointreau and lime to a shaker with ice.",
+        "Add a dash each of Angostura and orange bitters.",
+        "Shake hard for 12 seconds.",
+        "Double-strain up into a chilled coupe.",
+        "Express a lime peel over the top."
+      ],
+      smoke: false,
+      noSmoke: 'Shaken with fresh citrus — never smoke this.',
+      glass: 'coupe', color: '#CFC98A', ice: 'none', garnish: 'lime-twist'
+    },
+    {
+      id: 'gimlet', name: 'Gimlet', base: 'Gin', method: 'Shaken', section: 'shaken',
+      spirits: ['gin'],
+      note: 'Gin and lime, cold and unadorned.',
+      hook: "Lime went to sea because it stopped sailors dying of scurvy.",
+      story: "Gin was already aboard, and the two found each other. The old version uses sweetened lime cordial; fresh lime and sugar makes a sharper, cleaner drink, which is what we pour.",
+      flavor: { bitter: 1, sweet: 3, citrus: 5, herbal: 3, strength: 4 },
+      build: [['2 oz', 'gin'], ['0.75 oz', 'lime'], ['0.75 oz', 'simple syrup']],
+      steps: [
+        "Add the gin, lime and simple syrup to a shaker with ice.",
+        "Shake hard for 12 seconds.",
+        "Double-strain up into a chilled coupe.",
+        "Garnish with a lime peel."
+      ],
+      smoke: false,
+      noSmoke: 'Shaken with fresh citrus — never smoke this.',
+      glass: 'coupe', color: '#D2DCA0', ice: 'none', garnish: 'lime-twist'
+    },
     {
       id: 'gin-tonic', name: 'Gin & Tonic', base: 'Gin', method: 'Built', section: 'long', low: true,
       spirits: ['gin'],
@@ -1866,24 +1831,6 @@ details.notes summary:hover { color: var(--brass); }
       smoke: false, noSmoke: 'Far too delicate.',
       glass: 'tall', color: '#D2BE85', ice: 'tall', garnish: 'lemon-wheel', bubbles: true
     },
-    {
-      id: 'garibaldi', name: 'Garibaldi', base: 'Campari', method: 'Whipped', section: 'long', low: true,
-      spirits: ['campari'],
-      note: "Campari from the north, Sicilian oranges from the south — the story people tell, anyway. Whip the juice or don't bother.",
-      hook: "The whole trick is shearing air into the orange juice.",
-      story: "New York's Dante turned a two-ingredient throwaway into a signature by blitzing it until micro-bubbles leave it pale and cloud-like. The patriotic reading — red for Garibaldi's shirts, oranges for Sicily — is charming and has nothing behind it.",
-      flavor: { bitter: 3, sweet: 4, citrus: 5, herbal: 2, strength: 2 },
-      build: [['1.5 oz', 'Campari'], ['4 oz', 'fresh orange juice']],
-      steps: [
-        "Shake the orange juice hard on its own, or blitz it, until it turns fluffy. The froth is the whole drink.",
-        "Fill a tall glass completely with ice.",
-        "Pour in the Campari.",
-        "Top with the whipped orange juice."
-      ],
-      tip: 'Flat juice makes a flat Garibaldi. The froth is the whole drink.',
-      smoke: false, noSmoke: 'Fresh citrus, and the froth would kill the aroma anyway.',
-      glass: 'tall', color: '#D9701C', ice: 'tall', garnish: 'none', foam: '#F2B366'
-    },
 
     {
       id: 'smoked-tea-sour', name: 'Smoked Tea Sour', base: 'Tea', method: 'Shaken', section: 'mocktail', na: true,
@@ -1924,43 +1871,6 @@ details.notes summary:hover { color: var(--brass); }
       glass: 'tall', color: '#D9C07E', ice: 'tall', garnish: 'lemon-wheel', bubbles: true
     },
     {
-      id: 'orange-tonic', name: 'Orange Tonic', base: 'Orange', method: 'Built', section: 'mocktail', na: true,
-      spirits: [],
-      note: "Quinine supplies the bitter edge the alcohol would have. Two ingredients, and a torched peel doing the heavy lifting.",
-      hook: "Hold it under a blacklight and the tonic glows blue.",
-      story: "Quinine is why, and it is also what supplies the bitter edge alcohol would otherwise bring — which is the difference between this and a glass of orange juice.",
-      flavor: { bitter: 2, sweet: 3, citrus: 5, herbal: 1, strength: 0 },
-      build: [['2 oz', 'fresh orange juice'], ['4 oz', 'tonic'], ['pinch', 'salt']],
-      steps: [
-        "Fill a tall glass completely with ice.",
-        "Add the orange juice and the salt.",
-        "Top with tonic and stir once.",
-        "Torch an orange peel over the surface and drop it in."
-      ],
-      smoke: false,
-      noSmoke: 'The torched peel already does that job here, and bubbles would carry a smoked glass away.',
-      glass: 'tall', color: '#E08A2B', ice: 'tall', garnish: 'orange-slice', bubbles: true
-    },
-    {
-      id: 'whipped-orange', name: 'Whipped Orange', base: 'Orange', method: 'Whipped', section: 'mocktail', na: true,
-      spirits: [],
-      note: "Shake the juice alone until it pales and foams. That froth is the whole drink — the Garibaldi trick, minus the Campari.",
-      hook: "Orange juice changes state if you shake it hard enough on its own.",
-      story: "Fifteen seconds alone in the tin with ice and nothing else, and it turns pale and holds a foam like a milkshake. Nothing is added — you are beating air into it. Skip that and you have a glass of juice.",
-      flavor: { bitter: 0, sweet: 4, citrus: 5, herbal: 0, strength: 0 },
-      build: [['4 oz', 'fresh orange juice'], ['2 oz', 'club soda'], ['pinch', 'salt']],
-      steps: [
-        "Shake the orange juice hard on its own with ice — nothing else in the tin — for about 15 seconds, until it goes pale and frothy.",
-        "Strain into a tall glass over fresh ice.",
-        "Top with soda.",
-        "Stir in the pinch of salt."
-      ],
-      tip: 'Whipping is doing all the work, so do not skip it.',
-      smoke: false,
-      noSmoke: 'Fresh citrus and froth. The froth would kill the aroma before it reached you.',
-      glass: 'tall', color: '#E88A2E', ice: 'tall', garnish: 'none', foam: '#F6C48A', bubbles: true
-    },
-    {
       id: 'bitters-soda', name: 'Bitters & Soda', base: 'Angostura', method: 'Built', section: 'mocktail', na: true,
       spirits: [],
       note: "Eight dashes of Angostura and a lot of bubbles. Spiced, dry, nearly clear — and not quite alcohol-free.",
@@ -1989,18 +1899,6 @@ details.notes summary:hover { color: var(--brass); }
     { id: 'mocktail', title: 'Mocktails', sub: 'no alcohol · salt in every one' }
   ];
 
-  var SPIRITS = [
-    { id: 'gin', label: 'Gin' },
-    { id: 'bourbon', label: 'Bourbon' },
-    { id: 'rye', label: 'Rye' },
-    { id: 'campari', label: 'Campari' },
-    { id: 'lillet', label: 'Lillet' },
-    { id: 'suze', label: 'Suze' },
-    { id: 'cognac', label: 'Cognac' },
-    { id: 'tequila', label: 'Tequila' },
-    { id: 'vodka', label: 'Vodka' }
-  ];
-
   var byId = {};
   DRINKS.forEach(function (d) { byId[d.id] = d; });
 
@@ -2011,18 +1909,9 @@ __THAI_DATA__
 
   var T_EN = {
     tab_menu: 'Menu', tab_orders: 'Orders',
-    surprise: 'Surprise me', narrow: 'Narrow it down',
-
-    row_taste: 'Flavor', row_heavy: 'How heavy', row_spirit: 'Made with',
-    any: 'Anything', any_heavy: 'Any',
-    taste_bitter: 'Bitter', taste_sweet: 'Sweet', taste_citrus: 'Citrusy', taste_herbal: 'Herbal',
-    heavy_none: 'No alcohol', heavy_light: 'Light & long',
-    level_light: 'Light', level_medium: 'Medium', level_strong: 'Strong', heavy_mid: 'In between', heavy_strong: 'Strong & short',
-    sp_gin: 'Gin', sp_bourbon: 'Bourbon', sp_rye: 'Rye', sp_campari: 'Campari', sp_lillet: 'Lillet', sp_suze: 'Suze',
-    sp_cognac: 'Cognac', sp_tequila: 'Tequila', sp_vodka: 'Vodka',
-    takes_smoke: 'Takes smoke',
-    count_one: 'drink', count_many: 'drinks',
-    no_match: 'Nothing on the shelf matches that.', show_all: 'Show everything',
+    surprise: 'Surprise me',
+    heavy_none: 'No alcohol',
+    level_light: 'Light', level_medium: 'Medium', level_strong: 'Strong',
 
     sec_stirred: 'Stirred', sec_stirred_sub: 'spirit-forward · smoke works here',
     sec_shaken: 'Shaken', sec_shaken_sub: 'citrus · bright · no smoke',
@@ -2125,7 +2014,7 @@ __THAI_DATA__
     try { localStorage.setItem(LANG_KEY, next); } catch (e) {}
     applyLang();
     paintStatic();
-    renderFilters();
+    renderJumps();
     renderMenu();
     renderOrders();
     paintSecret();
@@ -2138,7 +2027,6 @@ __THAI_DATA__
     $('#tab-menu-text').textContent = U('tab_menu');
     $('#tab-orders-text').textContent = U('tab_orders');
     $('#choice-text').textContent = U('surprise');
-    $('#filter-toggle-text').textContent = U('narrow');
     $('#notes-summary').textContent = U('bar_notes');
 
     var lede = $('#orders-lede');
@@ -2650,8 +2538,9 @@ __THAI_DATA__
     var y = g.rim;
     var rx = 60 + g.halfTop;
 
-    if (kind === 'orange-twist' || kind === 'lemon-twist') {
-      var col = kind === 'orange-twist' ? CITRUS.orange : CITRUS.lemon;
+    if (kind === 'orange-twist' || kind === 'lemon-twist' || kind === 'lime-twist') {
+      var col = kind === 'orange-twist' ? CITRUS.orange
+        : kind === 'lime-twist' ? CITRUS.lime : CITRUS.lemon;
       var tw = s('path', {
         d: 'M' + (rx - 12) + ',' + (y - 2) + ' q14,-12 20,0 q5,11 -7,13 q-10,1 -7,-8',
         fill: 'none', stroke: col, 'stroke-width': '3.6', 'stroke-linecap': 'round', 'stroke-linejoin': 'round'
@@ -2889,114 +2778,18 @@ __THAI_DATA__
 
   /* ---------- menu ---------- */
 
-  /* The filters are the same five meters printed on every card: four flavors,
-     plus strength as "how heavy". Nobody needs to know a spirit to order. */
-  var TASTES = {
-    bitter: function (d) { return d.flavor.bitter >= 4; },
-    sweet: function (d) { return d.flavor.sweet >= 4 || (d.flavor.sweet >= 3 && d.flavor.bitter <= 1); },
-    citrus: function (d) { return d.flavor.citrus >= 4; },
-    herbal: function (d) { return d.flavor.herbal >= 4; }
-  };
-  var HEAVY = {
-    none: function (d) { return !!d.na; },
-    light: function (d) { return !d.na && d.flavor.strength <= 2; },
-    mid: function (d) { return d.flavor.strength === 3; },
-    strong: function (d) { return d.flavor.strength >= 4; }
-  };
-
-  var filters = { taste: 'any', heavy: 'any', spirit: 'all', smoke: false };
-
-  function passes(d, f) {
-    if (d.hidden) return false;
-    if (f.taste !== 'any' && !TASTES[f.taste](d)) return false;
-    if (f.heavy !== 'any' && !HEAVY[f.heavy](d)) return false;
-    if (f.spirit !== 'all' && d.spirits.indexOf(f.spirit) === -1) return false;
-    if (f.smoke && !d.smoke) return false;
-    return true;
-  }
-
-  function matches(d) { return passes(d, filters); }
-
-  /* how many drinks would be left if this one control changed */
-  function countWith(key, value) {
-    var trial = { taste: filters.taste, heavy: filters.heavy, spirit: filters.spirit, smoke: filters.smoke };
-    trial[key] = value;
-    return DRINKS.filter(function (d) { return passes(d, trial); }).length;
-  }
-
-  function rows() {
-    return [
-      {
-        key: 'taste', label: U('row_taste'), any: 'any',
-        options: [
-          { id: 'any', label: U('any') },
-          { id: 'bitter', label: U('taste_bitter') },
-          { id: 'sweet', label: U('taste_sweet') },
-          { id: 'citrus', label: U('taste_citrus') },
-          { id: 'herbal', label: U('taste_herbal') }
-        ]
-      },
-      {
-        key: 'heavy', label: U('row_heavy'), any: 'any',
-        options: [
-          { id: 'any', label: U('any_heavy') },
-          { id: 'none', label: U('heavy_none') },
-          { id: 'light', label: U('heavy_light') },
-          { id: 'mid', label: U('heavy_mid') },
-          { id: 'strong', label: U('heavy_strong') }
-        ]
-      },
-      {
-        key: 'spirit', label: U('row_spirit'), any: 'all',
-        options: [{ id: 'all', label: U('any') }].concat(SPIRITS.map(function (s) {
-          return { id: s.id, label: U('sp_' + s.id) };
-        }))
-      }
-    ];
-  }
-
-  function renderFilters() {
-    var bar = $('#filters');
+  function renderJumps() {
+    var bar = $('#jumps');
     bar.innerHTML = '';
-
-    rows().forEach(function (rowDef) {
-      var row = el('div', 'filter-row');
-      row.appendChild(el('span', 'filter-label', rowDef.label));
-
-      rowDef.options.forEach(function (opt) {
-        var b = el('button', 'pill', opt.label);
-        b.type = 'button';
-        /* three rows each offer "Anything" — the row has to be in the name */
-        b.setAttribute('aria-label', rowDef.label + ': ' + opt.label);
-        b.setAttribute('aria-pressed', filters[rowDef.key] === opt.id ? 'true' : 'false');
-        /* a control that would empty the list is a dead end — grey it out */
-        if (opt.id !== rowDef.any && countWith(rowDef.key, opt.id) === 0) b.disabled = true;
-        b.addEventListener('click', function () {
-          filters[rowDef.key] = opt.id;
-          renderFilters();
-          renderMenu();
-        });
-        row.appendChild(b);
+    orderedSections().forEach(function (sec) {
+      if (!DRINKS.some(function (d) { return d.section === sec.id && !d.hidden; })) return;
+      var b = el('button', 'jump', U('sec_' + sec.id));
+      b.type = 'button';
+      b.addEventListener('click', function () {
+        var head = document.getElementById('sec-' + sec.id);
+        if (head) head.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
-
-      if (rowDef.key === 'spirit') {
-        row.appendChild(el('span', 'filter-sep'));
-        var smokeBtn = el('button', 'pill smoke-pill', U('takes_smoke'));
-        smokeBtn.type = 'button';
-        smokeBtn.setAttribute('aria-pressed', filters.smoke ? 'true' : 'false');
-        if (!filters.smoke && countWith('smoke', true) === 0) smokeBtn.disabled = true;
-        smokeBtn.addEventListener('click', function () {
-          filters.smoke = !filters.smoke;
-          renderFilters();
-          renderMenu();
-        });
-        row.appendChild(smokeBtn);
-
-        var n = DRINKS.filter(matches).length;
-        row.appendChild(el('span', 'filter-count', n + ' ' + (n === 1 ? U('count_one') : U('count_many'))));
-      }
-
-      bar.appendChild(row);
+      bar.appendChild(b);
     });
   }
 
@@ -3040,10 +2833,13 @@ __THAI_DATA__
     var shown = 0;
 
     orderedSections().forEach(function (sec) {
-      var list = DRINKS.filter(function (d) { return d.section === sec.id && matches(d); });
+      var list = DRINKS.filter(function (d) { return d.section === sec.id && !d.hidden; });
       if (!list.length) return;
 
-      body.appendChild(ruleEl(U('sec_' + sec.id), U('sec_' + sec.id + '_sub')));
+      var head = ruleEl(U('sec_' + sec.id), U('sec_' + sec.id + '_sub'));
+      head.id = 'sec-' + sec.id;
+      head.style.scrollMarginTop = '86px';
+      body.appendChild(head);
 
       var grid = el('div', 'menu');
       list.forEach(function (d, i) { grid.appendChild(drinkCard(d, shown + i)); });
@@ -3051,20 +2847,6 @@ __THAI_DATA__
       shown += list.length;
     });
 
-    if (!shown) {
-      var none = el('div', 'no-match');
-      none.appendChild(el('div', null, U('no_match')));
-      var reset = el('button', 'link-btn', U('show_all'));
-      reset.type = 'button';
-      reset.style.marginTop = '10px';
-      reset.addEventListener('click', function () {
-        filters = { taste: 'any', heavy: 'any', spirit: 'all', smoke: false };
-        renderFilters();
-        renderMenu();
-      });
-      none.appendChild(reset);
-      body.appendChild(none);
-    }
   }
 
   /* ---------- order sheet ---------- */
@@ -3616,16 +3398,9 @@ __THAI_DATA__
 
   /* ---------- bartender's choice ---------- */
 
-  var filterToggle = $('#filter-toggle');
-  filterToggle.addEventListener('click', function () {
-    var open = filterToggle.getAttribute('aria-expanded') === 'true';
-    filterToggle.setAttribute('aria-expanded', open ? 'false' : 'true');
-    $('#filters').classList.toggle('collapsed', open);
-  });
-
   var choice = $('#choice');
   choice.addEventListener('click', function () {
-    var pool = DRINKS.filter(matches);
+    var pool = DRINKS.filter(function (d) { return !d.hidden; });
     if (!pool.length) return;
     choice.classList.add('rolling');
     setTimeout(function () { choice.classList.remove('rolling'); }, 500);
@@ -3709,7 +3484,7 @@ __THAI_DATA__
   watchForTaps();
   watchTheName();
   paintSecret();
-  renderFilters();
+  renderJumps();
   renderMenu();
   renderOrders();
 
