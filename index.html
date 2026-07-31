@@ -513,6 +513,8 @@ main { padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 96px; }
 .chip.smoke .dot { background: var(--smoke); }
 .chip.egg { color: var(--brass); border-color: rgba(210,162,76,.3); }
 .chip.egg .dot { background: var(--brass); }
+.chip.zero { color: var(--poured); border-color: rgba(143,168,107,.3); }
+.chip.zero .dot { background: var(--poured); }
 .chip.poured { color: var(--poured); border-color: rgba(143,168,107,.3); }
 .chip.poured .dot { background: var(--poured); }
 .chip.low { color: var(--brass); border-color: rgba(210,162,76,.28); }
@@ -737,7 +739,9 @@ main { padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 96px; }
 
 dialog {
   width: min(560px, calc(100vw - 24px));
-  max-height: min(88dvh, 900px);
+  /* svh, not dvh: the small viewport is what you can see with the phone's
+     browser bars up, and that is the only height that is always visible */
+  max-height: min(88svh, 900px);
   padding: 0;
   border: 1px solid var(--line-2);
   border-radius: 14px;
@@ -745,13 +749,23 @@ dialog {
   color: var(--text);
   box-shadow: 0 40px 80px -30px #000;
 }
+/* a phone lays the sheet out in a viewport taller than the visible one, so
+   centring slides the top of it up behind the toolbar — sit it near the top */
+@media (max-width: 640px) {
+  dialog {
+    margin-top: max(14px, env(safe-area-inset-top));
+    margin-bottom: auto;
+    max-height: calc(88svh - env(safe-area-inset-top));
+  }
+}
 dialog::backdrop { background: rgba(8,5,4,.72); backdrop-filter: blur(3px); }
 dialog[open] { animation: rise .22s cubic-bezier(.2,.8,.3,1); }
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
 
-.sheet { display: flex; flex-direction: column; max-height: inherit; }
+.sheet { display: flex; flex-direction: column; max-height: inherit; overflow: hidden; }
 .sheet-head {
   position: relative;
+  flex: none;
   display: flex;
   gap: 18px;
   align-items: center;
@@ -804,8 +818,17 @@ dialog[open] { animation: rise .22s cubic-bezier(.2,.8,.3,1); }
   letter-spacing: -0.02em;
   text-wrap: balance;
 }
-.sheet-body { display: grid; gap: 20px; padding: 22px 24px; overflow-y: auto; }
+.sheet-body {
+  display: grid;
+  flex: 1 1 auto;
+  min-height: 0;
+  gap: 20px;
+  padding: 22px 24px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
 .sheet-foot {
+  flex: none;
   display: flex;
   gap: 10px;
   padding: 16px 24px 20px;
@@ -924,6 +947,11 @@ textarea { min-height: 62px; resize: vertical; }
   background: var(--smoke) var(--tick) center / 13px no-repeat;
 }
 .option.egg:has(input:checked) .box { border-color: var(--brass); background-color: var(--brass); }
+.option.zero:has(input:checked) {
+  border-color: rgba(143,168,107,.55);
+  background: rgba(143,168,107,.07);
+}
+.option.zero:has(input:checked) .box { border-color: var(--poured); background-color: var(--poured); }
 .option:has(input:focus-visible) { outline: 2px solid var(--campari-2); outline-offset: 2px; }
 .option-text { display: grid; gap: 3px; }
 .option-title { font-weight: 600; font-size: 0.9375rem; }
@@ -1104,6 +1132,7 @@ textarea { min-height: 62px; resize: vertical; }
   color: var(--text-3);
 }
 .aside.smoke-aside { box-shadow: inset 2px 0 0 var(--smoke); }
+.aside.zero-aside { box-shadow: inset 2px 0 0 var(--poured); }
 .aside.tip-aside { box-shadow: inset 2px 0 0 var(--brass); }
 
 .empty {
@@ -1487,6 +1516,14 @@ details.notes summary:hover { color: var(--brass); }
       tip: 'Worth making both ways — Rittenhouse at 100 proof is a noticeably different drink from bourbon.',
       smoke: true, woods: ['Oak', 'Oak + a pinch of cinnamon', 'Pecan', 'Walnut'],
       smokeNote: 'The archetype. Sugar and smoke are the entire point.',
+      zero: { from: 'sugar cube (or 0.25 oz simple syrup)', qty: '0.25 oz', to: 'zero-sugar syrup',
+        note: 'Nothing to muddle, so it comes together faster. What you lose is the grain of sugar that never quite dissolves.',
+        steps: [
+          'Put the zero-sugar syrup in the glass with the bitters.',
+          'Add the whiskey and one large cube.',
+          'Stir 30 seconds, adding a second cube partway through.',
+          'Express an orange peel and drop it in.'
+        ] },
       glass: 'rocks', color: '#A55E22', ice: 'cube', garnish: 'orange-twist'
     },
     {
@@ -1547,6 +1584,14 @@ details.notes summary:hover { color: var(--brass); }
       ],
       smoke: true, woods: ['Oak', 'Pecan'],
       smokeNote: 'Smoke stands in for the absinthe rinse we do not have. Different flavor, same job.',
+      zero: { from: 'sugar cube', qty: '0.25 oz', to: 'zero-sugar syrup',
+        note: 'A straight swap for the cube. It lands drier, which the rye can carry.',
+        steps: [
+          "Put the zero-sugar syrup in a mixing glass with the Peychaud's.",
+          'Add the rye and ice, and stir 30 seconds.',
+          'Strain into a chilled rocks glass — no ice.',
+          'Express a lemon peel over the top, then throw the peel away. It does not go in.'
+        ] },
       glass: 'rocks', color: '#9E5324', ice: 'none', garnish: 'none'
     },
     {
@@ -1634,6 +1679,8 @@ details.notes summary:hover { color: var(--brass); }
       ],
       egg: true, smoke: false,
       noSmoke: 'Smoke over fresh citrus reads muddy, and foam kills the aroma anyway.',
+      zero: { from: 'simple syrup', to: 'zero-sugar syrup',
+        note: 'One for one. Sugar carries weight as well as sweetness, so it pours thinner — take the egg white and you will not notice.' },
       glass: 'rocks', color: '#BE8330', ice: 'cubes', garnish: 'none'
     },
     {
@@ -1658,6 +1705,8 @@ details.notes summary:hover { color: var(--brass); }
       egg: true, smoke: false,
       tip: 'Worth doing side by side with the whiskey sour once.',
       noSmoke: 'Smoke over fresh citrus reads muddy, and foam kills the aroma anyway.',
+      zero: { from: 'simple syrup', to: 'zero-sugar syrup',
+        note: 'One for one. Leaner without the sugar behind it, which gin minds less than bourbon does.' },
       glass: 'rocks', color: '#CBBD75', ice: 'cubes', garnish: 'none'
     },
     {
@@ -1774,6 +1823,8 @@ details.notes summary:hover { color: var(--brass); }
       ],
       smoke: false,
       noSmoke: 'Shaken with fresh citrus — never smoke this.',
+      zero: { from: 'simple syrup', to: 'zero-sugar syrup',
+        note: 'One for one. Three things in the glass and nowhere to hide, so taste it before you strain.' },
       glass: 'coupe', color: '#D2DCA0', ice: 'none', garnish: 'lime-twist'
     },
     {
@@ -1880,6 +1931,8 @@ details.notes summary:hover { color: var(--brass); }
       ],
       tip: 'Swap bourbon for a John Collins, or rye for more bite.',
       smoke: false, noSmoke: 'Shaken with fresh citrus — never smoke this.',
+      zero: { from: 'simple syrup', to: 'zero-sugar syrup',
+        note: 'One for one, and the soda covers the missing body better than anywhere else on the list.' },
       glass: 'tall', color: '#D0C384', ice: 'tall', garnish: 'none', bubbles: true
     },
     {
@@ -2066,6 +2119,9 @@ details.notes summary:hover { color: var(--brass); }
     name_ph_err: 'ใส่ชื่อด้วยนะ',
     note_ph: 'ไม่บังคับ — เวอร์มุตน้อยหน่อย, ไม่ใส่การ์นิช, ขอสองแก้ว…',
 
+    zero_sugar: 'ไซรัปไร้น้ำตาล',
+    chip_zero_opt: 'มีสูตรไร้น้ำตาล', chip_zero: 'ไร้น้ำตาล',
+    aside_zero: 'ไซรัปไร้น้ำตาล',
     smoke_it: 'รมควัน',
     wood: 'ไม้',
     egg_white: 'ไข่ขาว',
@@ -2173,6 +2229,14 @@ details.notes summary:hover { color: var(--brass); }
       smokeNote: 'แก้วที่เหมาะกับการรมควันที่สุดในเมนู เบอร์เบินมีคาราเมลและโอ๊กให้ควันเกาะ ไม่ใช่กลิ่นสมุนไพรที่จะไปตีกัน'
     },
     'old-fashioned': {
+      zero: { from: 'น้ำตาลก้อน (หรือไซรัปน้ำตาล 0.25 ออนซ์)', qty: '0.25 ออนซ์', to: 'ไซรัปไร้น้ำตาล',
+        note: 'ไม่ต้องบดน้ำตาล จึงเร็วกว่า สิ่งที่หายไปคือเม็ดน้ำตาลที่ละลายไม่หมดเท่านั้น',
+        steps: [
+          'ใส่ไซรัปไร้น้ำตาลลงในแก้ว ตามด้วยบิตเตอร์',
+          'ใส่วิสกี้และน้ำแข็งก้อนใหญ่หนึ่งก้อน',
+          'คน 30 วินาที แล้วเติมน้ำแข็งอีกก้อนระหว่างทาง',
+          'บีบเปลือกส้มแล้วหย่อนลงไป'
+        ] },
       base: 'เบอร์เบินหรือราย', method: 'คน',
       note: "คำว่าค็อกเทลในปี 1806 หมายถึงแบบนี้ — เหล้า น้ำตาล น้ำ บิตเตอร์ ที่เหลือหลังจากนั้นคือส่วนขยายทั้งนั้น",
       hook: "คนเริ่มสั่งแบบเก่า ๆ เพราะเบื่อเครื่องดื่มหวือหวา แล้วชื่อก็ติดมา",
@@ -2222,6 +2286,14 @@ details.notes summary:hover { color: var(--brass); }
       smokeNote: 'ได้ผลแน่นอน แม้จะไม่น่าสนใจเท่า Monte Carlo'
     },
     'sazerac': {
+      zero: { from: 'น้ำตาลก้อน', qty: '0.25 ออนซ์', to: 'ไซรัปไร้น้ำตาล',
+        note: 'สลับกับน้ำตาลก้อนได้ตรง ๆ รสจะแห้งขึ้น ซึ่งรายรับไหว',
+        steps: [
+          'ใส่ไซรัปไร้น้ำตาลลงในแก้วผสม ตามด้วยเพย์โชด์',
+          'ใส่รายและน้ำแข็ง แล้วคน 30 วินาที',
+          'กรองลงแก้วร็อกแช่เย็น — ไม่ใส่น้ำแข็ง',
+          'บีบเปลือกเลมอนเหนือแก้วแล้วทิ้งเปลือกไป ไม่ต้องหย่อนลงในแก้ว'
+        ] },
       base: 'ราย', method: 'คน',
       note: "นิวออร์ลีนส์ในแก้วแช่เย็น ของเราไม่มีการกลั้วแอบซินธ์ ใช้ควันทำหน้าที่นั้นแทน",
       hook: "รัฐหลุยเซียนาตัดสินว่าแก้วนี้เสียชื่อเกินกว่าจะเป็นค็อกเทลประจำรัฐ",
@@ -2252,6 +2324,8 @@ details.notes summary:hover { color: var(--brass); }
       noSmoke: 'จะอยากรมควันมาก แต่เจนเชียนของซูซกับกลิ่นดอกไม้ของลิเลต์คือสิ่งที่ควันทำลายพอดี'
     },
     'whiskey-sour': {
+      zero: { from: 'ไซรัปน้ำตาล', to: 'ไซรัปไร้น้ำตาล',
+        note: 'แทนกันหนึ่งต่อหนึ่ง น้ำตาลให้ทั้งความหวานและน้ำหนัก แก้วนี้จึงบางลง ถ้าใส่ไข่ขาวจะแทบไม่รู้สึก' },
       base: 'เบอร์เบิน', method: 'เขย่า',
       note: "เบอร์เบินที่ถูกเลมอนดึงจนตึง ถ้าใส่ไข่ขาวจะนุ่มลื่นราวแพร มีฟองหนาพอให้หยดบิตเตอร์ลอยอยู่ได้",
       hook: "ไข่ขาวไม่ได้ให้รสอะไรเลย มันอยู่ในแก้วเพื่อเนื้อสัมผัส",
@@ -2272,6 +2346,8 @@ details.notes summary:hover { color: var(--brass); }
       noSmoke: 'ควันกับน้ำผลไม้สดให้รสขุ่น ๆ และฟองก็กลบกลิ่นควันอยู่ดี'
     },
     'gin-sour': {
+      zero: { from: 'ไซรัปน้ำตาล', to: 'ไซรัปไร้น้ำตาล',
+        note: 'แทนกันหนึ่งต่อหนึ่ง รสจะบางลงเพราะไม่มีน้ำตาลหนุน ซึ่งจินรับได้ดีกว่าเบอร์เบิน' },
       base: 'จิน', method: 'เขย่า',
       note: "แก้วเดียวกันแต่หรี่เสียงลงและเพิ่มกลิ่นหอมขึ้น ลองทำคู่กับเวอร์ชันวิสกี้เพื่อฟังความต่าง",
       hook: "แก้วนี้คือญาติที่สงบเสงี่ยมของเครื่องดื่มที่เคยต้องใช้คนสามสิบคนเขย่า",
@@ -2386,6 +2462,8 @@ details.notes summary:hover { color: var(--brass); }
       noSmoke: 'เขย่ากับน้ำผลไม้สด แก้วนี้ห้ามรมควัน'
     },
     'gimlet': {
+      zero: { from: 'ไซรัปน้ำตาล', to: 'ไซรัปไร้น้ำตาล',
+        note: 'แทนกันหนึ่งต่อหนึ่ง มีแค่สามอย่างในแก้ว ไม่มีที่ให้ซ่อน ชิมก่อนกรองเสมอ' },
       base: 'จิน', method: 'เขย่า',
       note: 'จินกับมะนาว เย็นและเรียบง่าย',
       hook: 'มะนาวถูกส่งลงเรือเพราะช่วยไม่ให้ลูกเรือตายด้วยโรคลักปิดลักเปิด',
@@ -2489,6 +2567,8 @@ details.notes summary:hover { color: var(--brass); }
       noSmoke: 'โซดาจะพากลิ่นควันลอยหายไป ถ้าอยากได้ควันให้ไปรมควัน Negroni แทน'
     },
     'tom-collins': {
+      zero: { from: 'ไซรัปน้ำตาล', to: 'ไซรัปไร้น้ำตาล',
+        note: 'แทนกันหนึ่งต่อหนึ่ง และโซดากลบเนื้อที่หายไปได้ดีที่สุดในบรรดาแก้วทั้งหมด' },
       base: 'จิน', method: 'เขย่า + โซดา',
       note: "ว่ากันว่าตั้งชื่อตามเรื่องหลอกลวงปี 1874 ที่ทำให้คนนิวยอร์กเดินหาชายที่นินทาพวกเขาไปทั่วบาร์",
       hook: "แก้วนี้ตั้งชื่อตามชายที่ไม่มีตัวตน และมุกตลกที่มีจริง",
@@ -2620,6 +2700,7 @@ details.notes summary:hover { color: var(--brass); }
     note_ph: 'Optional — light on the vermouth, no garnish, make it two…',
 
     smoke_it: 'Smoke it', wood: 'Wood', egg_white: 'Egg white',
+    zero_sugar: 'Zero-sugar syrup',
     egg_why: 'Dry-shaken first, served up with a thick white foam. Skip it for a leaner, tarter drink over ice.',
     no_smoke_here: 'No smoke on this one. ', heads_up: 'Heads up. ',
 
@@ -2639,12 +2720,13 @@ details.notes summary:hover { color: var(--brass); }
     chip_no_smoke: 'No smoke', chip_smoke: 'Smoke — ', chip_smoke_best: 'Smoke — the best of them',
     chip_smoked: 'Smoked — ', chip_low: 'Low ABV', chip_na: 'No alcohol',
     chip_warn: 'Not alcohol-free', chip_egg_opt: 'Egg white optional', chip_egg: 'Egg white',
+    chip_zero_opt: 'Zero-sugar option', chip_zero: 'Zero sugar',
     chip_poured: 'Poured',
 
     toast_ordered: 'Ordered — ', toast_poured: 'Poured — ', toast_back: 'Back on the rail',
     toast_for: ' for ',
 
-    aside_smoke: 'Smoke — ', aside_tip: 'Worth knowing', aside_warn: 'Not alcohol-free',
+    aside_smoke: 'Smoke — ', aside_zero: 'Zero-sugar syrup', aside_tip: 'Worth knowing', aside_warn: 'Not alcohol-free',
 
     smoke_step: function (chip, blended) {
       return 'Smoke the empty glass: invert it over the ' + chip +
@@ -2825,16 +2907,23 @@ details.notes summary:hover { color: var(--brass); }
     });
   }
 
+  /* the shared book was built before this option existed and its columns are
+     fixed, so the flag travels on the front of the note and is peeled back off */
+  var ZERO_MARK = '~z ';
+
   function toRow(o) {
     return {
       id: o.id, drink: o.drink, guest: o.guest, smoke: !!o.smoke, wood: o.wood || null,
-      egg: !!o.egg, note: o.note || '', at: o.at, done: !!o.done, done_at: o.doneAt || null
+      egg: !!o.egg, note: (o.zero ? ZERO_MARK : '') + (o.note || ''),
+      at: o.at, done: !!o.done, done_at: o.doneAt || null
     };
   }
   function fromRow(r) {
     return {
       id: r.id, drink: r.drink, guest: r.guest, smoke: !!r.smoke, wood: r.wood,
-      egg: !!r.egg, note: r.note || '', at: Number(r.at), done: !!r.done, doneAt: r.done_at
+      egg: !!r.egg, zero: (r.note || '').slice(0, ZERO_MARK.length) === ZERO_MARK,
+      note: (r.note || '').replace(ZERO_MARK, ''),
+      at: Number(r.at), done: !!r.done, doneAt: r.done_at
     };
   }
 
@@ -2938,7 +3027,14 @@ details.notes summary:hover { color: var(--brass); }
      first, and egg white swaps in the dry-shake sequence */
   function stepsFor(drink, opts) {
     opts = opts || {};
-    var list = (opts.egg && drink.eggSteps ? drink.eggSteps : drink.steps).slice();
+    var zero = opts.zero && drink.zero;
+    var base = drink.steps;
+    if (opts.egg && drink.eggSteps) base = drink.eggSteps;
+    else if (zero && drink.zero.steps) base = drink.zero.steps;
+    var list = base.slice();
+    if (zero) {
+      list = list.map(function (st) { return st.split(drink.zero.from).join(drink.zero.to); });
+    }
     if (opts.smoke) {
       var wood = opts.wood || drink.woods[0];
       /* the blend gets its own sentence — "the oak + a pinch of cinnamon chip" doesn't read */
@@ -2979,9 +3075,19 @@ details.notes summary:hover { color: var(--brass); }
     return top.concat([level]).join(' · ');
   }
 
-  function buildList(drink) {
+  /* zero-sugar changes exactly one ingredient, so swap that line rather
+     than keeping a second copy of every recipe */
+  function buildFor(drink, opts) {
+    if (!(opts && opts.zero && drink.zero)) return drink.build;
+    return drink.build.map(function (pair) {
+      if (pair[1] !== drink.zero.from) return pair;
+      return [drink.zero.qty || pair[0], drink.zero.to];
+    });
+  }
+
+  function buildList(drink, opts) {
     var ul = el('ul', 'build');
-    drink.build.forEach(function (pair) {
+    buildFor(drink, opts).forEach(function (pair) {
       var li = el('li');
       li.appendChild(el('span', 'qty', pair[0]));
       li.appendChild(el('span', 'ing', pair[1]));
@@ -3594,6 +3700,7 @@ details.notes summary:hover { color: var(--brass); }
     if (drink.na && !drink.warning) chips.appendChild(chip('na', U('chip_na')));
     if (drink.warning) chips.appendChild(chip('warn', U('chip_warn')));
     if (drink.egg) chips.appendChild(chip('egg', U('chip_egg_opt')));
+    if (drink.zero) chips.appendChild(chip('zero', U('chip_zero_opt')));
     body.appendChild(chips);
     card.appendChild(body);
 
@@ -3649,7 +3756,7 @@ details.notes summary:hover { color: var(--brass); }
   function openSheet(drink) {
     sheet.innerHTML = '';
 
-    var state = { smoke: !!drink.defaultSmoke, egg: false, wood: drink.woods ? drink.woods[0] : null };
+    var state = { smoke: !!drink.defaultSmoke, egg: false, zero: false, wood: drink.woods ? drink.woods[0] : null };
 
     var form = el('form', 'sheet');
     form.method = 'dialog';
@@ -3706,8 +3813,15 @@ details.notes summary:hover { color: var(--brass); }
 
     var whatField = el('div', 'field');
     whatField.appendChild(el('div', 'label', U('whats_in_it')));
-    whatField.appendChild(buildList(drink));
+    var whatList = buildList(drink, state);
+    whatField.appendChild(whatList);
     body.appendChild(whatField);
+
+    function repaintBuild() {
+      var next = buildList(drink, state);
+      whatField.replaceChild(next, whatList);
+      whatList = next;
+    }
 
     var tasteField = el('div', 'field');
     tasteField.appendChild(el('div', 'label', U('tastes_like')));
@@ -3769,6 +3883,16 @@ details.notes summary:hover { color: var(--brass); }
       body.appendChild(eggRow);
     }
 
+    if (drink.zero) {
+      var zeroRow = optionRow('zero', U('zero_sugar'), drink.zero.note);
+      var zeroInput = $('input', zeroRow);
+      zeroInput.addEventListener('change', function () {
+        state.zero = zeroInput.checked;
+        repaintBuild();
+      });
+      body.appendChild(zeroRow);
+    }
+
     redraw();
 
     var nameField = el('div', 'field');
@@ -3813,6 +3937,7 @@ details.notes summary:hover { color: var(--brass); }
         smoke: state.smoke,
         wood: state.smoke ? state.wood : null,
         egg: state.egg,
+        zero: state.zero,
         note: noteInput.value.trim(),
         at: Date.now(),
         done: false
@@ -3884,6 +4009,7 @@ details.notes summary:hover { color: var(--brass); }
       ? chip('smoke', U('chip_smoked') + woodLabel(order.wood || drink.woods[0]))
       : chip('', drink.smoke ? U('chip_no_smoke') : drink.method));
     if (order.egg) chips.appendChild(chip('egg', U('chip_egg')));
+    if (order.zero) chips.appendChild(chip('zero', U('chip_zero')));
     if (order.done) chips.appendChild(chip('poured', U('chip_poured')));
     text.appendChild(chips);
 
@@ -3904,8 +4030,15 @@ details.notes summary:hover { color: var(--brass); }
     panel.id = panelId;
     panel.hidden = true;
 
-    panel.appendChild(buildList(drink));
-    panel.appendChild(stepsList(drink, { smoke: order.smoke, egg: order.egg, wood: order.wood }));
+    panel.appendChild(buildList(drink, { zero: order.zero }));
+    panel.appendChild(stepsList(drink, { smoke: order.smoke, egg: order.egg, zero: order.zero, wood: order.wood }));
+
+    if (order.zero && drink.zero) {
+      var zr = el('div', 'aside zero-aside');
+      zr.appendChild(el('div', 'aside-label', U('aside_zero')));
+      zr.appendChild(el('div', null, drink.zero.note));
+      panel.appendChild(zr);
+    }
 
     if (order.smoke) {
       var wood = order.wood || drink.woods[0];
