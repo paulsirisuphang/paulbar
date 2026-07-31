@@ -157,21 +157,36 @@ button, input, textarea, select { font: inherit; color: inherit; }
   letter-spacing: -0.015em;
 }
 .wordmark .amp { color: var(--campari); }
-.mark {
-  padding: 0;
+.tee {
+  display: block;
+  padding: 4px 6px;
+  margin-left: -2px;
   border: 0;
   background: none;
-  font: inherit;
-  color: inherit;
-  letter-spacing: inherit;
   cursor: pointer;
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
+  line-height: 0;
   touch-action: manipulation;
-  transition: color .2s;
+  -webkit-tap-highlight-color: transparent;
 }
-.mark:hover { color: #FFF6E8; }
+.tee svg {
+  width: 15px;
+  height: 22px;
+  transform-box: fill-box;
+  transform-origin: 50% 92%;
+  animation: tee-shiver 3.4s ease-in-out infinite;
+  transition: filter .2s;
+}
+.tee:hover svg { filter: brightness(1.25) drop-shadow(0 0 6px rgba(226,164,80,.5)); }
+/* mostly still, then a small shiver, so it catches the eye now and then */
+@keyframes tee-shiver {
+  0%, 72%, 100% { transform: rotate(0deg); }
+  75%  { transform: rotate(-10deg); }
+  79%  { transform: rotate(9deg); }
+  83%  { transform: rotate(-7deg); }
+  87%  { transform: rotate(5deg); }
+  91%  { transform: rotate(-3deg); }
+  95%  { transform: rotate(1deg); }
+}
 
 .topbar-right {
   position: relative;
@@ -522,6 +537,11 @@ main { padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 96px; }
 
 /* three of them behind the bar, shaking */
 .tenders { width: 100%; max-width: 510px; --busy: 1; }
+@media (min-width: 700px) {
+  /* room to be half again as big once there is a desktop to be big on */
+  .cta-row { max-width: 800px; }
+  .tenders { max-width: 765px; }
+}
 /* overflow visible so a pair of legs can leave the top of the frame */
 .tenders svg { display: block; width: 100%; height: auto; overflow: visible; }
 /* an order lands and they pick up the pace for a few seconds */
@@ -598,6 +618,19 @@ main { padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 96px; }
   to   { transform: rotate(8deg); }
 }
 
+/* their resting state: always shaking */
+.tender-body {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: t-body calc(var(--d) * var(--tempo) * var(--busy, 1)) ease-in-out infinite alternate;
+  animation-delay: var(--t);
+}
+.tender-arms {
+  transform-box: fill-box;
+  transform-origin: 33% 92%;
+  animation: t-arms calc(var(--d) * var(--tempo) * var(--busy, 1)) ease-in-out infinite alternate;
+  animation-delay: var(--t);
+}
 @keyframes t-arms {
   from { transform: rotate(-11deg) translateY(1px); }
   to   { transform: rotate(8deg) translateY(-2px); }
@@ -1285,7 +1318,15 @@ details.notes summary:hover { color: var(--brass); }
 
 <div class="page">
   <header class="topbar">
-    <h1 class="wordmark"><button class="mark" id="mark" type="button">Paul<span class="amp">'</span>s Bar</button></h1>
+    <h1 class="wordmark">Paul<span class="amp">'</span>s Bar</h1>
+    <button class="tee" id="tee" type="button" aria-label="A golf tee">
+      <svg viewBox="0 0 24 34" aria-hidden="true">
+        <path d="M3.5,5.5 L9,12 L15,12 L20.5,5.5 Z" fill="#C79A4E"/>
+        <ellipse cx="12" cy="5.5" rx="8.6" ry="3" fill="#E8C27A"/>
+        <ellipse cx="12" cy="5.2" rx="5.4" ry="1.7" fill="#7A5A2E"/>
+        <path d="M10.1,12 L11.5,29.5 Q12,32 12.5,29.5 L13.9,12 Z" fill="#C79A4E"/>
+      </svg>
+    </button>
     <div class="topbar-right">
       <div class="langs" role="group" aria-label="Language">
         <button class="lang" id="lang-en" type="button" aria-pressed="true">EN</button>
@@ -1494,8 +1535,8 @@ details.notes summary:hover { color: var(--brass); }
       glass: 'rocks', color: '#9E5324', ice: 'none', garnish: 'none'
     },
     {
-      id: 'vieux-carre', name: 'Vieux Carré', base: 'Rye & cognac', method: 'Stirred',
-      section: 'stirred', hidden: true,
+      id: 'vieux-carre', name: 'Smoke Vieux Carré', base: 'Rye & cognac', method: 'Stirred',
+      section: 'stirred', hidden: true, defaultSmoke: true,
       spirits: ['rye', 'cognac'],
       note: 'Three spirits in equal parts, held together by Bénédictine.',
       hook: "Three spirits in equal parts, which is one more than most drinks risk.",
@@ -2997,7 +3038,7 @@ __THAI_DATA__
   function openSheet(drink) {
     sheet.innerHTML = '';
 
-    var state = { smoke: false, egg: false, wood: drink.woods ? drink.woods[0] : null };
+    var state = { smoke: !!drink.defaultSmoke, egg: false, wood: drink.woods ? drink.woods[0] : null };
 
     var form = el('form', 'sheet');
     form.method = 'dialog';
@@ -3066,10 +3107,11 @@ __THAI_DATA__
       var block = el('div');
       var smokeRow = optionRow('smoke', U('smoke_it'), drink.smokeNote);
       var smokeInput = $('input', smokeRow);
+      smokeInput.checked = state.smoke;
       block.appendChild(smokeRow);
 
       var woods = el('div', 'woods');
-      woods.hidden = true;
+      woods.hidden = !state.smoke;
       woods.appendChild(el('div', 'label', U('wood')));
       var row = el('div', 'wood-row');
       var note = el('p', 'wood-note', woodNote(state.wood));
@@ -3425,7 +3467,7 @@ __THAI_DATA__
   }
 
   function watchTheName() {
-    var mark = $('#mark');
+    var mark = $('#tee');
     if (!mark) return;
 
     mark.addEventListener('click', function () {
