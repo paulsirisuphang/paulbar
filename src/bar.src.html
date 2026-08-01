@@ -2333,13 +2333,15 @@ __THAI_DATA__
         apikey: SUPABASE.key,
         Authorization: 'Bearer ' + SUPABASE.key,
         'Content-Type': 'application/json',
-        Prefer: 'return=minimal'
+        /* re-sending an order updates it instead of colliding with itself */
+        Prefer: 'return=minimal,resolution=merge-duplicates'
       },
       body: opts.body ? JSON.stringify(opts.body) : undefined
     }).then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       setOnline(true);
-      return r.status === 204 ? null : r.json();
+      /* a write comes back empty, a read comes back with the book */
+      return r.text().then(function (body) { return body ? JSON.parse(body) : null; });
     }).catch(function (e) {
       setOnline(false);
       throw e;
@@ -2410,6 +2412,13 @@ __THAI_DATA__
   }
 
   /* anything ordered while the wifi was out goes up as soon as it returns */
+  function liveOrder(id) {
+    for (var i = 0; i < orders.length; i++) {
+      if (orders[i].id === id) return orders[i];
+    }
+    return null;
+  }
+
   function flushPending() {
     orders.forEach(function (o) { if (o.pending) push(o); });
   }
@@ -3427,13 +3436,14 @@ __THAI_DATA__
     pour.setAttribute('aria-label', (order.done ? U('toast_back') : U('toast_poured') + drink.name) +
       U('toast_for') + order.guest);
     pour.addEventListener('click', function () {
-      order.done = !order.done;
-      order.doneAt = order.done ? Date.now() : null;
+      var o = liveOrder(order.id) || order;
+      o.done = !o.done;
+      o.doneAt = o.done ? Date.now() : null;
       save();
       renderOrders();
-      if (order.pending) push(order); else pushDone(order);
-      toast(order.done ? U('toast_poured') + drink.name + U('toast_for') + order.guest : U('toast_back'),
-        drink, { smoke: order.smoke, egg: order.egg });
+      if (o.pending) push(o); else pushDone(o);
+      toast(o.done ? U('toast_poured') + drink.name + U('toast_for') + o.guest : U('toast_back'),
+        drink, { smoke: o.smoke, egg: o.egg });
     });
     main.appendChild(pour);
 
@@ -3466,14 +3476,14 @@ __THAI_DATA__
     var panelId = 'build-' + order.id;
     var toggle = el('button', 'build-toggle');
     toggle.type = 'button';
-    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-expanded', openBuilds[order.id] ? 'true' : 'false');
     toggle.setAttribute('aria-controls', panelId);
     toggle.appendChild(el('span', 'caret', '›'));
     toggle.appendChild(document.createTextNode(U('the_build')));
 
     var panel = el('div', 'build-panel');
     panel.id = panelId;
-    panel.hidden = true;
+    panel.hidden = !openBuilds[order.id];
 
     panel.appendChild(buildList(drink, { zero: order.zero }));
     panel.appendChild(stepsList(drink, { smoke: order.smoke, egg: order.egg, zero: order.zero, wood: order.wood }));
@@ -3509,6 +3519,7 @@ __THAI_DATA__
       var open = toggle.getAttribute('aria-expanded') === 'true';
       toggle.setAttribute('aria-expanded', open ? 'false' : 'true');
       panel.hidden = open;
+      if (open) delete openBuilds[order.id]; else openBuilds[order.id] = true;
     });
 
     wrap.appendChild(toggle);
@@ -3516,7 +3527,26 @@ __THAI_DATA__
     return wrap;
   }
 
+  /* which recipes are open, kept outside the tickets so a redraw restores them */
+  var openBuilds = {};
+
+  /* what the book looks like right now. The shared version is re-read every
+     three seconds, and rebuilding the page each time would shut the recipe
+     somebody is halfway through reading */
+  function ordersKey() {
+    return lang + orders.map(function (o) {
+      return [o.id, o.at, o.drink, o.guest, o.note || '', o.wood || '',
+        (o.done ? 'd' : '') + (o.smoke ? 's' : '') + (o.egg ? 'e' : '') +
+        (o.zero ? 'z' : '') + (o.pending ? 'p' : '')].join('\u0001');
+    }).join('\u0002');
+  }
+  var lastOrdersKey = null;
+
   function renderOrders(isNew) {
+    var key = ordersKey();
+    if (key === lastOrdersKey) return;
+    lastOrdersKey = key;
+
     var body = $('#orders-body');
     body.innerHTML = '';
 
