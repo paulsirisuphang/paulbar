@@ -24,6 +24,8 @@ const [name, w, h, ...steps] = process.argv.slice(2);
 const browser = await launch(process.env.ENGINE);
 const paint = !!process.env.PAINT;
 const page = await openPage(browser, { width: +w, height: +h, scale: +(process.env.SCALE || 2), clock: paint });
+/* an installed clock still runs in real time until it's paused */
+if (paint) await page.clock.pauseAt(Date.now() + 1000);
 await page.goto(TEST_PAGE + (process.env.QUERY || ''));
 if (!paint) {
   /* a key finishes the painting, the way a guest would skip it */

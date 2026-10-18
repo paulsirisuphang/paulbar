@@ -72,6 +72,8 @@ async function order(page, id, guest) {
 
 const checks = [
   ['the bar paints itself in on every load, from blank paper', { clock: true }, async (page) => {
+    /* the clock stands still until it's run on, however slow the machine */
+    await page.clock.pauseAt(Date.now() + 1000);
     await page.goto(TEST_PAGE);
     ok(await page.$('#scene.painting'), 'the bar is not painted in on the first load');
     ok(await count(page, '#scene .paint-line') > 100, 'too few lines are drawn in');
