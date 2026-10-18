@@ -809,11 +809,13 @@ function renderScene(paint = false) {
   ]));
   svg.appendChild(defs);
 
-  svg.appendChild(backBar(defs, x0 - 2, x1 + 2));
-  svg.appendChild(S('rect', { x: x0, y: -2, width: span, height: COUNTER_Y + 2, fill: 'url(#' + glow + ')', class: 'lantern-glow' }));
   /* the top of the page, where the lantern's cord is tied, with room to
      spare in case the header settles taller once its fonts arrive */
   const ceiling = VIEW_TOP - (box.getBoundingClientRect().top + window.scrollY) * span / sceneWidth - 30;
+  svg.appendChild(backBar(defs, x0 - 2, x1 + 2));
+  /* the light runs up behind the header to the top of the page, so it
+     never starts at an edge where the header ends */
+  svg.appendChild(S('rect', { x: x0, y: ceiling, width: span, height: COUNTER_Y - ceiling, fill: 'url(#' + glow + ')', class: 'lantern-glow' }));
   svg.appendChild(lantern(rand, ceiling));
   svg.appendChild(counter(rand, x0 - 2, x1 + 2));
   drawPieces(rand).forEach((g) => svg.appendChild(g));

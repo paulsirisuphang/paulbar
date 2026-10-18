@@ -133,7 +133,7 @@ const checks = [
     ok(total >= 10 && total <= 15, `the painting takes ${total.toFixed(1)}s`);
   }],
 
-  ['the lantern hangs on a cord from the top of the page', {}, async (page) => {
+  ['the lantern hangs on a cord from the top of the page, and its light starts there', {}, async (page) => {
     await enter(page);
     const m = await page.evaluate(() => {
       const svg = document.querySelector('#scene svg');
@@ -142,12 +142,15 @@ const checks = [
       const paper = [...document.querySelectorAll('#scene .lantern path')].find((p) => p.getAttribute('fill') === '#EFE6D4');
       return {
         top: cord.getBoundingClientRect().top + window.scrollY,
+        light: document.querySelector('#scene .lantern-glow').getBoundingClientRect().top + window.scrollY,
         wide: paper.getBoundingClientRect().width / unit,
         name: document.querySelectorAll('#scene .lantern-name path').length,
         sways: getComputedStyle(document.querySelector('#scene .lantern')).animationName
       };
     });
     ok(m.top <= 0, `the cord stops ${m.top.toFixed(0)}px below the top of the page`);
+    /* light that started where the header ends would draw an edge under it */
+    ok(m.light <= 0, `the lantern's light starts ${m.light.toFixed(0)}px below the top of the page`);
     ok(m.wide >= 38, `the lantern is only ${m.wide.toFixed(0)} units wide`);
     /* ホ is four strokes and the small circle makes it ポ; then ー, then ル in two */
     eq(m.name, 8, 'brush marks in ポール on the lantern');
@@ -399,9 +402,11 @@ const checks = [
     ok(Math.abs(m.shaker - m.width / 2 - 10 * 800 / 340) < 2, `the shaker is ${(m.shaker - m.width / 2).toFixed(1)}px off centre`);
     ok(Math.abs(m.apart - 163 * 800 / 340) < 2, `the outer pieces are ${m.apart.toFixed(1)}px apart on a desktop`);
     eq(await count(page, '.shelf-glow'), 2, 'lit shelves behind the bar');
-    /* a narrower window redraws the bar to fit, on the phone's stage */
+    /* a narrower window redraws the bar to fit, on the phone's stage; wait
+       for the redraw itself, which a busy machine can take a while over */
+    const drawn = await page.$eval('#scene svg', (s) => s.getAttribute('viewBox'));
     await page.setViewportSize({ width: 700, height: 860 });
-    await page.waitForTimeout(500);
+    await page.waitForFunction((was) => document.querySelector('#scene svg').getAttribute('viewBox') !== was, drawn);
     m = await measure();
     ok(m.left <= 0 && m.right >= m.width - 1, `after narrowing, the bar spans ${m.left.toFixed(0)}–${m.right.toFixed(0)} of ${m.width}px`);
     ok(Math.abs(m.apart - 163 * 560 / 340) < 2, `after narrowing, the outer pieces are ${m.apart.toFixed(1)}px apart`);
