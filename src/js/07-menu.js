@@ -2,19 +2,9 @@
    THE MENU — filters, sections, and a line for every drink
    ================================================================ */
 
-/* a section id, or 'all' — nothing chosen means everything */
+/* a section id, or 'all' — nothing chosen means everything. The sections
+   always run in the card's order, spirit-forward first (SECTIONS). */
 let showing = 'all';
-let phase = null;
-
-/* Which sections lead, by the hour. Long drinks in the afternoon,
-   spirit-forward in the evening, and in the small hours the bar
-   quietly puts the mocktails first. */
-const PHASE_ORDER = {
-  day:      ['long', 'shaken', 'mocktail', 'stirred'],
-  evening:  ['stirred', 'shaken', 'long', 'mocktail'],
-  late:     ['stirred', 'shaken', 'long', 'mocktail'],
-  lastcall: ['mocktail', 'stirred', 'shaken', 'long']
-};
 
 function phaseNow(now = new Date()) {
   const h = now.getHours();
@@ -24,19 +14,9 @@ function phaseNow(now = new Date()) {
   return 'late';
 }
 
-function orderedSections() {
-  const order = PHASE_ORDER[phase] || PHASE_ORDER.evening;
-  return SECTIONS.slice().sort((a, b) => order.indexOf(a) - order.indexOf(b));
-}
-
-/* the room changes with the hour; nothing announces it */
+/* the room's light changes with the hour; nothing announces it */
 function applyPhase() {
-  const next = phaseNow();
-  if (next === phase) return;
-  const first = phase === null;
-  phase = next;
-  document.documentElement.dataset.phase = phase;
-  if (!first) { renderFilters(); renderMenu(); }
+  document.documentElement.dataset.phase = phaseNow();
 }
 
 const listed = (sec) => drinks().filter((d) => d.section === sec && !d.hidden);
@@ -47,7 +27,7 @@ function renderFilters() {
   const bar = $('#filters');
   bar.innerHTML = '';
   bar.setAttribute('aria-label', U('filters_label'));
-  orderedSections().forEach((sec) => {
+  SECTIONS.forEach((sec) => {
     if (!listed(sec).length) return;
     const b = el('button', 'filter');
     b.type = 'button';
@@ -124,7 +104,7 @@ function renderMenu() {
   const body = $('#menu-body');
   body.innerHTML = '';
   let shown = 0;
-  orderedSections().forEach((sec) => {
+  SECTIONS.forEach((sec) => {
     if (showing !== 'all' && showing !== sec) return;
     const list = listed(sec);
     if (!list.length) return;

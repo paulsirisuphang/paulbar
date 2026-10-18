@@ -65,6 +65,7 @@
   gap: 12px;
   max-width: calc(100vw - 32px);
   padding: 10px 22px 10px 14px;
+  border-radius: 14px;
   background: var(--paper-hi);
   box-shadow: 0 0 0 1px rgba(38, 34, 30, .08), 0 20px 34px -22px rgba(52, 38, 24, .6);
   font-family: var(--serif);

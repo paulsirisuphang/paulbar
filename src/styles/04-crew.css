@@ -1,23 +1,24 @@
 /* ================================================================
    THE CREW — three behind a hinoki counter under a paper lantern,
-   always shaking, each with a party piece when tapped
+   in front of a lit back bar, always shaking, each with a party
+   piece when tapped
    ================================================================ */
 
+/* The bar runs the full width of the window, out past the page's
+   margins. The drawing keeps the crew at their size in the middle
+   (crew.js) and only the bar gets longer. */
 .hero {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 auto;
+  margin-inline: calc(50% - 50vw);
 }
 
 .crew {
   position: relative;
   width: 100%;
-  max-width: 560px;
   --busy: 1;
 }
-/* half again as big once there is a desktop to be big on */
-@media (min-width: 760px) { .crew { max-width: 800px; } }
 .crew svg { display: block; width: 100%; height: auto; overflow: visible; }
 /* an order lands and they pick up the pace for a few seconds */
 .crew.busy { --busy: .55; }
@@ -52,14 +53,21 @@
   to   { transform: rotate(1.4deg); }
 }
 .lantern-glow { opacity: var(--lantern); transition: opacity 2s ease; }
+/* the strip of light behind each shelf, never quite off */
+.shelf-glow { opacity: calc(.45 + var(--lantern) * .55); transition: opacity 2s ease; }
 .lantern-light { opacity: calc(.35 + var(--lantern) * .65); transition: opacity 2s ease; }
 
 /* a phone will not reliably fire a tap on an SVG shape, so each of them
-   is covered by a real button — which a keyboard can reach too */
-.tender-taps { position: absolute; inset: 22% 0 14%; z-index: 1; display: flex; }
+   is covered by a real button — which a keyboard can reach too. crew.js
+   sets where each one sits along the bar. */
+.tender-taps { position: absolute; inset: 22% 0 14%; z-index: 1; }
 .tender-tap {
+  position: absolute;
+  top: 0;
+  bottom: 0;
   padding: 0;
   border: 0;
+  border-radius: var(--radius);
   background: none;
   cursor: pointer;
   touch-action: manipulation;
@@ -121,6 +129,7 @@
   position: relative;
   z-index: 2;
   margin-top: 18px;
+  border-radius: var(--radius);
   display: inline-flex;
   align-items: center;
   gap: 11px;

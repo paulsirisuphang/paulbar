@@ -9,7 +9,7 @@ dialog {
   max-height: min(90svh, 920px);
   padding: 0;
   border: 0;
-  border-radius: 2px;
+  border-radius: var(--radius-lg);
   background-color: var(--paper-hi);
   background-image: var(--washi, none);
   background-size: 420px 420px;
@@ -40,13 +40,14 @@ dialog[open] { animation: card-in .34s var(--ease); }
   max-height: inherit;
   overflow: hidden;
 }
-/* the printed frame */
+/* the printed frame, its corners following the card's */
 .sheet::before {
   content: '';
   position: absolute;
   inset: 7px;
   z-index: 3;
   border: 1px solid var(--rule);
+  border-radius: calc(var(--radius-lg) - 7px);
   pointer-events: none;
 }
 
@@ -102,12 +103,13 @@ dialog[open] { animation: card-in .34s var(--ease); }
   height: 40px;
   padding: 0;
   border: 0;
+  border-radius: 50%;
   background: none;
   color: var(--ink-2);
   cursor: pointer;
-  transition: color .2s, transform .3s var(--ease);
+  transition: color .2s, background-color .2s, transform .3s var(--ease);
 }
-.sheet-close:hover { color: var(--ink); transform: rotate(90deg); }
+.sheet-close:hover { color: var(--ink); background: rgba(38, 34, 30, .05); transform: rotate(90deg); }
 .sheet-close svg { width: 18px; height: 18px; }
 
 .sheet-body {
@@ -157,6 +159,7 @@ dialog[open] { animation: card-in .34s var(--ease); }
   align-items: start;
   padding: 14px 16px;
   border: 1px solid rgba(176, 57, 42, .35);
+  border-radius: var(--radius);
   font-size: .9375rem;
   line-height: 1.5;
   color: var(--ink-2);
@@ -226,6 +229,7 @@ dialog[open] { animation: card-in .34s var(--ease); }
   align-items: start;
   padding: 16px 16px 16px 14px;
   border: 1px solid var(--rule-2);
+  border-radius: var(--radius);
   cursor: pointer;
   transition: border-color .25s, background-color .25s;
 }
@@ -236,6 +240,7 @@ dialog[open] { animation: card-in .34s var(--ease); }
   height: 20px;
   margin-top: 2px;
   border: 1px solid var(--ink-2);
+  border-radius: 5px;
   background: var(--paper-hi);
   display: grid;
   place-items: center;
@@ -256,9 +261,12 @@ dialog[open] { animation: card-in .34s var(--ease); }
   margin-top: -1px;
   padding: 16px 16px 18px 48px;
   border: 1px solid var(--ink-2);
+  border-radius: 0 0 var(--radius) var(--radius);
   border-top-style: dashed;
   border-top-color: var(--rule-2);
 }
+/* the smoke option and its woods read as one card while the woods are open */
+.option.smoke:has(+ .woods:not([hidden])) { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 .wood-row { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 .wood {
   padding: 4px 0;
@@ -313,6 +321,7 @@ textarea.write { min-height: 64px; resize: vertical; line-height: 1.5; }
   width: 100%;
   padding: 16px 20px;
   border: 0;
+  border-radius: var(--radius);
   background: var(--ink);
   color: var(--paper-hi);
   font-family: var(--sans);

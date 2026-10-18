@@ -1,7 +1,7 @@
 /* ================================================================
    THE CREW
    Three behind a hinoki counter, under a paper lantern, in front of a
-   shoji screen. Always shaking, each on their own rhythm so they never
+   back bar of lit shelves. Always shaking, each on their own rhythm so they never
    fall into step. Tap one and they do their party piece for ten
    seconds: the sommelier juggles three bottles of wine, the golfer
    drives a ball off the bar top, and the yogi stands on her head.
@@ -9,6 +9,10 @@
    Each figure is drawn about its waist, at the counter line; arms are
    drawn about the shoulder they swing from. Groups that move carry the
    class `moves` and no transform attribute of their own (crew.css).
+
+   The crew stand on a stage 340 units wide, which keeps the size it
+   always had: up to 560px on a phone and 800px on a desktop. The bar
+   and the shelves behind them run on to the edges of the window.
    ================================================================ */
 
 const SKIN = '#E6CDB2';
@@ -239,25 +243,26 @@ function lantern(rand) {
   return hang.outer;
 }
 
-function counter(rand) {
+/* the bar top and the front of the slab, from x0 to x1 */
+function counter(rand, x0, x1) {
   const g = S('g');
   const top = COUNTER_Y;
-  /* the bar top, seen at a slant, then the front of the slab */
-  g.appendChild(wash(poly([[6, top - 6], [354, top - 6], [356, top], [4, top]]), '#E6D2B0', { alpha: 1, edge: .15, edgeWidth: .6 }));
-  g.appendChild(wash(poly([[4, top], [356, top], [356, top + 22], [4, top + 22]]), '#D2B288', { alpha: 1, edge: 0 }));
-  /* grain */
-  for (let i = 0; i < 9; i++) {
-    const y = top + 3 + i * 2.2 + rand() * 1.2;
-    const x0 = 6 + rand() * 120;
-    const pts = trace((t) => [x0 + t * (180 + rand() * 60), y + Math.sin(t * Math.PI * (1 + rand())) * 1.2], 10);
+  g.appendChild(wash(poly([[x0, top - 6], [x1, top - 6], [x1, top], [x0, top]]), '#E6D2B0', { alpha: 1, edge: 0 }));
+  g.appendChild(wash(poly([[x0, top], [x1, top], [x1, top + 22], [x0, top + 22]]), '#D2B288', { alpha: 1, edge: 0 }));
+  /* grain, in long runs along the slab */
+  const runs = Math.ceil((x1 - x0) / 38);
+  for (let i = 0; i < runs; i++) {
+    const y = top + 3 + (i % 9) * 2.2 + rand() * 1.2;
+    const sx = x0 - 40 + (i / runs) * (x1 - x0) + rand() * 50;
+    const pts = trace((t) => [sx + t * (180 + rand() * 60), y + Math.sin(t * Math.PI * (1 + rand())) * 1.2], 10);
     g.appendChild(pen(pts, .35, { color: '#8C6A43', alpha: .28 + rand() * .2 }));
   }
-  g.appendChild(brush(line([4, top], [356, top], 20), 1.2, { rand, taper: .02 }));
-  g.appendChild(pen(line([6, top - 6], [354, top - 6], 2), .5, { alpha: .45, straight: true }));
-  g.appendChild(pen(line([4, top + 22], [356, top + 22], 2), .7, { alpha: .55, straight: true }));
-  g.appendChild(brush(line([30, top - 3.2], [330, top - 3.2], 6), .8, { color: GOUACHE, alpha: .55, taper: .2, even: true }));
+  g.appendChild(brush(line([x0, top], [x1, top], Math.ceil((x1 - x0) / 16)), 1.2, { rand, taper: 0 }));
+  g.appendChild(pen(line([x0, top - 6], [x1, top - 6], 2), .5, { alpha: .45, straight: true }));
+  g.appendChild(pen(line([x0, top + 22], [x1, top + 22], 2), .7, { alpha: .55, straight: true }));
+  g.appendChild(pen(line([x0, top - 3.2], [x1, top - 3.2], 2), .8, { color: GOUACHE, alpha: .5, straight: true }));
 
-  /* a single branch in a stoneware vase at one end… */
+  /* a single branch in a stoneware vase at one end of the stage… */
   const vx = 30, vy = top - 3;
   g.appendChild(wash('M' + (vx - 5) + ',' + vy + ' Q' + (vx - 7.4) + ',' + (vy - 9) + ' ' + (vx - 2.2) + ',' + (vy - 13) + ' L' + (vx - 2.2) + ',' + (vy - 17) +
     ' L' + (vx + 2.2) + ',' + (vy - 17) + ' L' + (vx + 2.2) + ',' + (vy - 13) + ' Q' + (vx + 7.4) + ',' + (vy - 9) + ' ' + (vx + 5) + ',' + vy + ' Z',
@@ -268,7 +273,7 @@ function counter(rand) {
     g.appendChild(wash(smooth([[x, y], [x + 4 * s, y - 3], [x + 7.5 * s, y - 1.5], [x + 3.6 * s, y + 1.2]], true), '#7F8F55', { alpha: .9, edge: .3, edgeWidth: .5 }));
   });
 
-  /* …and a bottle of something good at the other */
+  /* …and the bottle that's being poured at the other */
   const bx = 334, by = top - 3;
   const bottleD = 'M' + (bx - 5) + ',' + by + ' L' + (bx - 5) + ',' + (by - 22) + ' Q' + (bx - 5) + ',' + (by - 27) + ' ' + (bx - 1.6) + ',' + (by - 29) +
     ' L' + (bx - 1.6) + ',' + (by - 36) + ' L' + (bx + 1.6) + ',' + (by - 36) + ' L' + (bx + 1.6) + ',' + (by - 29) + ' Q' + (bx + 5) + ',' + (by - 27) + ' ' + (bx + 5) + ',' + (by - 22) + ' L' + (bx + 5) + ',' + by + ' Z';
@@ -280,47 +285,153 @@ function counter(rand) {
   return g;
 }
 
-/* A sliding screen behind them, lighter paper in a fine wooden grid,
-   fading out towards the edges rather than ending in a box. */
-function shoji(defs) {
-  const fade = inkId('fade');
-  const mask = inkId('shoji');
-  defs.appendChild(S('radialGradient', { id: fade, cx: .5, cy: .55, r: .55 }, [
-    S('stop', { offset: 0, 'stop-color': '#fff', 'stop-opacity': 1 }),
-    S('stop', { offset: .55, 'stop-color': '#fff', 'stop-opacity': .7 }),
-    S('stop', { offset: 1, 'stop-color': '#fff', 'stop-opacity': 0 })
-  ]));
-  defs.appendChild(S('mask', { id: mask, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: 360, height: 176 }, [
-    S('rect', { x: 0, y: 0, width: 360, height: COUNTER_Y, fill: 'url(#' + fade + ')' })
-  ]));
-  const g = S('g', { mask: 'url(#' + mask + ')' });
-  const x0 = 20, x1 = 340, y0 = 4, y1 = COUNTER_Y - 6;
-  g.appendChild(S('rect', { x: x0, y: y0, width: x1 - x0, height: y1 - y0, fill: '#F7F2E8', 'fill-opacity': .6 }));
-  /* the stiles sit either side of the lantern cord, never on it */
-  for (let x = x0 + 16; x < x1; x += 32) g.appendChild(pen([[x, y0], [x, y1]], .45, { alpha: .09, straight: true }));
-  for (let y = y0 + 26; y < y1; y += 26) g.appendChild(pen([[x0, y], [x1, y]], .45, { alpha: .07, straight: true }));
+/* ---------- the back bar ---------- */
+
+/* Bottles, each standing on 0,0: its outline, where the cap sits, and the
+   paper label on the front when it has one. */
+const BOTTLES = {
+  square:   { w: 9.2, neck: -20.6, nw: 1.5, label: [-3.6, -11.4, 7.2, 6.2],
+    d: 'M-4.6,0 L4.6,0 L4.6,-14 Q4.6,-16.2 2.4,-16.6 L1.5,-16.8 L1.5,-20.6 L-1.5,-20.6 L-1.5,-16.8 L-2.4,-16.6 Q-4.6,-16.2 -4.6,-14 Z' },
+  round:    { w: 7.2, neck: -24.2, nw: 1.2, label: [-3, -9.6, 6, 5],
+    d: 'M-3.6,0 L3.6,0 L3.6,-12 Q3.6,-15.6 1.2,-17.2 L1.2,-24.2 L-1.2,-24.2 L-1.2,-17.2 Q-3.6,-15.6 -3.6,-12 Z' },
+  slim:     { w: 6, neck: -26.4, nw: 1.1, label: [-2.4, -12.6, 4.8, 7],
+    d: 'M-3,0 L3,0 L3,-17 Q3,-19.2 1.1,-20.2 L1.1,-26.4 L-1.1,-26.4 L-1.1,-20.2 Q-3,-19.2 -3,-17 Z' },
+  squat:    { w: 11, neck: -16, nw: 1.3, label: [-3.2, -8, 6.4, 4],
+    d: 'M-4.4,0 L4.4,0 Q6.2,-5.6 4.2,-10 Q2.8,-12.2 1.3,-12.6 L1.3,-16 L-1.3,-16 L-1.3,-12.6 Q-2.8,-12.2 -4.2,-10 Q-6.2,-5.6 -4.4,0 Z' },
+  decanter: { w: 11.2, neck: -18.2, nw: 1.6, label: null,
+    d: 'M-4.9,0 L4.9,0 Q5.7,-6.4 4.9,-12.4 Q4.1,-15.2 1.6,-15.6 L1.6,-18.2 L-1.6,-18.2 L-1.6,-15.6 Q-4.1,-15.2 -4.9,-12.4 Q-5.7,-6.4 -4.9,0 Z' }
+};
+const BOTTLE_KINDS = Object.keys(BOTTLES);
+/* whisky, brandy, gin, a blue gin, the bitter red, vermouth, chartreuse,
+   amaro, tequila, a green sake bottle, an old gold liqueur */
+const SPIRITS = ['#B47A34', '#8C5426', '#D5DED7', '#6E8BA3', '#A93A2E', '#6F2C28', '#7E8F4A', '#4B3A2E', '#E2DBC9', '#5F7656', '#C59A4A'];
+/* where each shelf's bottles stand: one above the crew, one at their shoulders */
+const SHELVES = [44, 100];
+
+const placed = (item) => 'translate(' + fx(item.x) + ' ' + item.y + ') scale(' + fx(item.scale) + ')';
+
+function shelfBottle(item) {
+  const b = BOTTLES[item.kind];
+  const g = S('g', { transform: placed(item) });
+  g.appendChild(wash(b.d, item.color, { alpha: .92, edge: .3, edgeWidth: .7 }));
+  if (b.label && item.label) g.appendChild(S('rect', { x: b.label[0], y: b.label[1], width: b.label[2], height: b.label[3], rx: .5, fill: '#F3EDE1', 'fill-opacity': .9 }));
+  g.appendChild(pen([[-b.w * .27, -2.2], [-b.w * .27, b.neck * .5]], .7, { color: GOUACHE, alpha: .55, straight: true }));
+  g.appendChild(S('rect', { x: -b.nw - .3, y: b.neck - 2.4, width: (b.nw + .3) * 2, height: 2.4, rx: .5, fill: item.gold ? '#B08D4A' : '#3B3530' }));
+  g.appendChild(S('path', { d: b.d, fill: 'none', stroke: INK, 'stroke-width': .5, 'stroke-opacity': .55, 'stroke-linejoin': 'round' }));
   return g;
 }
 
+/* a lidded jar in celadon or tea-brown glaze, between the bottles */
+function shelfJar(item) {
+  const g = S('g', { transform: placed(item) });
+  const body = 'M-4.6,0 L4.6,0 Q7.2,-5.8 5.2,-10.6 Q3.6,-12.6 0,-12.6 Q-3.6,-12.6 -5.2,-10.6 Q-7.2,-5.8 -4.6,0 Z';
+  g.appendChild(wash(body, item.color, { alpha: .95, edge: .3, edgeWidth: .8 }));
+  g.appendChild(S('ellipse', { cx: 0, cy: -12.8, rx: 3.8, ry: 1.1, fill: deepen(item.color, .2) }));
+  g.appendChild(S('rect', { x: -.9, y: -14.8, width: 1.8, height: 2, rx: .7, fill: deepen(item.color, .3) }));
+  g.appendChild(pen(arc(0, -6, 4.4, 4.4, Math.PI * .95, Math.PI * 1.3, 6), .7, { color: GOUACHE, alpha: .5 }));
+  g.appendChild(S('path', { d: body, fill: 'none', stroke: INK, 'stroke-width': .5, 'stroke-opacity': .55 }));
+  return g;
+}
+
+/* What stands on a shelf: little groups of two or three with room between
+   them, and now and then a jar. The run is laid out from a fixed point far
+   to the left, so a wider window shows more of the same bar rather than a
+   different one. Nothing stands where the lantern hangs, or on the lower
+   shelf behind a bartender, their raised shaker, or what's on the counter. */
+const clearOnShelf = [
+  (x) => Math.abs(x - 180) > 26,
+  (x) => CREW.every((c) => x < c.x - 21 || x > c.x + 40) && Math.abs(x - 30) > 13 && Math.abs(x - 334) > 9
+];
+function shelfItems(row, x0, x1) {
+  const r = seeded('shelf' + row);
+  const y = SHELVES[row];
+  const clear = clearOnShelf[row];
+  const items = [];
+  const keep = (item) => { if (item.x > x0 - 12 && item.x < x1 + 12 && clear(item.x)) items.push(item); };
+  let x = -1600;
+  while (x < x1 + 12) {
+    if (r() < .14) {
+      const scale = .9 + r() * .2;
+      keep({ jar: true, x: x + 6 * scale, y, scale, color: r() < .5 ? '#A9B79E' : '#8B6B4C' });
+      x += 12 * scale + 16 + r() * 20;
+      continue;
+    }
+    const n = 2 + Math.floor(r() * 2);
+    for (let i = 0; i < n; i++) {
+      const kind = BOTTLE_KINDS[Math.floor(r() * BOTTLE_KINDS.length)];
+      const scale = .9 + r() * .22;
+      const w = BOTTLES[kind].w * scale;
+      keep({ kind, scale, x: x + w / 2, y, color: SPIRITS[Math.floor(r() * SPIRITS.length)], label: r() < .75, gold: r() < .4 });
+      x += w + 1.6;
+    }
+    x += 16 + r() * 20;
+  }
+  return items;
+}
+
+/* Floating hinoki shelves from one edge of the window to the other, lit
+   along the back so the bottles stand against a warm glow. */
+function backBar(defs, x0, x1) {
+  const g = S('g');
+  const glow = inkId('shelfglow');
+  defs.appendChild(S('linearGradient', { id: glow, x1: 0, y1: 0, x2: 0, y2: 1 }, [
+    S('stop', { offset: 0, 'stop-color': '#FBE3B4', 'stop-opacity': 0 }),
+    S('stop', { offset: 1, 'stop-color': '#FBE3B4', 'stop-opacity': .85 })
+  ]));
+  const shade = inkId('shelfshade');
+  defs.appendChild(S('linearGradient', { id: shade, x1: 0, y1: 0, x2: 0, y2: 1 }, [
+    S('stop', { offset: 0, 'stop-color': '#5A4630', 'stop-opacity': .16 }),
+    S('stop', { offset: 1, 'stop-color': '#5A4630', 'stop-opacity': 0 })
+  ]));
+  SHELVES.forEach((y, row) => {
+    g.appendChild(S('rect', { x: x0, y: y - 26, width: x1 - x0, height: 26, fill: 'url(#' + glow + ')', class: 'shelf-glow' }));
+    shelfItems(row, x0, x1).forEach((item) => g.appendChild(item.jar ? shelfJar(item) : shelfBottle(item)));
+    /* the plank edge-on, and its shadow on the wall */
+    g.appendChild(S('rect', { x: x0, y: y + 3.4, width: x1 - x0, height: 5, fill: 'url(#' + shade + ')' }));
+    g.appendChild(wash(poly([[x0, y], [x1, y], [x1, y + 3.4], [x0, y + 3.4]]), '#D3B48A', { alpha: 1, edge: 0 }));
+    g.appendChild(pen(line([x0, y + .5], [x1, y + .5], 2), .6, { color: GOUACHE, alpha: .6, straight: true }));
+    g.appendChild(pen(line([x0, y + 3.4], [x1, y + 3.4], 2), .45, { alpha: .45, straight: true }));
+  });
+  return g;
+}
+
+/* ---------- the scene ---------- */
+
+const STAGE_W = 340;
+/* pixels to a unit of the stage */
+function stageUnit() {
+  const main = $('main');
+  const cs = getComputedStyle(main);
+  const content = main.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  return Math.min(content, window.innerWidth >= 760 ? 800 : 560) / STAGE_W;
+}
+
+/* the width the bar was last drawn at, so a resize only redraws it when it has to */
+let crewWidth = 0;
+
 function renderCrew() {
+  const box = $('#crew');
+  crewWidth = box.clientWidth;
+  const span = Math.max(crewWidth / stageUnit(), STAGE_W);
+  const x0 = 180 - span / 2, x1 = 180 + span / 2;
   const rand = seeded('crew');
-  const svg = S('svg', { viewBox: '10 -2 340 176', 'aria-hidden': 'true', focusable: 'false' });
+  const svg = S('svg', { viewBox: [x0, -2, span, 176].map((n) => fx(n)).join(' '), 'aria-hidden': 'true', focusable: 'false' });
   const defs = S('defs');
   const glow = inkId('room');
-  defs.appendChild(S('radialGradient', { id: glow, cx: .5, cy: .26, r: .62 }, [
-    S('stop', { offset: 0, 'stop-color': '#F2C98C', 'stop-opacity': .55 }),
-    S('stop', { offset: .55, 'stop-color': '#EBC48E', 'stop-opacity': .16 }),
+  /* the lantern's pool of light, round whatever the width */
+  defs.appendChild(S('radialGradient', { id: glow, gradientUnits: 'userSpaceOnUse', cx: 180, cy: 40, r: 210 }, [
+    S('stop', { offset: 0, 'stop-color': '#F2C98C', 'stop-opacity': .5 }),
+    S('stop', { offset: .55, 'stop-color': '#EBC48E', 'stop-opacity': .14 }),
     S('stop', { offset: 1, 'stop-color': '#EBC48E', 'stop-opacity': 0 })
   ]));
   svg.appendChild(defs);
 
-  svg.appendChild(shoji(defs));
-  svg.appendChild(S('rect', { x: 0, y: 0, width: 360, height: COUNTER_Y, fill: 'url(#' + glow + ')', class: 'lantern-glow' }));
+  svg.appendChild(backBar(defs, x0 - 2, x1 + 2));
+  svg.appendChild(S('rect', { x: x0, y: -2, width: span, height: COUNTER_Y + 2, fill: 'url(#' + glow + ')', class: 'lantern-glow' }));
   CREW.forEach((cfg) => svg.appendChild(figure(cfg, rand)));
   svg.appendChild(lantern(rand));
-  svg.appendChild(counter(rand));
+  svg.appendChild(counter(rand, x0 - 2, x1 + 2));
 
-  const box = $('#crew');
   box.innerHTML = '';
   box.appendChild(svg);
 
@@ -331,7 +442,8 @@ function renderCrew() {
   CREW.forEach((cfg, i) => {
     const b = el('button', 'tender-tap');
     b.type = 'button';
-    b.style.flex = '1';
+    b.style.left = ((cfg.x - 52 - x0) / span * 100).toFixed(3) + '%';
+    b.style.width = (104 / span * 100).toFixed(3) + '%';
     b.setAttribute('aria-label', U('tender_tap'));
     b.addEventListener('click', () => {
       if (prefersStill()) return;
@@ -342,6 +454,12 @@ function renderCrew() {
     taps.appendChild(b);
   });
   box.appendChild(taps);
+}
+
+/* a turned phone or a resized window gets the bar redrawn to its new width */
+function fitCrew() {
+  const box = $('#crew');
+  if (box.clientWidth && box.clientWidth !== crewWidth) renderCrew();
 }
 
 /* an order lands and they work faster for a few seconds */

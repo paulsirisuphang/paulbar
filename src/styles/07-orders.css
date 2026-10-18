@@ -73,9 +73,10 @@
 
 .tickets { display: grid; gap: 14px; }
 
-/* a slip of card on the rail */
+/* a slip of card on the rail, torn straight across the top */
 .ticket {
   position: relative;
+  border-radius: 0 0 var(--radius) var(--radius);
   background: var(--paper-hi);
   box-shadow: 0 0 0 1px rgba(38, 34, 30, .07), 0 14px 26px -22px rgba(52, 38, 24, .55);
 }
@@ -103,6 +104,7 @@
   margin-top: 5px;
   padding: 0;
   border: 1px solid var(--ink-3);
+  border-radius: 6px;
   background: var(--paper-hi);
   display: grid;
   place-items: center;

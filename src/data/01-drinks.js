@@ -356,14 +356,14 @@ const DRINKS = [
     flavor: { bitter: 2, sweet: 2, citrus: 3, herbal: 3, strength: 2 },
     build: [['2 oz', 'gin'], ['4–5 oz', 'tonic'], ['', 'lemon wedge']],
     steps: [
-      "Fill a tall glass completely with ice.",
+      "Fill a balloon glass with ice.",
       "Pour in the gin.",
       "Top with tonic.",
       "Stir once, no more — over-stirring flattens it.",
       "Squeeze a lemon wedge over the top and drop it in."
     ],
     smoke: false, noSmoke: 'Nothing long and fizzy takes smoke — the bubbles carry it straight off.',
-    glass: 'tall', color: '#B9CBD0', ice: 'tall', garnish: 'lemon-wedge', bubbles: true
+    glass: 'copa', color: '#B9CBD0', ice: 'bowl', garnish: 'lemon-wedge', bubbles: true
   },
   {
     id: 'lillet-tonic', name: 'Lillet Tonic', method: 'Built', section: 'long', low: true,
@@ -372,14 +372,14 @@ const DRINKS = [
     flavor: { bitter: 1, sweet: 3, citrus: 2, herbal: 2, strength: 1 },
     build: [['2 oz', 'Lillet Blanc'], ['3 oz', 'tonic'], ['', 'orange slice']],
     steps: [
-      "Fill a tall glass completely with ice.",
+      "Fill a large wine glass with ice.",
       "Pour in the Lillet Blanc.",
       "Top with tonic.",
       "Stir once and garnish with an orange slice."
     ],
     tip: 'Around 6% ABV — the lightest drink on the list.',
     smoke: false, noSmoke: 'Far too delicate, and the bubbles would carry the smoke off anyway.',
-    glass: 'tall', color: '#CDB77C', ice: 'tall', garnish: 'orange-slice', bubbles: true
+    glass: 'wine', color: '#CDB77C', ice: 'bowl', garnish: 'orange-slice', bubbles: true
   },
   {
     id: 'campari-tonic', name: 'Campari & Tonic', method: 'Built', section: 'long', low: true,
@@ -403,13 +403,13 @@ const DRINKS = [
     flavor: { bitter: 5, sweet: 1, citrus: 2, herbal: 4, strength: 2 },
     build: [['1.5 oz', 'Suze'], ['4 oz', 'tonic'], ['', 'lemon wedge']],
     steps: [
-      "Fill a tall glass completely with ice.",
+      "Fill a large wine glass with ice.",
       "Pour in the Suze.",
       "Top with tonic — low-sugar if you have it.",
       "Squeeze a lemon wedge over the top and drop it in."
     ],
     smoke: false, noSmoke: 'Gentian is exactly what smoke destroys.',
-    glass: 'tall', color: '#C4C075', ice: 'tall', garnish: 'lemon-wedge', bubbles: true
+    glass: 'wine', color: '#C4C075', ice: 'bowl', garnish: 'lemon-wedge', bubbles: true
   },
   {
     id: 'americano', name: 'Americano', method: 'Built', section: 'long', low: true,
@@ -484,13 +484,13 @@ const DRINKS = [
     flavor: { bitter: 1, sweet: 3, citrus: 2, herbal: 2, strength: 1 },
     build: [['3 oz', 'Lillet'], ['2 oz', 'soda'], ['', 'lemon wheel']],
     steps: [
-      "Fill a tall glass completely with ice.",
+      "Fill a large wine glass with ice.",
       "Pour in the Lillet.",
       "Top with soda.",
       "Garnish with a lemon wheel."
     ],
     smoke: false, noSmoke: 'Far too delicate.',
-    glass: 'tall', color: '#D2BE85', ice: 'tall', garnish: 'lemon-wheel', bubbles: true
+    glass: 'wine', color: '#D2BE85', ice: 'bowl', garnish: 'lemon-wheel', bubbles: true
   },
 
   {

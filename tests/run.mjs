@@ -242,9 +242,41 @@ const checks = [
     eq(await wide(), 0, 'sideways overflow with a card open');
   }],
 
-  ['the crew is half again as big on a desktop', { width: 1280, height: 860 }, async (page) => {
+  ['the bar runs the full width; the crew keep their size in the middle', { width: 1280, height: 860 }, async (page) => {
     await enter(page);
-    eq(Math.round(await page.$eval('.crew', (n) => n.getBoundingClientRect().width)), 800, 'crew width on a desktop');
+    /* the crew's stage is 800px on a desktop, 340 units wide: tap areas 104 units apart */
+    const measure = () => page.evaluate(() => {
+      const svg = document.querySelector('#crew svg').getBoundingClientRect();
+      const taps = [...document.querySelectorAll('.tender-tap')].map((b) => { const r = b.getBoundingClientRect(); return r.left + r.width / 2; });
+      return { left: svg.left, right: svg.right, width: document.documentElement.clientWidth, middle: taps[1], apart: taps[2] - taps[0] };
+    });
+    let m = await measure();
+    ok(m.left <= 0 && m.right >= m.width - 1, `the bar spans ${m.left.toFixed(0)}–${m.right.toFixed(0)} of a ${m.width}px window`);
+    ok(Math.abs(m.middle - m.width / 2) < 2, `the middle bartender is ${(m.middle - m.width / 2).toFixed(1)}px off centre`);
+    ok(Math.abs(m.apart - 208 * 800 / 340) < 2, `the outer bartenders are ${m.apart.toFixed(1)}px apart on a desktop`);
+    eq(await count(page, '.shelf-glow'), 2, 'lit shelves behind the bar');
+    /* a narrower window redraws the bar to fit, and the crew drop to the phone stage */
+    await page.setViewportSize({ width: 700, height: 860 });
+    await page.waitForTimeout(500);
+    m = await measure();
+    ok(m.left <= 0 && m.right >= m.width - 1, `after narrowing, the bar spans ${m.left.toFixed(0)}–${m.right.toFixed(0)} of ${m.width}px`);
+    ok(Math.abs(m.apart - 208 * 560 / 340) < 2, `after narrowing, the outer bartenders are ${m.apart.toFixed(1)}px apart`);
+  }],
+
+  ['spirit-forward comes first, in the filters and on the card', {}, async (page) => {
+    await enter(page);
+    eq(await text(page, '.filter'), 'Spirit-forward', 'the first filter');
+    eq(await page.$eval('.section', (s) => s.id), 'sec-stirred', 'the first section');
+  }],
+
+  ['buttons and the card have soft corners', {}, async (page) => {
+    await enter(page);
+    const radius = (sel) => page.$eval(sel, (n) => parseFloat(getComputedStyle(n).borderTopLeftRadius));
+    ok(await radius('#choice') >= 8, 'Surprise me has square corners');
+    await openDrink(page, 'gimlet');
+    ok(await radius('#sheet') >= 14, 'the card has square corners');
+    ok(await radius('#sheet .btn') >= 8, 'Send to the bar has square corners');
+    ok(await radius('#sheet .option') >= 8, 'the options have square corners');
   }],
 
   ['Surprise me pours something from the menu, never the secret', {}, async (page) => {

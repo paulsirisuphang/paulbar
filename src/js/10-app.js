@@ -142,6 +142,8 @@ function showTab(which) {
   $('#tab-orders').setAttribute('aria-selected', String(!menu));
   $('#view-menu').hidden = !menu;
   $('#view-orders').hidden = menu;
+  /* the window may have changed width while the bar was out of sight */
+  if (menu) fitCrew();
   if (!menu) $$('.count').forEach((n) => n.classList.remove('pulse'));
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
@@ -185,6 +187,13 @@ function wireChrome() {
   window.addEventListener('resize', paintFilterFade);
   /* the first measure is taken before the fonts are in, and they change the widths */
   if (document.fonts) document.fonts.ready.then(paintFilterFade);
+
+  /* the bar is drawn to the window's width; redraw it once a resize settles */
+  let fitTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(fitTimer);
+    fitTimer = setTimeout(() => { if (!$('#view-menu').hidden) fitCrew(); }, 150);
+  });
 
   /* the bar gets a hairline once the menu slides under it */
   const bar = $('.topbar');

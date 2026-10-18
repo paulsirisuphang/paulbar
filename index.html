@@ -52,8 +52,12 @@
   --smoke:  #687579;
   --hinoki: #CDAA7E;
 
+  /* corners: worn soft, like a lacquer tray or a stoneware cup */
+  --radius:    10px;
+  --radius-lg: 18px;
+
   /* how the room is lit; the hours below move these */
-  --sun:     rgba(255, 252, 244, .55);  /* daylight through the screen, top left */
+  --sun:     rgba(255, 252, 244, .55);  /* daylight from the window, top left */
   --lamp:    rgba(214, 146, 72, .16);   /* the paper lantern over the bar */
   --lantern: 1;                         /* how lit the lantern is, 0–1 */
   --tempo:   1;                         /* how fast the crew works */
@@ -149,10 +153,10 @@ button, input, textarea, select { font: inherit; color: inherit; }
 button { -webkit-tap-highlight-color: transparent; }
 img, svg { max-width: 100%; }
 
+/* the ring follows whatever corners the thing it's on has */
 :focus-visible {
   outline: 1.5px solid var(--shu);
   outline-offset: 3px;
-  border-radius: 2px;
 }
 
 ::selection { background: rgba(176, 57, 42, .18); }
@@ -316,6 +320,7 @@ img, svg { max-width: 100%; }
   display: grid;
   min-width: 200px;
   padding: 8px;
+  border-radius: 14px;
   background: var(--paper-hi);
   box-shadow: 0 1px 0 rgba(255, 255, 255, .7) inset, 0 0 0 1px var(--rule), 0 24px 40px -24px rgba(60, 44, 28, .45);
   animation: menu-in .22s var(--ease);
@@ -371,24 +376,25 @@ main {
 
 /* ================================================================
    THE CREW — three behind a hinoki counter under a paper lantern,
-   always shaking, each with a party piece when tapped
+   in front of a lit back bar, always shaking, each with a party
+   piece when tapped
    ================================================================ */
 
+/* The bar runs the full width of the window, out past the page's
+   margins. The drawing keeps the crew at their size in the middle
+   (crew.js) and only the bar gets longer. */
 .hero {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 auto;
+  margin-inline: calc(50% - 50vw);
 }
 
 .crew {
   position: relative;
   width: 100%;
-  max-width: 560px;
   --busy: 1;
 }
-/* half again as big once there is a desktop to be big on */
-@media (min-width: 760px) { .crew { max-width: 800px; } }
 .crew svg { display: block; width: 100%; height: auto; overflow: visible; }
 /* an order lands and they pick up the pace for a few seconds */
 .crew.busy { --busy: .55; }
@@ -423,14 +429,21 @@ main {
   to   { transform: rotate(1.4deg); }
 }
 .lantern-glow { opacity: var(--lantern); transition: opacity 2s ease; }
+/* the strip of light behind each shelf, never quite off */
+.shelf-glow { opacity: calc(.45 + var(--lantern) * .55); transition: opacity 2s ease; }
 .lantern-light { opacity: calc(.35 + var(--lantern) * .65); transition: opacity 2s ease; }
 
 /* a phone will not reliably fire a tap on an SVG shape, so each of them
-   is covered by a real button — which a keyboard can reach too */
-.tender-taps { position: absolute; inset: 22% 0 14%; z-index: 1; display: flex; }
+   is covered by a real button — which a keyboard can reach too. crew.js
+   sets where each one sits along the bar. */
+.tender-taps { position: absolute; inset: 22% 0 14%; z-index: 1; }
 .tender-tap {
+  position: absolute;
+  top: 0;
+  bottom: 0;
   padding: 0;
   border: 0;
+  border-radius: var(--radius);
   background: none;
   cursor: pointer;
   touch-action: manipulation;
@@ -492,6 +505,7 @@ main {
   position: relative;
   z-index: 2;
   margin-top: 18px;
+  border-radius: var(--radius);
   display: inline-flex;
   align-items: center;
   gap: 11px;
@@ -694,7 +708,7 @@ dialog {
   max-height: min(90svh, 920px);
   padding: 0;
   border: 0;
-  border-radius: 2px;
+  border-radius: var(--radius-lg);
   background-color: var(--paper-hi);
   background-image: var(--washi, none);
   background-size: 420px 420px;
@@ -725,13 +739,14 @@ dialog[open] { animation: card-in .34s var(--ease); }
   max-height: inherit;
   overflow: hidden;
 }
-/* the printed frame */
+/* the printed frame, its corners following the card's */
 .sheet::before {
   content: '';
   position: absolute;
   inset: 7px;
   z-index: 3;
   border: 1px solid var(--rule);
+  border-radius: calc(var(--radius-lg) - 7px);
   pointer-events: none;
 }
 
@@ -787,12 +802,13 @@ dialog[open] { animation: card-in .34s var(--ease); }
   height: 40px;
   padding: 0;
   border: 0;
+  border-radius: 50%;
   background: none;
   color: var(--ink-2);
   cursor: pointer;
-  transition: color .2s, transform .3s var(--ease);
+  transition: color .2s, background-color .2s, transform .3s var(--ease);
 }
-.sheet-close:hover { color: var(--ink); transform: rotate(90deg); }
+.sheet-close:hover { color: var(--ink); background: rgba(38, 34, 30, .05); transform: rotate(90deg); }
 .sheet-close svg { width: 18px; height: 18px; }
 
 .sheet-body {
@@ -842,6 +858,7 @@ dialog[open] { animation: card-in .34s var(--ease); }
   align-items: start;
   padding: 14px 16px;
   border: 1px solid rgba(176, 57, 42, .35);
+  border-radius: var(--radius);
   font-size: .9375rem;
   line-height: 1.5;
   color: var(--ink-2);
@@ -911,6 +928,7 @@ dialog[open] { animation: card-in .34s var(--ease); }
   align-items: start;
   padding: 16px 16px 16px 14px;
   border: 1px solid var(--rule-2);
+  border-radius: var(--radius);
   cursor: pointer;
   transition: border-color .25s, background-color .25s;
 }
@@ -921,6 +939,7 @@ dialog[open] { animation: card-in .34s var(--ease); }
   height: 20px;
   margin-top: 2px;
   border: 1px solid var(--ink-2);
+  border-radius: 5px;
   background: var(--paper-hi);
   display: grid;
   place-items: center;
@@ -941,9 +960,12 @@ dialog[open] { animation: card-in .34s var(--ease); }
   margin-top: -1px;
   padding: 16px 16px 18px 48px;
   border: 1px solid var(--ink-2);
+  border-radius: 0 0 var(--radius) var(--radius);
   border-top-style: dashed;
   border-top-color: var(--rule-2);
 }
+/* the smoke option and its woods read as one card while the woods are open */
+.option.smoke:has(+ .woods:not([hidden])) { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 .wood-row { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 .wood {
   padding: 4px 0;
@@ -998,6 +1020,7 @@ textarea.write { min-height: 64px; resize: vertical; line-height: 1.5; }
   width: 100%;
   padding: 16px 20px;
   border: 0;
+  border-radius: var(--radius);
   background: var(--ink);
   color: var(--paper-hi);
   font-family: var(--sans);
@@ -1086,9 +1109,10 @@ textarea.write { min-height: 64px; resize: vertical; line-height: 1.5; }
 
 .tickets { display: grid; gap: 14px; }
 
-/* a slip of card on the rail */
+/* a slip of card on the rail, torn straight across the top */
 .ticket {
   position: relative;
+  border-radius: 0 0 var(--radius) var(--radius);
   background: var(--paper-hi);
   box-shadow: 0 0 0 1px rgba(38, 34, 30, .07), 0 14px 26px -22px rgba(52, 38, 24, .55);
 }
@@ -1116,6 +1140,7 @@ textarea.write { min-height: 64px; resize: vertical; line-height: 1.5; }
   margin-top: 5px;
   padding: 0;
   border: 1px solid var(--ink-3);
+  border-radius: 6px;
   background: var(--paper-hi);
   display: grid;
   place-items: center;
@@ -1336,6 +1361,7 @@ details.notes[open] summary svg { transform: rotate(90deg); }
   gap: 12px;
   max-width: calc(100vw - 32px);
   padding: 10px 22px 10px 14px;
+  border-radius: 14px;
   background: var(--paper-hi);
   box-shadow: 0 0 0 1px rgba(38, 34, 30, .08), 0 20px 34px -22px rgba(52, 38, 24, .6);
   font-family: var(--serif);
@@ -1834,14 +1860,14 @@ const DRINKS = [
     flavor: { bitter: 2, sweet: 2, citrus: 3, herbal: 3, strength: 2 },
     build: [['2 oz', 'gin'], ['4–5 oz', 'tonic'], ['', 'lemon wedge']],
     steps: [
-      "Fill a tall glass completely with ice.",
+      "Fill a balloon glass with ice.",
       "Pour in the gin.",
       "Top with tonic.",
       "Stir once, no more — over-stirring flattens it.",
       "Squeeze a lemon wedge over the top and drop it in."
     ],
     smoke: false, noSmoke: 'Nothing long and fizzy takes smoke — the bubbles carry it straight off.',
-    glass: 'tall', color: '#B9CBD0', ice: 'tall', garnish: 'lemon-wedge', bubbles: true
+    glass: 'copa', color: '#B9CBD0', ice: 'bowl', garnish: 'lemon-wedge', bubbles: true
   },
   {
     id: 'lillet-tonic', name: 'Lillet Tonic', method: 'Built', section: 'long', low: true,
@@ -1850,14 +1876,14 @@ const DRINKS = [
     flavor: { bitter: 1, sweet: 3, citrus: 2, herbal: 2, strength: 1 },
     build: [['2 oz', 'Lillet Blanc'], ['3 oz', 'tonic'], ['', 'orange slice']],
     steps: [
-      "Fill a tall glass completely with ice.",
+      "Fill a large wine glass with ice.",
       "Pour in the Lillet Blanc.",
       "Top with tonic.",
       "Stir once and garnish with an orange slice."
     ],
     tip: 'Around 6% ABV — the lightest drink on the list.',
     smoke: false, noSmoke: 'Far too delicate, and the bubbles would carry the smoke off anyway.',
-    glass: 'tall', color: '#CDB77C', ice: 'tall', garnish: 'orange-slice', bubbles: true
+    glass: 'wine', color: '#CDB77C', ice: 'bowl', garnish: 'orange-slice', bubbles: true
   },
   {
     id: 'campari-tonic', name: 'Campari & Tonic', method: 'Built', section: 'long', low: true,
@@ -1881,13 +1907,13 @@ const DRINKS = [
     flavor: { bitter: 5, sweet: 1, citrus: 2, herbal: 4, strength: 2 },
     build: [['1.5 oz', 'Suze'], ['4 oz', 'tonic'], ['', 'lemon wedge']],
     steps: [
-      "Fill a tall glass completely with ice.",
+      "Fill a large wine glass with ice.",
       "Pour in the Suze.",
       "Top with tonic — low-sugar if you have it.",
       "Squeeze a lemon wedge over the top and drop it in."
     ],
     smoke: false, noSmoke: 'Gentian is exactly what smoke destroys.',
-    glass: 'tall', color: '#C4C075', ice: 'tall', garnish: 'lemon-wedge', bubbles: true
+    glass: 'wine', color: '#C4C075', ice: 'bowl', garnish: 'lemon-wedge', bubbles: true
   },
   {
     id: 'americano', name: 'Americano', method: 'Built', section: 'long', low: true,
@@ -1962,13 +1988,13 @@ const DRINKS = [
     flavor: { bitter: 1, sweet: 3, citrus: 2, herbal: 2, strength: 1 },
     build: [['3 oz', 'Lillet'], ['2 oz', 'soda'], ['', 'lemon wheel']],
     steps: [
-      "Fill a tall glass completely with ice.",
+      "Fill a large wine glass with ice.",
       "Pour in the Lillet.",
       "Top with soda.",
       "Garnish with a lemon wheel."
     ],
     smoke: false, noSmoke: 'Far too delicate.',
-    glass: 'tall', color: '#D2BE85', ice: 'tall', garnish: 'lemon-wheel', bubbles: true
+    glass: 'wine', color: '#D2BE85', ice: 'bowl', garnish: 'lemon-wheel', bubbles: true
   },
 
   {
@@ -2553,7 +2579,7 @@ const TH = {
     story: "เรื่องเล่าสวยหรูที่ว่านายทหารในอินเดียผสมจินกับควินินนั้นถูกแต่งขึ้นในยุค 1970 เพราะโทนิกไม่เคยมีควินินมากพอจะเป็นยา สิ่งที่เกิดขึ้นจริงคือ Gin Craze ราชสำนักหนุนจินราคาถูกเพื่อกัดฝรั่งเศส จนลอนดอนเต็มไปด้วยร้านขายจิน",
     build: [['2 ออนซ์', 'จิน'], ['4–5 ออนซ์', 'โทนิก'], ['', 'เลมอนฝาน']],
     steps: [
-      'ใส่น้ำแข็งให้เต็มแก้วทรงสูง',
+      'ใส่น้ำแข็งให้เต็มแก้วทรงบอลลูน',
       'เทจินลงไป',
       'เติมโทนิกจนเต็ม',
       'คนครั้งเดียวพอ คนมากไปฟองจะหาย',
@@ -2567,7 +2593,7 @@ const TH = {
     story: "มันเริ่มต้นในปี 1887 ในฐานะไวน์ยาจริง ๆ ที่ผสมควินินจากเปลือกซิงโคนาเปรู และขายในชื่อ Kina Lillet ส่วนที่อยู่ในขวดวันนี้เบากว่า หวานผลไม้กว่า และขมน้อยกว่ามาก จนแทบเป็นคนละเครื่องดื่ม",
     build: [['2 ออนซ์', 'ลิเลต์ บล็อง'], ['3 ออนซ์', 'โทนิก'], ['', 'ส้มฝาน']],
     steps: [
-      'ใส่น้ำแข็งให้เต็มแก้วทรงสูง',
+      'ใส่น้ำแข็งให้เต็มแก้วไวน์ใบใหญ่',
       'เทลิเลต์ บล็องลงไป',
       'เติมโทนิกจนเต็ม',
       'คนครั้งเดียวแล้วตกแต่งด้วยส้มฝาน'
@@ -2594,7 +2620,7 @@ const TH = {
     story: "ภาพนั้นทำขึ้นในปี 1912 มีเศษหนังสือพิมพ์จริงแปะอยู่รอบ ๆ ทั้งข่าวสงครามบอลข่านและเรื่องซุบซิบในร้านกาแฟ ส่วนของที่อยู่ในขวดคือรากเจนเชียน ซึ่งถูกขุดจากลานหินบนเทือกเขาแอลป์ด้วยส้อมสองง่ามยาวหนึ่งเมตร จากต้นที่มีอายุหลายสิบปี และหน้าตาคล้ายพืชมีพิษร้ายแรงจนมีคนเก็บผิดจนเป็นอันตรายมาแล้ว",
     build: [['1.5 ออนซ์', 'ซูซ'], ['4 ออนซ์', 'โทนิก'], ['', 'เลมอนฝาน']],
     steps: [
-      'ใส่น้ำแข็งให้เต็มแก้วทรงสูง',
+      'ใส่น้ำแข็งให้เต็มแก้วไวน์ใบใหญ่',
       'เทซูซลงไป',
       'เติมโทนิกจนเต็ม ถ้ามีสูตรน้ำตาลน้อยจะดีกว่า',
       'บีบเลมอนฝานเหนือแก้วแล้วหย่อนลงไป'
@@ -2665,7 +2691,7 @@ const TH = {
     story: "โซดาเจือจางเบากว่าโทนิกและไม่ได้พาความขมมาด้วย กลิ่นส้มอมน้ำผึ้งของลิเลต์เลยไม่มีอะไรต้องสู้ เป็นแก้วที่เบาที่สุดในเมนู",
     build: [['3 ออนซ์', 'ลิเลต์'], ['2 ออนซ์', 'โซดา'], ['', 'เลมอนฝานแว่น']],
     steps: [
-      'ใส่น้ำแข็งให้เต็มแก้วทรงสูง',
+      'ใส่น้ำแข็งให้เต็มแก้วไวน์ใบใหญ่',
       'เทลิเลต์ลงไป',
       'เติมโซดาจนเต็ม',
       'ตกแต่งด้วยเลมอนฝานแว่น'
@@ -3312,7 +3338,11 @@ const ART_BOX = '0 0 120 170';
 const GLASS = {
   rocks: { kind: 'tumbler', rimY: 66, rimW: 28, baseY: 146, baseW: 25.5, base: 10, wall: 1.8, tilt: .2, level: .5 },
   tall:  { kind: 'tumbler', rimY: 24, rimW: 19.5, baseY: 148, baseW: 17.5, base: 11, wall: 1.6, tilt: .2, level: .86 },
-  coupe: { kind: 'coupe', rimY: 62, rimW: 34, depth: 27, stemY: 142, footW: 19, wall: 1.6, tilt: .22, level: .84 }
+  coupe: { kind: 'coupe', rimY: 62, rimW: 34, depth: 27, stemY: 142, footW: 19, wall: 1.6, tilt: .22, level: .84 },
+  /* a big white-wine glass, the way Lillet and a spritz are poured over ice */
+  wine:  { kind: 'bowl', rimY: 36, rimW: 21, bellyY: 66, bellyW: 27, bottomY: 101, stemY: 146, footW: 20, wall: 1.5, tilt: .22, level: .6 },
+  /* the balloon a Spanish bar pours its gin and tonic into */
+  copa:  { kind: 'bowl', rimY: 34, rimW: 25, bellyY: 72, bellyW: 33, bottomY: 108, stemY: 146, footW: 22, wall: 1.5, tilt: .22, level: .56 }
 };
 
 const CITRUS = {
@@ -3340,7 +3370,7 @@ function visual(drink, opts = {}) {
   return v;
 }
 
-/* where the walls are at any height, for either kind of glass */
+/* where the walls are at any height, for each kind of glass */
 function geometry(G) {
   if (G.kind === 'tumbler') {
     const outerAt = (y) => G.rimW + (G.baseW - G.rimW) * ((y - G.rimY) / (G.baseY - G.rimY));
@@ -3348,6 +3378,21 @@ function geometry(G) {
     const bottom = G.baseY - G.base;
     const levelY = bottom - G.level * (bottom - (G.rimY + 4));
     return { G, outerAt, innerAt, bottom, levelY, groundY: G.baseY, groundW: G.baseW };
+  }
+  if (G.kind === 'bowl') {
+    /* in towards the rim above the belly, round underneath it */
+    const profile = (y, rim, belly, bottom) => (y <= G.bellyY
+      ? rim + (belly - rim) * Math.sin(Math.max(0, (y - G.rimY) / (G.bellyY - G.rimY)) * Math.PI / 2)
+      : belly * Math.sqrt(Math.max(0, 1 - ((y - G.bellyY) / (bottom - G.bellyY)) ** 2)));
+    const bottom = G.bottomY - G.wall;
+    return {
+      G,
+      outerAt: (y) => profile(y, G.rimW, G.bellyW, G.bottomY),
+      innerAt: (y) => profile(y, G.rimW - G.wall, G.bellyW - G.wall, bottom),
+      bottom,
+      levelY: bottom - G.level * (bottom - G.rimY),
+      groundY: G.stemY, groundW: G.footW, stemTop: G.bottomY - .6
+    };
   }
   const Di = G.depth - G.wall;
   const Ri = G.rimW - G.wall;
@@ -3357,9 +3402,19 @@ function geometry(G) {
     G, outerAt, innerAt, Di, Ri,
     bottom: G.rimY + Di,
     levelY: G.rimY + (1 - G.level) * Di,
-    groundY: G.stemY, groundW: G.footW
+    groundY: G.stemY, groundW: G.footW, stemTop: G.rimY + G.depth - .6
   };
 }
+
+/* down one side of a bowl from y0 to y1, closer together near the bottom
+   where the curve turns fastest */
+function bowlSide(widthAt, y0, y1, n) {
+  return trace((t) => {
+    const y = y0 + (y1 - y0) * (1 - (1 - t) ** 2);
+    return [CX - widthAt(y), y];
+  }, n);
+}
+const mirrored = (side) => side.slice().reverse().map(([x, y]) => [2 * CX - x, y]);
 
 /* The inside of the glass filled to y: down one wall, across the bottom,
    up the other, and back along the far edge of the surface. `inset`
@@ -3379,6 +3434,10 @@ function fillPts(geo, y, inset = 0) {
       line([CX + rb, bot], [CX + rx, y], 8),
       back
     );
+  }
+  if (G.kind === 'bowl') {
+    const left = bowlSide(innerAt, y, bottom - inset * .7, 22);
+    return join(left, mirrored(left), back);
   }
   const Ri = geo.Ri - inset, Di = geo.Di - inset * .7;
   const from = Math.asin(Math.max(-1, Math.min(1, (y - G.rimY) / Di)));
@@ -3401,6 +3460,10 @@ function silhouettePts(geo) {
       line([CX + G.baseW, G.baseY], [CX + G.rimW, G.rimY], 6),
       backRim
     );
+  }
+  if (G.kind === 'bowl') {
+    const left = bowlSide(geo.outerAt, G.rimY, G.bottomY, 24);
+    return join(left, mirrored(left), backRim);
   }
   const left = trace((t) => {
     const p = (Math.PI / 2) * t;
@@ -3433,7 +3496,7 @@ function drawDrink(drink, opts = {}, mode = 'static') {
     fill: lighten(v.color, .25), 'fill-opacity': .2
   }));
 
-  if (G.kind === 'coupe') svg.appendChild(drawStemAndFoot(geo, rand));
+  if (G.kind !== 'tumbler') svg.appendChild(drawStemAndFoot(geo, rand));
 
   /* ---------- the glass, faintly ---------- */
   svg.appendChild(S('path', { d: smooth(silhouettePts(geo), true), fill: GLASS_TINT, 'fill-opacity': .24 }));
@@ -3505,7 +3568,7 @@ function drawDrink(drink, opts = {}, mode = 'static') {
   within.appendChild(liquid);
   within.appendChild(above);
   within.appendChild(lines);
-  if (G.kind === 'tumbler' && v.garnish === 'orange-slice') within.appendChild(sunkenSlice(geo, L, rand, v.color));
+  if (G.kind !== 'coupe' && v.garnish === 'orange-slice') within.appendChild(sunkenSlice(geo, L, rand, v.color));
 
   const surface = S('g');
   if (reveal) surface.setAttribute('clip-path', liquid.getAttribute('clip-path'));
@@ -3521,7 +3584,7 @@ function drawDrink(drink, opts = {}, mode = 'static') {
   else if (/-wedge$/.test(g)) svg.appendChild(wedge(geo, CITRUS[g.split('-')[0]], rand));
 
   /* ---------- the glass in ink, then light on it ---------- */
-  svg.appendChild(G.kind === 'tumbler' ? tumblerInk(geo, rand) : coupeInk(geo, rand));
+  svg.appendChild(G.kind === 'tumbler' ? tumblerInk(geo, rand) : G.kind === 'bowl' ? bowlInk(geo, rand) : coupeInk(geo, rand));
 
   /* ---------- garnish that hangs in front, and smoke ---------- */
   if (/-twist$/.test(g)) svg.appendChild(twist(geo, CITRUS[g.split('-')[0]], rand));
@@ -3604,10 +3667,31 @@ function coupeInk(geo, rand) {
   return ink;
 }
 
+/* a wine glass or a balloon: the bowl in one stroke, the rim, two gleams */
+function bowlInk(geo, rand) {
+  const { G } = geo;
+  const t = G.tilt;
+  const ink = S('g');
+  const left = bowlSide(geo.outerAt, G.rimY, G.bottomY, 26);
+  ink.appendChild(brush(wobble(join(left, mirrored(left)), .28, rand), 1.4, { rand, taper: .04 }));
+  ink.appendChild(brush(arc(CX, G.rimY, G.rimW, G.rimW * t, Math.PI, 0, 28), 1.3, { rand, taper: .08 }));
+  ink.appendChild(pen(arc(CX, G.rimY + 1, G.rimW - 1.7, (G.rimW - 1.7) * t, Math.PI * .9, Math.PI * .1, 18), .5, { alpha: .3 }));
+  const gleam = trace((u) => {
+    const y = G.rimY + 9 + (G.bottomY - G.rimY - 22) * u;
+    return [CX - geo.innerAt(y) + 4.4, y];
+  }, 10);
+  ink.appendChild(brush(gleam, 2.2, { color: GOUACHE, alpha: .78, rand, taper: .4 }));
+  ink.appendChild(brush(trace((u) => {
+    const y = G.bellyY - 7 + 13 * u;
+    return [CX + geo.innerAt(y) - 4.6, y];
+  }, 5), 1.2, { color: GOUACHE, alpha: .6, taper: .45, even: true }));
+  return ink;
+}
+
 function drawStemAndFoot(geo, rand) {
   const { G } = geo;
   const g = S('g');
-  const top = G.rimY + G.depth - .6;
+  const top = geo.stemTop;
   const fr = G.footW * G.tilt;
   g.appendChild(S('ellipse', { cx: CX, cy: G.stemY, rx: G.footW, ry: fr, fill: GLASS_TINT, 'fill-opacity': .45 }));
   g.appendChild(brush(arc(CX, G.stemY, G.footW, fr, Math.PI * 1.04, Math.PI * 1.96, 18), .7, { rand, alpha: .45, taper: .3 }));
@@ -3653,6 +3737,8 @@ function iceFor(kind, geo, L, rand) {
   let spots = [];
   if (kind === 'cube') spots = [[CX + 1, B - 19, 36, -7]];
   if (kind === 'cubes') spots = [[CX - 7, B - 13, 23, -12], [CX + 8, B - 31, 22, 14]];
+  /* a bowl full of ice, the top cube breaking the surface */
+  if (kind === 'bowl') spots = [[CX - 9, L + 12, 16, -10], [CX + 9, L + 10, 15, 13], [CX + 1, L + 25, 15, 4], [CX + 2, L - 2, 14, -5]];
   /* a highball is packed to the top: stack them until one breaks the surface */
   if (kind === 'tall') {
     for (let y = B - 11, i = 0; y > L; y -= 20, i++) {
@@ -3665,7 +3751,8 @@ function iceFor(kind, geo, L, rand) {
 /* ---------- bubbles and foam ---------- */
 
 function bubblesIn(group, geo, L, rand, moving) {
-  const w = geo.innerAt(geo.bottom) * .62;
+  /* spread across the glass a little above the bottom, which a bowl needs */
+  const w = geo.innerAt(geo.bottom - (geo.bottom - L) * .3) * .62;
   for (let i = 0; i < 8; i++) {
     const x = CX + (rand() * 2 - 1) * w;
     const y = geo.bottom - 4 - rand() * (geo.bottom - L) * .55;
@@ -3853,7 +3940,7 @@ function artBox(cls, drink, opts, mode) {
 /* ================================================================
    THE CREW
    Three behind a hinoki counter, under a paper lantern, in front of a
-   shoji screen. Always shaking, each on their own rhythm so they never
+   back bar of lit shelves. Always shaking, each on their own rhythm so they never
    fall into step. Tap one and they do their party piece for ten
    seconds: the sommelier juggles three bottles of wine, the golfer
    drives a ball off the bar top, and the yogi stands on her head.
@@ -3861,6 +3948,10 @@ function artBox(cls, drink, opts, mode) {
    Each figure is drawn about its waist, at the counter line; arms are
    drawn about the shoulder they swing from. Groups that move carry the
    class `moves` and no transform attribute of their own (crew.css).
+
+   The crew stand on a stage 340 units wide, which keeps the size it
+   always had: up to 560px on a phone and 800px on a desktop. The bar
+   and the shelves behind them run on to the edges of the window.
    ================================================================ */
 
 const SKIN = '#E6CDB2';
@@ -4091,25 +4182,26 @@ function lantern(rand) {
   return hang.outer;
 }
 
-function counter(rand) {
+/* the bar top and the front of the slab, from x0 to x1 */
+function counter(rand, x0, x1) {
   const g = S('g');
   const top = COUNTER_Y;
-  /* the bar top, seen at a slant, then the front of the slab */
-  g.appendChild(wash(poly([[6, top - 6], [354, top - 6], [356, top], [4, top]]), '#E6D2B0', { alpha: 1, edge: .15, edgeWidth: .6 }));
-  g.appendChild(wash(poly([[4, top], [356, top], [356, top + 22], [4, top + 22]]), '#D2B288', { alpha: 1, edge: 0 }));
-  /* grain */
-  for (let i = 0; i < 9; i++) {
-    const y = top + 3 + i * 2.2 + rand() * 1.2;
-    const x0 = 6 + rand() * 120;
-    const pts = trace((t) => [x0 + t * (180 + rand() * 60), y + Math.sin(t * Math.PI * (1 + rand())) * 1.2], 10);
+  g.appendChild(wash(poly([[x0, top - 6], [x1, top - 6], [x1, top], [x0, top]]), '#E6D2B0', { alpha: 1, edge: 0 }));
+  g.appendChild(wash(poly([[x0, top], [x1, top], [x1, top + 22], [x0, top + 22]]), '#D2B288', { alpha: 1, edge: 0 }));
+  /* grain, in long runs along the slab */
+  const runs = Math.ceil((x1 - x0) / 38);
+  for (let i = 0; i < runs; i++) {
+    const y = top + 3 + (i % 9) * 2.2 + rand() * 1.2;
+    const sx = x0 - 40 + (i / runs) * (x1 - x0) + rand() * 50;
+    const pts = trace((t) => [sx + t * (180 + rand() * 60), y + Math.sin(t * Math.PI * (1 + rand())) * 1.2], 10);
     g.appendChild(pen(pts, .35, { color: '#8C6A43', alpha: .28 + rand() * .2 }));
   }
-  g.appendChild(brush(line([4, top], [356, top], 20), 1.2, { rand, taper: .02 }));
-  g.appendChild(pen(line([6, top - 6], [354, top - 6], 2), .5, { alpha: .45, straight: true }));
-  g.appendChild(pen(line([4, top + 22], [356, top + 22], 2), .7, { alpha: .55, straight: true }));
-  g.appendChild(brush(line([30, top - 3.2], [330, top - 3.2], 6), .8, { color: GOUACHE, alpha: .55, taper: .2, even: true }));
+  g.appendChild(brush(line([x0, top], [x1, top], Math.ceil((x1 - x0) / 16)), 1.2, { rand, taper: 0 }));
+  g.appendChild(pen(line([x0, top - 6], [x1, top - 6], 2), .5, { alpha: .45, straight: true }));
+  g.appendChild(pen(line([x0, top + 22], [x1, top + 22], 2), .7, { alpha: .55, straight: true }));
+  g.appendChild(pen(line([x0, top - 3.2], [x1, top - 3.2], 2), .8, { color: GOUACHE, alpha: .5, straight: true }));
 
-  /* a single branch in a stoneware vase at one end… */
+  /* a single branch in a stoneware vase at one end of the stage… */
   const vx = 30, vy = top - 3;
   g.appendChild(wash('M' + (vx - 5) + ',' + vy + ' Q' + (vx - 7.4) + ',' + (vy - 9) + ' ' + (vx - 2.2) + ',' + (vy - 13) + ' L' + (vx - 2.2) + ',' + (vy - 17) +
     ' L' + (vx + 2.2) + ',' + (vy - 17) + ' L' + (vx + 2.2) + ',' + (vy - 13) + ' Q' + (vx + 7.4) + ',' + (vy - 9) + ' ' + (vx + 5) + ',' + vy + ' Z',
@@ -4120,7 +4212,7 @@ function counter(rand) {
     g.appendChild(wash(smooth([[x, y], [x + 4 * s, y - 3], [x + 7.5 * s, y - 1.5], [x + 3.6 * s, y + 1.2]], true), '#7F8F55', { alpha: .9, edge: .3, edgeWidth: .5 }));
   });
 
-  /* …and a bottle of something good at the other */
+  /* …and the bottle that's being poured at the other */
   const bx = 334, by = top - 3;
   const bottleD = 'M' + (bx - 5) + ',' + by + ' L' + (bx - 5) + ',' + (by - 22) + ' Q' + (bx - 5) + ',' + (by - 27) + ' ' + (bx - 1.6) + ',' + (by - 29) +
     ' L' + (bx - 1.6) + ',' + (by - 36) + ' L' + (bx + 1.6) + ',' + (by - 36) + ' L' + (bx + 1.6) + ',' + (by - 29) + ' Q' + (bx + 5) + ',' + (by - 27) + ' ' + (bx + 5) + ',' + (by - 22) + ' L' + (bx + 5) + ',' + by + ' Z';
@@ -4132,47 +4224,153 @@ function counter(rand) {
   return g;
 }
 
-/* A sliding screen behind them, lighter paper in a fine wooden grid,
-   fading out towards the edges rather than ending in a box. */
-function shoji(defs) {
-  const fade = inkId('fade');
-  const mask = inkId('shoji');
-  defs.appendChild(S('radialGradient', { id: fade, cx: .5, cy: .55, r: .55 }, [
-    S('stop', { offset: 0, 'stop-color': '#fff', 'stop-opacity': 1 }),
-    S('stop', { offset: .55, 'stop-color': '#fff', 'stop-opacity': .7 }),
-    S('stop', { offset: 1, 'stop-color': '#fff', 'stop-opacity': 0 })
-  ]));
-  defs.appendChild(S('mask', { id: mask, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: 360, height: 176 }, [
-    S('rect', { x: 0, y: 0, width: 360, height: COUNTER_Y, fill: 'url(#' + fade + ')' })
-  ]));
-  const g = S('g', { mask: 'url(#' + mask + ')' });
-  const x0 = 20, x1 = 340, y0 = 4, y1 = COUNTER_Y - 6;
-  g.appendChild(S('rect', { x: x0, y: y0, width: x1 - x0, height: y1 - y0, fill: '#F7F2E8', 'fill-opacity': .6 }));
-  /* the stiles sit either side of the lantern cord, never on it */
-  for (let x = x0 + 16; x < x1; x += 32) g.appendChild(pen([[x, y0], [x, y1]], .45, { alpha: .09, straight: true }));
-  for (let y = y0 + 26; y < y1; y += 26) g.appendChild(pen([[x0, y], [x1, y]], .45, { alpha: .07, straight: true }));
+/* ---------- the back bar ---------- */
+
+/* Bottles, each standing on 0,0: its outline, where the cap sits, and the
+   paper label on the front when it has one. */
+const BOTTLES = {
+  square:   { w: 9.2, neck: -20.6, nw: 1.5, label: [-3.6, -11.4, 7.2, 6.2],
+    d: 'M-4.6,0 L4.6,0 L4.6,-14 Q4.6,-16.2 2.4,-16.6 L1.5,-16.8 L1.5,-20.6 L-1.5,-20.6 L-1.5,-16.8 L-2.4,-16.6 Q-4.6,-16.2 -4.6,-14 Z' },
+  round:    { w: 7.2, neck: -24.2, nw: 1.2, label: [-3, -9.6, 6, 5],
+    d: 'M-3.6,0 L3.6,0 L3.6,-12 Q3.6,-15.6 1.2,-17.2 L1.2,-24.2 L-1.2,-24.2 L-1.2,-17.2 Q-3.6,-15.6 -3.6,-12 Z' },
+  slim:     { w: 6, neck: -26.4, nw: 1.1, label: [-2.4, -12.6, 4.8, 7],
+    d: 'M-3,0 L3,0 L3,-17 Q3,-19.2 1.1,-20.2 L1.1,-26.4 L-1.1,-26.4 L-1.1,-20.2 Q-3,-19.2 -3,-17 Z' },
+  squat:    { w: 11, neck: -16, nw: 1.3, label: [-3.2, -8, 6.4, 4],
+    d: 'M-4.4,0 L4.4,0 Q6.2,-5.6 4.2,-10 Q2.8,-12.2 1.3,-12.6 L1.3,-16 L-1.3,-16 L-1.3,-12.6 Q-2.8,-12.2 -4.2,-10 Q-6.2,-5.6 -4.4,0 Z' },
+  decanter: { w: 11.2, neck: -18.2, nw: 1.6, label: null,
+    d: 'M-4.9,0 L4.9,0 Q5.7,-6.4 4.9,-12.4 Q4.1,-15.2 1.6,-15.6 L1.6,-18.2 L-1.6,-18.2 L-1.6,-15.6 Q-4.1,-15.2 -4.9,-12.4 Q-5.7,-6.4 -4.9,0 Z' }
+};
+const BOTTLE_KINDS = Object.keys(BOTTLES);
+/* whisky, brandy, gin, a blue gin, the bitter red, vermouth, chartreuse,
+   amaro, tequila, a green sake bottle, an old gold liqueur */
+const SPIRITS = ['#B47A34', '#8C5426', '#D5DED7', '#6E8BA3', '#A93A2E', '#6F2C28', '#7E8F4A', '#4B3A2E', '#E2DBC9', '#5F7656', '#C59A4A'];
+/* where each shelf's bottles stand: one above the crew, one at their shoulders */
+const SHELVES = [44, 100];
+
+const placed = (item) => 'translate(' + fx(item.x) + ' ' + item.y + ') scale(' + fx(item.scale) + ')';
+
+function shelfBottle(item) {
+  const b = BOTTLES[item.kind];
+  const g = S('g', { transform: placed(item) });
+  g.appendChild(wash(b.d, item.color, { alpha: .92, edge: .3, edgeWidth: .7 }));
+  if (b.label && item.label) g.appendChild(S('rect', { x: b.label[0], y: b.label[1], width: b.label[2], height: b.label[3], rx: .5, fill: '#F3EDE1', 'fill-opacity': .9 }));
+  g.appendChild(pen([[-b.w * .27, -2.2], [-b.w * .27, b.neck * .5]], .7, { color: GOUACHE, alpha: .55, straight: true }));
+  g.appendChild(S('rect', { x: -b.nw - .3, y: b.neck - 2.4, width: (b.nw + .3) * 2, height: 2.4, rx: .5, fill: item.gold ? '#B08D4A' : '#3B3530' }));
+  g.appendChild(S('path', { d: b.d, fill: 'none', stroke: INK, 'stroke-width': .5, 'stroke-opacity': .55, 'stroke-linejoin': 'round' }));
   return g;
 }
 
+/* a lidded jar in celadon or tea-brown glaze, between the bottles */
+function shelfJar(item) {
+  const g = S('g', { transform: placed(item) });
+  const body = 'M-4.6,0 L4.6,0 Q7.2,-5.8 5.2,-10.6 Q3.6,-12.6 0,-12.6 Q-3.6,-12.6 -5.2,-10.6 Q-7.2,-5.8 -4.6,0 Z';
+  g.appendChild(wash(body, item.color, { alpha: .95, edge: .3, edgeWidth: .8 }));
+  g.appendChild(S('ellipse', { cx: 0, cy: -12.8, rx: 3.8, ry: 1.1, fill: deepen(item.color, .2) }));
+  g.appendChild(S('rect', { x: -.9, y: -14.8, width: 1.8, height: 2, rx: .7, fill: deepen(item.color, .3) }));
+  g.appendChild(pen(arc(0, -6, 4.4, 4.4, Math.PI * .95, Math.PI * 1.3, 6), .7, { color: GOUACHE, alpha: .5 }));
+  g.appendChild(S('path', { d: body, fill: 'none', stroke: INK, 'stroke-width': .5, 'stroke-opacity': .55 }));
+  return g;
+}
+
+/* What stands on a shelf: little groups of two or three with room between
+   them, and now and then a jar. The run is laid out from a fixed point far
+   to the left, so a wider window shows more of the same bar rather than a
+   different one. Nothing stands where the lantern hangs, or on the lower
+   shelf behind a bartender, their raised shaker, or what's on the counter. */
+const clearOnShelf = [
+  (x) => Math.abs(x - 180) > 26,
+  (x) => CREW.every((c) => x < c.x - 21 || x > c.x + 40) && Math.abs(x - 30) > 13 && Math.abs(x - 334) > 9
+];
+function shelfItems(row, x0, x1) {
+  const r = seeded('shelf' + row);
+  const y = SHELVES[row];
+  const clear = clearOnShelf[row];
+  const items = [];
+  const keep = (item) => { if (item.x > x0 - 12 && item.x < x1 + 12 && clear(item.x)) items.push(item); };
+  let x = -1600;
+  while (x < x1 + 12) {
+    if (r() < .14) {
+      const scale = .9 + r() * .2;
+      keep({ jar: true, x: x + 6 * scale, y, scale, color: r() < .5 ? '#A9B79E' : '#8B6B4C' });
+      x += 12 * scale + 16 + r() * 20;
+      continue;
+    }
+    const n = 2 + Math.floor(r() * 2);
+    for (let i = 0; i < n; i++) {
+      const kind = BOTTLE_KINDS[Math.floor(r() * BOTTLE_KINDS.length)];
+      const scale = .9 + r() * .22;
+      const w = BOTTLES[kind].w * scale;
+      keep({ kind, scale, x: x + w / 2, y, color: SPIRITS[Math.floor(r() * SPIRITS.length)], label: r() < .75, gold: r() < .4 });
+      x += w + 1.6;
+    }
+    x += 16 + r() * 20;
+  }
+  return items;
+}
+
+/* Floating hinoki shelves from one edge of the window to the other, lit
+   along the back so the bottles stand against a warm glow. */
+function backBar(defs, x0, x1) {
+  const g = S('g');
+  const glow = inkId('shelfglow');
+  defs.appendChild(S('linearGradient', { id: glow, x1: 0, y1: 0, x2: 0, y2: 1 }, [
+    S('stop', { offset: 0, 'stop-color': '#FBE3B4', 'stop-opacity': 0 }),
+    S('stop', { offset: 1, 'stop-color': '#FBE3B4', 'stop-opacity': .85 })
+  ]));
+  const shade = inkId('shelfshade');
+  defs.appendChild(S('linearGradient', { id: shade, x1: 0, y1: 0, x2: 0, y2: 1 }, [
+    S('stop', { offset: 0, 'stop-color': '#5A4630', 'stop-opacity': .16 }),
+    S('stop', { offset: 1, 'stop-color': '#5A4630', 'stop-opacity': 0 })
+  ]));
+  SHELVES.forEach((y, row) => {
+    g.appendChild(S('rect', { x: x0, y: y - 26, width: x1 - x0, height: 26, fill: 'url(#' + glow + ')', class: 'shelf-glow' }));
+    shelfItems(row, x0, x1).forEach((item) => g.appendChild(item.jar ? shelfJar(item) : shelfBottle(item)));
+    /* the plank edge-on, and its shadow on the wall */
+    g.appendChild(S('rect', { x: x0, y: y + 3.4, width: x1 - x0, height: 5, fill: 'url(#' + shade + ')' }));
+    g.appendChild(wash(poly([[x0, y], [x1, y], [x1, y + 3.4], [x0, y + 3.4]]), '#D3B48A', { alpha: 1, edge: 0 }));
+    g.appendChild(pen(line([x0, y + .5], [x1, y + .5], 2), .6, { color: GOUACHE, alpha: .6, straight: true }));
+    g.appendChild(pen(line([x0, y + 3.4], [x1, y + 3.4], 2), .45, { alpha: .45, straight: true }));
+  });
+  return g;
+}
+
+/* ---------- the scene ---------- */
+
+const STAGE_W = 340;
+/* pixels to a unit of the stage */
+function stageUnit() {
+  const main = $('main');
+  const cs = getComputedStyle(main);
+  const content = main.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  return Math.min(content, window.innerWidth >= 760 ? 800 : 560) / STAGE_W;
+}
+
+/* the width the bar was last drawn at, so a resize only redraws it when it has to */
+let crewWidth = 0;
+
 function renderCrew() {
+  const box = $('#crew');
+  crewWidth = box.clientWidth;
+  const span = Math.max(crewWidth / stageUnit(), STAGE_W);
+  const x0 = 180 - span / 2, x1 = 180 + span / 2;
   const rand = seeded('crew');
-  const svg = S('svg', { viewBox: '10 -2 340 176', 'aria-hidden': 'true', focusable: 'false' });
+  const svg = S('svg', { viewBox: [x0, -2, span, 176].map((n) => fx(n)).join(' '), 'aria-hidden': 'true', focusable: 'false' });
   const defs = S('defs');
   const glow = inkId('room');
-  defs.appendChild(S('radialGradient', { id: glow, cx: .5, cy: .26, r: .62 }, [
-    S('stop', { offset: 0, 'stop-color': '#F2C98C', 'stop-opacity': .55 }),
-    S('stop', { offset: .55, 'stop-color': '#EBC48E', 'stop-opacity': .16 }),
+  /* the lantern's pool of light, round whatever the width */
+  defs.appendChild(S('radialGradient', { id: glow, gradientUnits: 'userSpaceOnUse', cx: 180, cy: 40, r: 210 }, [
+    S('stop', { offset: 0, 'stop-color': '#F2C98C', 'stop-opacity': .5 }),
+    S('stop', { offset: .55, 'stop-color': '#EBC48E', 'stop-opacity': .14 }),
     S('stop', { offset: 1, 'stop-color': '#EBC48E', 'stop-opacity': 0 })
   ]));
   svg.appendChild(defs);
 
-  svg.appendChild(shoji(defs));
-  svg.appendChild(S('rect', { x: 0, y: 0, width: 360, height: COUNTER_Y, fill: 'url(#' + glow + ')', class: 'lantern-glow' }));
+  svg.appendChild(backBar(defs, x0 - 2, x1 + 2));
+  svg.appendChild(S('rect', { x: x0, y: -2, width: span, height: COUNTER_Y + 2, fill: 'url(#' + glow + ')', class: 'lantern-glow' }));
   CREW.forEach((cfg) => svg.appendChild(figure(cfg, rand)));
   svg.appendChild(lantern(rand));
-  svg.appendChild(counter(rand));
+  svg.appendChild(counter(rand, x0 - 2, x1 + 2));
 
-  const box = $('#crew');
   box.innerHTML = '';
   box.appendChild(svg);
 
@@ -4183,7 +4381,8 @@ function renderCrew() {
   CREW.forEach((cfg, i) => {
     const b = el('button', 'tender-tap');
     b.type = 'button';
-    b.style.flex = '1';
+    b.style.left = ((cfg.x - 52 - x0) / span * 100).toFixed(3) + '%';
+    b.style.width = (104 / span * 100).toFixed(3) + '%';
     b.setAttribute('aria-label', U('tender_tap'));
     b.addEventListener('click', () => {
       if (prefersStill()) return;
@@ -4194,6 +4393,12 @@ function renderCrew() {
     taps.appendChild(b);
   });
   box.appendChild(taps);
+}
+
+/* a turned phone or a resized window gets the bar redrawn to its new width */
+function fitCrew() {
+  const box = $('#crew');
+  if (box.clientWidth && box.clientWidth !== crewWidth) renderCrew();
 }
 
 /* an order lands and they work faster for a few seconds */
@@ -4452,19 +4657,9 @@ function emptyGlass() {
    THE MENU — filters, sections, and a line for every drink
    ================================================================ */
 
-/* a section id, or 'all' — nothing chosen means everything */
+/* a section id, or 'all' — nothing chosen means everything. The sections
+   always run in the card's order, spirit-forward first (SECTIONS). */
 let showing = 'all';
-let phase = null;
-
-/* Which sections lead, by the hour. Long drinks in the afternoon,
-   spirit-forward in the evening, and in the small hours the bar
-   quietly puts the mocktails first. */
-const PHASE_ORDER = {
-  day:      ['long', 'shaken', 'mocktail', 'stirred'],
-  evening:  ['stirred', 'shaken', 'long', 'mocktail'],
-  late:     ['stirred', 'shaken', 'long', 'mocktail'],
-  lastcall: ['mocktail', 'stirred', 'shaken', 'long']
-};
 
 function phaseNow(now = new Date()) {
   const h = now.getHours();
@@ -4474,19 +4669,9 @@ function phaseNow(now = new Date()) {
   return 'late';
 }
 
-function orderedSections() {
-  const order = PHASE_ORDER[phase] || PHASE_ORDER.evening;
-  return SECTIONS.slice().sort((a, b) => order.indexOf(a) - order.indexOf(b));
-}
-
-/* the room changes with the hour; nothing announces it */
+/* the room's light changes with the hour; nothing announces it */
 function applyPhase() {
-  const next = phaseNow();
-  if (next === phase) return;
-  const first = phase === null;
-  phase = next;
-  document.documentElement.dataset.phase = phase;
-  if (!first) { renderFilters(); renderMenu(); }
+  document.documentElement.dataset.phase = phaseNow();
 }
 
 const listed = (sec) => drinks().filter((d) => d.section === sec && !d.hidden);
@@ -4497,7 +4682,7 @@ function renderFilters() {
   const bar = $('#filters');
   bar.innerHTML = '';
   bar.setAttribute('aria-label', U('filters_label'));
-  orderedSections().forEach((sec) => {
+  SECTIONS.forEach((sec) => {
     if (!listed(sec).length) return;
     const b = el('button', 'filter');
     b.type = 'button';
@@ -4574,7 +4759,7 @@ function renderMenu() {
   const body = $('#menu-body');
   body.innerHTML = '';
   let shown = 0;
-  orderedSections().forEach((sec) => {
+  SECTIONS.forEach((sec) => {
     if (showing !== 'all' && showing !== sec) return;
     const list = listed(sec);
     if (!list.length) return;
@@ -5210,6 +5395,8 @@ function showTab(which) {
   $('#tab-orders').setAttribute('aria-selected', String(!menu));
   $('#view-menu').hidden = !menu;
   $('#view-orders').hidden = menu;
+  /* the window may have changed width while the bar was out of sight */
+  if (menu) fitCrew();
   if (!menu) $$('.count').forEach((n) => n.classList.remove('pulse'));
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
@@ -5253,6 +5440,13 @@ function wireChrome() {
   window.addEventListener('resize', paintFilterFade);
   /* the first measure is taken before the fonts are in, and they change the widths */
   if (document.fonts) document.fonts.ready.then(paintFilterFade);
+
+  /* the bar is drawn to the window's width; redraw it once a resize settles */
+  let fitTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(fitTimer);
+    fitTimer = setTimeout(() => { if (!$('#view-menu').hidden) fitCrew(); }, 150);
+  });
 
   /* the bar gets a hairline once the menu slides under it */
   const bar = $('.topbar');

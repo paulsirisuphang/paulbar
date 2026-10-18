@@ -16,7 +16,11 @@ const ART_BOX = '0 0 120 170';
 const GLASS = {
   rocks: { kind: 'tumbler', rimY: 66, rimW: 28, baseY: 146, baseW: 25.5, base: 10, wall: 1.8, tilt: .2, level: .5 },
   tall:  { kind: 'tumbler', rimY: 24, rimW: 19.5, baseY: 148, baseW: 17.5, base: 11, wall: 1.6, tilt: .2, level: .86 },
-  coupe: { kind: 'coupe', rimY: 62, rimW: 34, depth: 27, stemY: 142, footW: 19, wall: 1.6, tilt: .22, level: .84 }
+  coupe: { kind: 'coupe', rimY: 62, rimW: 34, depth: 27, stemY: 142, footW: 19, wall: 1.6, tilt: .22, level: .84 },
+  /* a big white-wine glass, the way Lillet and a spritz are poured over ice */
+  wine:  { kind: 'bowl', rimY: 36, rimW: 21, bellyY: 66, bellyW: 27, bottomY: 101, stemY: 146, footW: 20, wall: 1.5, tilt: .22, level: .6 },
+  /* the balloon a Spanish bar pours its gin and tonic into */
+  copa:  { kind: 'bowl', rimY: 34, rimW: 25, bellyY: 72, bellyW: 33, bottomY: 108, stemY: 146, footW: 22, wall: 1.5, tilt: .22, level: .56 }
 };
 
 const CITRUS = {
@@ -44,7 +48,7 @@ function visual(drink, opts = {}) {
   return v;
 }
 
-/* where the walls are at any height, for either kind of glass */
+/* where the walls are at any height, for each kind of glass */
 function geometry(G) {
   if (G.kind === 'tumbler') {
     const outerAt = (y) => G.rimW + (G.baseW - G.rimW) * ((y - G.rimY) / (G.baseY - G.rimY));
@@ -52,6 +56,21 @@ function geometry(G) {
     const bottom = G.baseY - G.base;
     const levelY = bottom - G.level * (bottom - (G.rimY + 4));
     return { G, outerAt, innerAt, bottom, levelY, groundY: G.baseY, groundW: G.baseW };
+  }
+  if (G.kind === 'bowl') {
+    /* in towards the rim above the belly, round underneath it */
+    const profile = (y, rim, belly, bottom) => (y <= G.bellyY
+      ? rim + (belly - rim) * Math.sin(Math.max(0, (y - G.rimY) / (G.bellyY - G.rimY)) * Math.PI / 2)
+      : belly * Math.sqrt(Math.max(0, 1 - ((y - G.bellyY) / (bottom - G.bellyY)) ** 2)));
+    const bottom = G.bottomY - G.wall;
+    return {
+      G,
+      outerAt: (y) => profile(y, G.rimW, G.bellyW, G.bottomY),
+      innerAt: (y) => profile(y, G.rimW - G.wall, G.bellyW - G.wall, bottom),
+      bottom,
+      levelY: bottom - G.level * (bottom - G.rimY),
+      groundY: G.stemY, groundW: G.footW, stemTop: G.bottomY - .6
+    };
   }
   const Di = G.depth - G.wall;
   const Ri = G.rimW - G.wall;
@@ -61,9 +80,19 @@ function geometry(G) {
     G, outerAt, innerAt, Di, Ri,
     bottom: G.rimY + Di,
     levelY: G.rimY + (1 - G.level) * Di,
-    groundY: G.stemY, groundW: G.footW
+    groundY: G.stemY, groundW: G.footW, stemTop: G.rimY + G.depth - .6
   };
 }
+
+/* down one side of a bowl from y0 to y1, closer together near the bottom
+   where the curve turns fastest */
+function bowlSide(widthAt, y0, y1, n) {
+  return trace((t) => {
+    const y = y0 + (y1 - y0) * (1 - (1 - t) ** 2);
+    return [CX - widthAt(y), y];
+  }, n);
+}
+const mirrored = (side) => side.slice().reverse().map(([x, y]) => [2 * CX - x, y]);
 
 /* The inside of the glass filled to y: down one wall, across the bottom,
    up the other, and back along the far edge of the surface. `inset`
@@ -83,6 +112,10 @@ function fillPts(geo, y, inset = 0) {
       line([CX + rb, bot], [CX + rx, y], 8),
       back
     );
+  }
+  if (G.kind === 'bowl') {
+    const left = bowlSide(innerAt, y, bottom - inset * .7, 22);
+    return join(left, mirrored(left), back);
   }
   const Ri = geo.Ri - inset, Di = geo.Di - inset * .7;
   const from = Math.asin(Math.max(-1, Math.min(1, (y - G.rimY) / Di)));
@@ -105,6 +138,10 @@ function silhouettePts(geo) {
       line([CX + G.baseW, G.baseY], [CX + G.rimW, G.rimY], 6),
       backRim
     );
+  }
+  if (G.kind === 'bowl') {
+    const left = bowlSide(geo.outerAt, G.rimY, G.bottomY, 24);
+    return join(left, mirrored(left), backRim);
   }
   const left = trace((t) => {
     const p = (Math.PI / 2) * t;
@@ -137,7 +174,7 @@ function drawDrink(drink, opts = {}, mode = 'static') {
     fill: lighten(v.color, .25), 'fill-opacity': .2
   }));
 
-  if (G.kind === 'coupe') svg.appendChild(drawStemAndFoot(geo, rand));
+  if (G.kind !== 'tumbler') svg.appendChild(drawStemAndFoot(geo, rand));
 
   /* ---------- the glass, faintly ---------- */
   svg.appendChild(S('path', { d: smooth(silhouettePts(geo), true), fill: GLASS_TINT, 'fill-opacity': .24 }));
@@ -209,7 +246,7 @@ function drawDrink(drink, opts = {}, mode = 'static') {
   within.appendChild(liquid);
   within.appendChild(above);
   within.appendChild(lines);
-  if (G.kind === 'tumbler' && v.garnish === 'orange-slice') within.appendChild(sunkenSlice(geo, L, rand, v.color));
+  if (G.kind !== 'coupe' && v.garnish === 'orange-slice') within.appendChild(sunkenSlice(geo, L, rand, v.color));
 
   const surface = S('g');
   if (reveal) surface.setAttribute('clip-path', liquid.getAttribute('clip-path'));
@@ -225,7 +262,7 @@ function drawDrink(drink, opts = {}, mode = 'static') {
   else if (/-wedge$/.test(g)) svg.appendChild(wedge(geo, CITRUS[g.split('-')[0]], rand));
 
   /* ---------- the glass in ink, then light on it ---------- */
-  svg.appendChild(G.kind === 'tumbler' ? tumblerInk(geo, rand) : coupeInk(geo, rand));
+  svg.appendChild(G.kind === 'tumbler' ? tumblerInk(geo, rand) : G.kind === 'bowl' ? bowlInk(geo, rand) : coupeInk(geo, rand));
 
   /* ---------- garnish that hangs in front, and smoke ---------- */
   if (/-twist$/.test(g)) svg.appendChild(twist(geo, CITRUS[g.split('-')[0]], rand));
@@ -308,10 +345,31 @@ function coupeInk(geo, rand) {
   return ink;
 }
 
+/* a wine glass or a balloon: the bowl in one stroke, the rim, two gleams */
+function bowlInk(geo, rand) {
+  const { G } = geo;
+  const t = G.tilt;
+  const ink = S('g');
+  const left = bowlSide(geo.outerAt, G.rimY, G.bottomY, 26);
+  ink.appendChild(brush(wobble(join(left, mirrored(left)), .28, rand), 1.4, { rand, taper: .04 }));
+  ink.appendChild(brush(arc(CX, G.rimY, G.rimW, G.rimW * t, Math.PI, 0, 28), 1.3, { rand, taper: .08 }));
+  ink.appendChild(pen(arc(CX, G.rimY + 1, G.rimW - 1.7, (G.rimW - 1.7) * t, Math.PI * .9, Math.PI * .1, 18), .5, { alpha: .3 }));
+  const gleam = trace((u) => {
+    const y = G.rimY + 9 + (G.bottomY - G.rimY - 22) * u;
+    return [CX - geo.innerAt(y) + 4.4, y];
+  }, 10);
+  ink.appendChild(brush(gleam, 2.2, { color: GOUACHE, alpha: .78, rand, taper: .4 }));
+  ink.appendChild(brush(trace((u) => {
+    const y = G.bellyY - 7 + 13 * u;
+    return [CX + geo.innerAt(y) - 4.6, y];
+  }, 5), 1.2, { color: GOUACHE, alpha: .6, taper: .45, even: true }));
+  return ink;
+}
+
 function drawStemAndFoot(geo, rand) {
   const { G } = geo;
   const g = S('g');
-  const top = G.rimY + G.depth - .6;
+  const top = geo.stemTop;
   const fr = G.footW * G.tilt;
   g.appendChild(S('ellipse', { cx: CX, cy: G.stemY, rx: G.footW, ry: fr, fill: GLASS_TINT, 'fill-opacity': .45 }));
   g.appendChild(brush(arc(CX, G.stemY, G.footW, fr, Math.PI * 1.04, Math.PI * 1.96, 18), .7, { rand, alpha: .45, taper: .3 }));
@@ -357,6 +415,8 @@ function iceFor(kind, geo, L, rand) {
   let spots = [];
   if (kind === 'cube') spots = [[CX + 1, B - 19, 36, -7]];
   if (kind === 'cubes') spots = [[CX - 7, B - 13, 23, -12], [CX + 8, B - 31, 22, 14]];
+  /* a bowl full of ice, the top cube breaking the surface */
+  if (kind === 'bowl') spots = [[CX - 9, L + 12, 16, -10], [CX + 9, L + 10, 15, 13], [CX + 1, L + 25, 15, 4], [CX + 2, L - 2, 14, -5]];
   /* a highball is packed to the top: stack them until one breaks the surface */
   if (kind === 'tall') {
     for (let y = B - 11, i = 0; y > L; y -= 20, i++) {
@@ -369,7 +429,8 @@ function iceFor(kind, geo, L, rand) {
 /* ---------- bubbles and foam ---------- */
 
 function bubblesIn(group, geo, L, rand, moving) {
-  const w = geo.innerAt(geo.bottom) * .62;
+  /* spread across the glass a little above the bottom, which a bowl needs */
+  const w = geo.innerAt(geo.bottom - (geo.bottom - L) * .3) * .62;
   for (let i = 0; i < 8; i++) {
     const x = CX + (rand() * 2 - 1) * w;
     const y = geo.bottom - 4 - rand() * (geo.bottom - L) * .55;

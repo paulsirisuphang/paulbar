@@ -30,8 +30,12 @@
   --smoke:  #687579;
   --hinoki: #CDAA7E;
 
+  /* corners: worn soft, like a lacquer tray or a stoneware cup */
+  --radius:    10px;
+  --radius-lg: 18px;
+
   /* how the room is lit; the hours below move these */
-  --sun:     rgba(255, 252, 244, .55);  /* daylight through the screen, top left */
+  --sun:     rgba(255, 252, 244, .55);  /* daylight from the window, top left */
   --lamp:    rgba(214, 146, 72, .16);   /* the paper lantern over the bar */
   --lantern: 1;                         /* how lit the lantern is, 0–1 */
   --tempo:   1;                         /* how fast the crew works */
