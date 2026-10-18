@@ -89,7 +89,9 @@ sheet.addEventListener('click', (e) => { if (e.target === sheet) sheet.close(); 
 
 function openSheet(drink) {
   sheet.innerHTML = '';
-  const state = { smoke: !!drink.defaultSmoke, egg: false, zero: false, wood: drink.woods ? drink.woods[0] : null };
+  /* a drink that takes smoke opens with it on, on the wood that suits it
+     best (each drink lists that one first); the guest can take it off */
+  const state = { smoke: !!drink.smoke, egg: false, zero: false, wood: drink.woods ? drink.woods[0] : null };
 
   const form = el('form', 'sheet');
   form.method = 'dialog';

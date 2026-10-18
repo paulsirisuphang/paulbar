@@ -459,8 +459,8 @@ main {
 
 /* smoke from the smoking gun rises slowly and thins out; tapped, it pours
    out more for a while */
-.smoke-wisp { transform-box: fill-box; transform-origin: 50% 100%; animation: wisp 7.2s ease-in-out infinite; }
-@keyframes wisp {
+.smoke-wisp { transform-box: fill-box; transform-origin: 50% 100%; animation: bar-smoke 7.2s ease-in-out infinite; }
+@keyframes bar-smoke {
   0%   { opacity: 0; transform: translateY(1.5px) scaleY(.92); }
   22%  { opacity: 1; }
   70%  { opacity: .7; }
@@ -1369,6 +1369,14 @@ details.notes[open] summary svg { transform: rotate(90deg); }
   70%  { opacity: .4; }
   100% { opacity: 0; transform: translate(6px, -34px) scale(1.15, 1.4); }
 }
+/* on the menu, smoke over a smoked drink drifts up a little and thins */
+.wisp-soft { transform-box: fill-box; transform-origin: 50% 100%; animation: wisp-soft 7.5s ease-in-out infinite; }
+@keyframes wisp-soft {
+  0%   { opacity: 0; transform: translate(0, 3px) scale(.92, .9); }
+  25%  { opacity: .95; }
+  70%  { opacity: .6; }
+  100% { opacity: 0; transform: translate(2px, -8px) scale(1.06, 1.15); }
+}
 
 /* the ice gives up while you make up your mind */
 /* each cube is drawn about its own centre, so it shrinks in place */
@@ -1616,7 +1624,7 @@ const DRINKS = [
   },
   {
     id: 'vieux-carre', name: 'Smoke Vieux Carré', method: 'Stirred',
-    section: 'stirred', hidden: true, defaultSmoke: true,
+    section: 'stirred', hidden: true,
     hook: "Three spirits in equal parts, which is one more than most drinks risk.",
     story: "Walter Bergeron mixed it at the Hotel Monteleone in New Orleans in 1938. The hotel's bar was later rebuilt as a carousel that turns a full circle every fifteen minutes, and has been revolving since 1949. The name means old square — the French Quarter.",
     flavor: { bitter: 3, sweet: 3, citrus: 1, herbal: 5, strength: 5 },
@@ -3546,7 +3554,7 @@ function drawDrink(drink, opts = {}, mode = 'static') {
   if (/-twist$/.test(g)) svg.appendChild(twist(geo, CITRUS[g.split('-')[0]], rand));
   if (g === 'cherry') svg.appendChild(pick(geo, rand));
 
-  if (v.smoke) svg.appendChild(smokeOver(geo, rand, mode === 'pour'));
+  if (v.smoke) svg.appendChild(smokeOver(geo, rand, mode === 'pour' ? 'rising' : moving ? 'drifting' : 'still'));
 
   if (reveal) pour(reveal, geo, L - ry - 8);
   return svg;
@@ -3865,21 +3873,26 @@ function pick(geo, rand) {
 /* ---------- smoke ---------- */
 
 /* Smoke drawn the way incense rises: a fine line at the core, a fainter
-   wider haze around it, both widening and wandering as they climb. */
-function smokeOver(geo, rand, rising) {
+   wider haze around it, both widening and wandering as they climb. On a
+   drink's card it rises tall; on the menu it drifts up a little, slowly,
+   and stays clear of the drink above; on a ticket it holds still. */
+function smokeOver(geo, rand, how) {
   const { G } = geo;
   const g = S('g');
+  const rising = how === 'rising', drifting = how === 'drifting';
   const top = G.rimY - G.rimW * G.tilt - 1;
   [
     { x: CX - 3, h: rising ? 46 : 30, amp: 4.5, ph: 0, delay: 0 },
     { x: CX + 6, h: rising ? 38 : 25, amp: 3.6, ph: 2.3, delay: 2.4 }
   ].forEach((w) => {
     const pts = trace((t) => [w.x + Math.sin(t * Math.PI * 2.1 + w.ph) * w.amp * (.25 + t) + t * t * 5, top - t * w.h], 26);
-    const wisp = S('g', { class: rising ? 'wisp' : null, opacity: rising ? null : .75 });
+    const wisp = S('g', { class: rising ? 'wisp' : drifting ? 'wisp-soft' : null, opacity: rising || drifting ? null : .75 });
     wisp.appendChild(brush(pts, (t) => 8 * (.35 + t), { color: SMOKE_INK, alpha: .07, rand, taper: .25, taperEnd: .35, vary: .35 }));
     wisp.appendChild(brush(pts, (t) => 3.4 * (.45 + t * .7), { color: SMOKE_INK, alpha: .13, rand, taper: .2, taperEnd: .4, vary: .3 }));
     wisp.appendChild(brush(pts, (t) => 1.1 * (1 - t * .45), { color: SMOKE_INK, alpha: .34, rand, taper: .08, taperEnd: .55, vary: .2 }));
     if (rising) wisp.style.animationDelay = w.delay + 's';
+    /* already part way up when the menu opens */
+    if (drifting) wisp.style.animationDelay = -(2 + w.delay * 1.4) + 's';
     g.appendChild(wisp);
   });
   return g;
@@ -4982,7 +4995,8 @@ function entryEl(drink, index) {
   b.type = 'button';
   b.dataset.drink = drink.id;
   b.style.setProperty('--i', String(index));
-  b.appendChild(artBox('entry-art', drink, {}, 'live'));
+  /* a drink that's smoked by default shows its smoke on the menu too */
+  b.appendChild(artBox('entry-art', drink, { smoke: !!drink.smoke }, 'live'));
 
   const text = el('div', 'entry-text');
   const name = el('div', 'entry-name');
@@ -5116,7 +5130,9 @@ sheet.addEventListener('click', (e) => { if (e.target === sheet) sheet.close(); 
 
 function openSheet(drink) {
   sheet.innerHTML = '';
-  const state = { smoke: !!drink.defaultSmoke, egg: false, zero: false, wood: drink.woods ? drink.woods[0] : null };
+  /* a drink that takes smoke opens with it on, on the wood that suits it
+     best (each drink lists that one first); the guest can take it off */
+  const state = { smoke: !!drink.smoke, egg: false, zero: false, wood: drink.woods ? drink.woods[0] : null };
 
   const form = el('form', 'sheet');
   form.method = 'dialog';

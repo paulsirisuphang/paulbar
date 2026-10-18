@@ -268,7 +268,7 @@ function drawDrink(drink, opts = {}, mode = 'static') {
   if (/-twist$/.test(g)) svg.appendChild(twist(geo, CITRUS[g.split('-')[0]], rand));
   if (g === 'cherry') svg.appendChild(pick(geo, rand));
 
-  if (v.smoke) svg.appendChild(smokeOver(geo, rand, mode === 'pour'));
+  if (v.smoke) svg.appendChild(smokeOver(geo, rand, mode === 'pour' ? 'rising' : moving ? 'drifting' : 'still'));
 
   if (reveal) pour(reveal, geo, L - ry - 8);
   return svg;
@@ -587,21 +587,26 @@ function pick(geo, rand) {
 /* ---------- smoke ---------- */
 
 /* Smoke drawn the way incense rises: a fine line at the core, a fainter
-   wider haze around it, both widening and wandering as they climb. */
-function smokeOver(geo, rand, rising) {
+   wider haze around it, both widening and wandering as they climb. On a
+   drink's card it rises tall; on the menu it drifts up a little, slowly,
+   and stays clear of the drink above; on a ticket it holds still. */
+function smokeOver(geo, rand, how) {
   const { G } = geo;
   const g = S('g');
+  const rising = how === 'rising', drifting = how === 'drifting';
   const top = G.rimY - G.rimW * G.tilt - 1;
   [
     { x: CX - 3, h: rising ? 46 : 30, amp: 4.5, ph: 0, delay: 0 },
     { x: CX + 6, h: rising ? 38 : 25, amp: 3.6, ph: 2.3, delay: 2.4 }
   ].forEach((w) => {
     const pts = trace((t) => [w.x + Math.sin(t * Math.PI * 2.1 + w.ph) * w.amp * (.25 + t) + t * t * 5, top - t * w.h], 26);
-    const wisp = S('g', { class: rising ? 'wisp' : null, opacity: rising ? null : .75 });
+    const wisp = S('g', { class: rising ? 'wisp' : drifting ? 'wisp-soft' : null, opacity: rising || drifting ? null : .75 });
     wisp.appendChild(brush(pts, (t) => 8 * (.35 + t), { color: SMOKE_INK, alpha: .07, rand, taper: .25, taperEnd: .35, vary: .35 }));
     wisp.appendChild(brush(pts, (t) => 3.4 * (.45 + t * .7), { color: SMOKE_INK, alpha: .13, rand, taper: .2, taperEnd: .4, vary: .3 }));
     wisp.appendChild(brush(pts, (t) => 1.1 * (1 - t * .45), { color: SMOKE_INK, alpha: .34, rand, taper: .08, taperEnd: .55, vary: .2 }));
     if (rising) wisp.style.animationDelay = w.delay + 's';
+    /* already part way up when the menu opens */
+    if (drifting) wisp.style.animationDelay = -(2 + w.delay * 1.4) + 's';
     g.appendChild(wisp);
   });
   return g;

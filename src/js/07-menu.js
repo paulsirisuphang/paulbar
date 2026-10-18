@@ -84,7 +84,8 @@ function entryEl(drink, index) {
   b.type = 'button';
   b.dataset.drink = drink.id;
   b.style.setProperty('--i', String(index));
-  b.appendChild(artBox('entry-art', drink, {}, 'live'));
+  /* a drink that's smoked by default shows its smoke on the menu too */
+  b.appendChild(artBox('entry-art', drink, { smoke: !!drink.smoke }, 'live'));
 
   const text = el('div', 'entry-text');
   const name = el('div', 'entry-name');

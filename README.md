@@ -18,7 +18,9 @@ list.
   one section at a time; with none chosen, the whole card shows.
 - A **drink's card** has its story, what's in it, how it tastes, and the
   options it takes: smoke and a choice of wood on 9 drinks, egg white on 2,
-  zero-sugar syrup on 6.
+  zero-sugar syrup on 6. A drink that takes smoke opens with it on, on the
+  wood that suits it best, and shows its smoke on the menu; the guest can
+  take it off.
 - **Orders** land on a rail as tickets, each with the full build behind it.
   Ticking a ticket stamps it poured.
 - The **lantern** is the way to the drink that isn't on the list: tap it.

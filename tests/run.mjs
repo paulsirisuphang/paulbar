@@ -201,6 +201,32 @@ const checks = [
     eq(offered.sort().join(', '), ZERO_SUGAR.slice().sort().join(', '), 'drinks offering zero sugar');
   }],
 
+  ['a drink that takes smoke opens smoked, on its best wood, and can be unsmoked', {}, async (page) => {
+    await enter(page);
+    /* the menu shows smoke over every drink that takes it, and no other */
+    const smoked = await page.$$eval('.entry', (n) => n.filter((e) => e.querySelector('.entry-art .wisp-soft')).map((e) => e.dataset.drink));
+    eq(smoked.length, 9, 'drinks shown smoking on the menu: ' + smoked.join(', '));
+    ok(!smoked.includes('gimlet'), 'smoke over a drink that never takes it');
+    await openDrink(page, 'negroni');
+    ok(await page.$eval('#sheet .option.smoke input', (i) => i.checked), 'smoke is not on to begin with');
+    eq(await text(page, '#sheet .wood[aria-pressed="true"]'), 'Cherry', 'the wood chosen for a Negroni');
+    ok(await count(page, '#sheet .preview .wisp') > 0, 'no smoke over the drink on its card');
+    /* taking it off takes the smoke away and sends it unsmoked */
+    await page.click('#sheet .option.smoke');
+    ok(!(await page.$eval('#sheet .option.smoke input', (i) => i.checked)), 'smoke would not come off');
+    eq(await count(page, '#sheet .preview .wisp'), 0, 'smoke still over the drink once taken off');
+    await page.fill('#sheet input.write', 'Nok');
+    await page.click('#sheet .btn');
+    await page.waitForFunction(() => !document.getElementById('sheet').open);
+    await page.click('#burger');
+    await page.click('#tab-orders');
+    eq(await count(page, '.ticket .note.smoke'), 0, 'smoke on a drink sent without it');
+    await page.click('#burger');
+    await page.click('#tab-menu');
+    await openDrink(page, 'old-fashioned');
+    eq(await text(page, '#sheet .wood[aria-pressed="true"]'), 'Oak', 'the wood chosen for an Old Fashioned');
+  }],
+
   ['zero sugar swaps the syrup in the recipe', {}, async (page) => {
     await enter(page);
     await openDrink(page, 'old-fashioned');

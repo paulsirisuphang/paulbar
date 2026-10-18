@@ -72,6 +72,14 @@
   70%  { opacity: .4; }
   100% { opacity: 0; transform: translate(6px, -34px) scale(1.15, 1.4); }
 }
+/* on the menu, smoke over a smoked drink drifts up a little and thins */
+.wisp-soft { transform-box: fill-box; transform-origin: 50% 100%; animation: wisp-soft 7.5s ease-in-out infinite; }
+@keyframes wisp-soft {
+  0%   { opacity: 0; transform: translate(0, 3px) scale(.92, .9); }
+  25%  { opacity: .95; }
+  70%  { opacity: .6; }
+  100% { opacity: 0; transform: translate(2px, -8px) scale(1.06, 1.15); }
+}
 
 /* the ice gives up while you make up your mind */
 /* each cube is drawn about its own centre, so it shrinks in place */

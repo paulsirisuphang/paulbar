@@ -106,8 +106,8 @@
 
 /* smoke from the smoking gun rises slowly and thins out; tapped, it pours
    out more for a while */
-.smoke-wisp { transform-box: fill-box; transform-origin: 50% 100%; animation: wisp 7.2s ease-in-out infinite; }
-@keyframes wisp {
+.smoke-wisp { transform-box: fill-box; transform-origin: 50% 100%; animation: bar-smoke 7.2s ease-in-out infinite; }
+@keyframes bar-smoke {
   0%   { opacity: 0; transform: translateY(1.5px) scaleY(.92); }
   22%  { opacity: 1; }
   70%  { opacity: .7; }

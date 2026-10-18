@@ -140,7 +140,7 @@ const DRINKS = [
   },
   {
     id: 'vieux-carre', name: 'Smoke Vieux Carré', method: 'Stirred',
-    section: 'stirred', hidden: true, defaultSmoke: true,
+    section: 'stirred', hidden: true,
     hook: "Three spirits in equal parts, which is one more than most drinks risk.",
     story: "Walter Bergeron mixed it at the Hotel Monteleone in New Orleans in 1938. The hotel's bar was later rebuilt as a carousel that turns a full circle every fifteen minutes, and has been revolving since 1949. The name means old square — the French Quarter.",
     flavor: { bitter: 3, sweet: 3, citrus: 1, herbal: 5, strength: 5 },
