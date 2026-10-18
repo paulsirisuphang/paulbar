@@ -22,11 +22,11 @@
    SVG transform attribute on the same element. */
 .scene .moves { transform-box: view-box; transform-origin: 0 0; }
 
-/* the paper lantern sways a little on its cord and is lit by the hour */
-.lantern { animation: lantern 7s ease-in-out infinite alternate; }
+/* the paper lantern sways a little on its long cord and is lit by the hour */
+.lantern { animation: lantern 8s ease-in-out infinite alternate; }
 @keyframes lantern {
-  from { transform: rotate(-1.4deg); }
-  to   { transform: rotate(1.4deg); }
+  from { transform: rotate(-.8deg); }
+  to   { transform: rotate(.8deg); }
 }
 .lantern-glow { opacity: var(--lantern); transition: opacity 2s ease; }
 /* the strip of light behind each shelf, never quite off */
@@ -36,7 +36,8 @@
 /* a phone will not reliably fire a tap on an SVG shape, so each piece is
    covered by a real button, which a keyboard can reach too. bar.js sets
    where each one sits along the bar. */
-.piece-taps { position: absolute; inset: 22% 0 14%; z-index: 1; }
+/* over what stands on the counter, below the lantern */
+.piece-taps { position: absolute; inset: 36% 0 14%; z-index: 1; }
 .piece-tap {
   position: absolute;
   top: 0;

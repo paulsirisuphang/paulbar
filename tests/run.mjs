@@ -130,6 +130,19 @@ const checks = [
     ok(total >= 10 && total <= 15, `the painting takes ${total.toFixed(1)}s`);
   }],
 
+  ['the lantern hangs on a cord from the top of the page', {}, async (page) => {
+    await enter(page);
+    const m = await page.evaluate(() => {
+      const svg = document.querySelector('#scene svg');
+      const unit = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
+      const cord = document.querySelector('#scene .lantern > path');
+      const paper = [...document.querySelectorAll('#scene .lantern path')].find((p) => p.getAttribute('fill') === '#EFE6D4');
+      return { top: cord.getBoundingClientRect().top + window.scrollY, wide: paper.getBoundingClientRect().width / unit };
+    });
+    ok(m.top <= 0, `the cord stops ${m.top.toFixed(0)}px below the top of the page`);
+    ok(m.wide >= 38, `the lantern is only ${m.wide.toFixed(0)} units wide`);
+  }],
+
   ['a tap finishes the painting at once', {}, async (page) => {
     await page.goto(TEST_PAGE);
     ok(await page.$('#scene.painting'), 'the bar is not being painted');

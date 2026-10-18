@@ -43,12 +43,20 @@ const paintAs = (el, part, order) => {
 
 /* ---------- the room ---------- */
 
-function lantern(rand) {
-  /* hung from the top edge; it sways about where the cord is tied */
-  const hang = joint(180, -4, 'lantern');
-  const g = S('g', { transform: 'scale(.84)' });
+/* The paper lantern hangs on a long cord from the ceiling, above the top
+   of the page, in front of the top shelf where nothing stands behind it.
+   It sways about where the cord is tied. `ceiling` is the top of the page
+   in the stage's units; the lantern's cap sits at LANTERN.y. The painter
+   brings the cord down first, then draws the lantern on the end of it. */
+const LANTERN = { x: 180, y: 8, scale: 1.25 };
+/* the middle of its paper, where the light comes from */
+const LANTERN_GLOW_Y = LANTERN.y + (36.4 - 14.6) * LANTERN.scale;
+function lantern(rand, ceiling) {
+  const hang = joint(LANTERN.x, ceiling, 'lantern');
+  const drop = LANTERN.y - ceiling;
+  hang.inner.appendChild(paintAs(pen([[0, 0], [0, drop + 1]], .7, { alpha: .7, straight: true }), 'lantern', 0));
+  const g = paintAs(S('g', { transform: 'translate(0 ' + fx(drop - 14.6 * LANTERN.scale) + ') scale(' + LANTERN.scale + ')' }), 'lantern', 1);
   hang.inner.appendChild(g);
-  g.appendChild(pen([[0, 0], [0, 15]], .6, { alpha: .7, straight: true }));
   g.appendChild(S('rect', { x: -3.4, y: 14.6, width: 6.8, height: 3.6, rx: .6, fill: '#3B3530' }));
   const glow = inkId('lamp');
   const body = 'M0,18 C13,18 16.6,28 16.6,36.4 C16.6,46 11,55.4 0,55.4 C-11,55.4 -16.6,46 -16.6,36.4 C-16.6,28 -13,18 0,18 Z';
@@ -66,7 +74,7 @@ function lantern(rand) {
   }
   g.appendChild(S('path', { d: body, fill: 'none', stroke: INK, 'stroke-width': .9, 'stroke-opacity': .75 }));
   g.appendChild(S('rect', { x: -4.2, y: 54.4, width: 8.4, height: 2.4, rx: .8, fill: '#3B3530' }));
-  return paintAs(hang.outer, 'lantern', 0);
+  return hang.outer;
 }
 
 /* The bar top and the front of the slab, from x0 to x1, and the vase and
@@ -643,7 +651,7 @@ function renderScene(paint = false) {
   const defs = S('defs');
   const glow = inkId('room');
   /* the lantern's pool of light, round whatever the width */
-  defs.appendChild(S('radialGradient', { id: glow, gradientUnits: 'userSpaceOnUse', cx: 180, cy: 40, r: 210 }, [
+  defs.appendChild(S('radialGradient', { id: glow, gradientUnits: 'userSpaceOnUse', cx: LANTERN.x, cy: LANTERN_GLOW_Y, r: 210 }, [
     S('stop', { offset: 0, 'stop-color': '#F2C98C', 'stop-opacity': .5 }),
     S('stop', { offset: .55, 'stop-color': '#EBC48E', 'stop-opacity': .14 }),
     S('stop', { offset: 1, 'stop-color': '#EBC48E', 'stop-opacity': 0 })
@@ -652,7 +660,10 @@ function renderScene(paint = false) {
 
   svg.appendChild(backBar(defs, x0 - 2, x1 + 2));
   svg.appendChild(S('rect', { x: x0, y: -2, width: span, height: COUNTER_Y + 2, fill: 'url(#' + glow + ')', class: 'lantern-glow' }));
-  svg.appendChild(lantern(rand));
+  /* the top of the page, where the lantern's cord is tied, with room to
+     spare in case the header settles taller once its fonts arrive */
+  const ceiling = -2 - (box.getBoundingClientRect().top + window.scrollY) * span / sceneWidth - 30;
+  svg.appendChild(lantern(rand, ceiling));
   svg.appendChild(counter(rand, x0 - 2, x1 + 2));
   drawPieces(rand).forEach((g) => svg.appendChild(g));
   /* the house seal on the front of the bar, the way a painter signs */
