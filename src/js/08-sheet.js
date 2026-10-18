@@ -84,11 +84,28 @@ function optionRow(cls, title, why) {
 
 const sheet = $('#sheet');
 
+/* The card is printed on a sheet of handmade paper. The sheet sits behind
+   the card's contents, and its deckled edge is drawn to the card's size
+   each time that changes. */
+function paperSheet() {
+  const paper = el('div', 'paper');
+  paper.setAttribute('aria-hidden', 'true');
+  paper.appendChild(el('div', 'paper-sheet'));
+  return paper;
+}
+if ('ResizeObserver' in window) {
+  new ResizeObserver(([entry]) => {
+    const { width, height } = entry.contentRect;
+    if (width && height) sheet.style.setProperty('--deckle', paperEdge(width, height));
+  }).observe(sheet);
+}
+
 /* the card fills the dialog, so a click on the dialog itself is the backdrop */
 sheet.addEventListener('click', (e) => { if (e.target === sheet) sheet.close(); });
 
 function openSheet(drink) {
   sheet.innerHTML = '';
+  sheet.appendChild(paperSheet());
   /* a drink that takes smoke opens with it on, on the wood that suits it
      best (each drink lists that one first); the guest can take it off */
   const state = { smoke: !!drink.smoke, egg: false, zero: false, wood: drink.woods ? drink.woods[0] : null };

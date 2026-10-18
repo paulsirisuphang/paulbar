@@ -401,14 +401,17 @@ const checks = [
     eq(await page.$eval('.section', (s) => s.id), 'sec-stirred', 'the first section');
   }],
 
-  ['buttons and the card have soft corners', {}, async (page) => {
+  ['Surprise me has soft corners; the card is a sheet of deckled paper', {}, async (page) => {
     await enter(page);
-    const radius = (sel) => page.$eval(sel, (n) => parseFloat(getComputedStyle(n).borderTopLeftRadius));
-    ok(await radius('#choice') >= 8, 'Surprise me has square corners');
+    ok(await page.$eval('#choice', (n) => parseFloat(getComputedStyle(n).borderTopLeftRadius)) >= 8, 'Surprise me has square corners');
     await openDrink(page, 'gimlet');
-    ok(await radius('#sheet') >= 14, 'the card has square corners');
-    ok(await radius('#sheet .btn') >= 8, 'Send to the bar has square corners');
-    ok(await radius('#sheet .option') >= 8, 'the options have square corners');
+    const card = await page.evaluate(() => {
+      const paper = getComputedStyle(document.querySelector('#sheet .paper-sheet'));
+      const band = getComputedStyle(document.querySelector('#sheet .btn'), '::before');
+      return { edge: paper.maskImage || paper.webkitMaskImage || '', ink: band.backgroundImage };
+    });
+    ok(/data:image\/svg/.test(card.edge), 'the card has no deckled edge');
+    ok(/data:image\/svg/.test(card.ink), 'the order button is not a stroke of ink');
   }],
 
   ['Surprise me pours something from the menu, never the secret', {}, async (page) => {

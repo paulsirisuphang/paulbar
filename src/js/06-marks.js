@@ -86,6 +86,75 @@ function warnSeal() {
   return svg;
 }
 
+/* ---------- the card's paper ---------- */
+
+/* The deckled edge of a sheet of handmade paper, as a mask w × h pixels
+   for the card: the edge wanders a few pixels in from the box, slowly
+   and finely, the corners are worn round, and the odd fibre stands out
+   past it. Each side keeps its own waver, so a card that only grows
+   taller keeps its top and bottom edges. Not blurred: WebKit softens a
+   blurred mask several times over. */
+function paperEdge(w, h) {
+  const IN = 3.4, ROUND = 9;
+  const side = (name, len) => {
+    const rand = seeded('deckle-' + name);
+    const slow = wave(rand, Math.max(3, Math.round(len / 120)));
+    const n = Math.max(10, Math.round(len / 5));
+    const pts = [];
+    for (let i = 0; i <= n; i++) {
+      const along = i / n * len;
+      const end = Math.min(along, len - along);
+      /* worn round at the corners */
+      const worn = end < ROUND ? ROUND * (1 - Math.sqrt(Math.max(0, 1 - ((ROUND - end) / ROUND) ** 2))) : 0;
+      pts.push([along, IN * (.5 + .3 * slow(i / n) + .3 * (rand() - .5)) + worn]);
+    }
+    const hairs = [];
+    for (let a = 20 + rand() * 40; a < len - 20; a += 26 + rand() * 60) {
+      const tilt = (rand() - .5) * 4;
+      hairs.push([[a, IN + 1.2 + rand() * 1.4], [a + tilt, .6 + rand() * .8]]);
+    }
+    return { pts, hairs };
+  };
+  /* each side runs clockwise; put it in the box */
+  const sides = [
+    [side('top', w), ([s, i]) => [s, i]],
+    [side('right', h), ([s, i]) => [w - i, s]],
+    [side('bottom', w), ([s, i]) => [w - s, h - i]],
+    [side('left', h), ([s, i]) => [i, h - s]]
+  ];
+  const outline = [];
+  let hairs = '';
+  sides.forEach(([{ pts, hairs: hs }, at]) => {
+    pts.slice(0, -1).forEach((p) => outline.push(at(p)));
+    hs.forEach(([a, b]) => {
+      const [x0, y0] = at(a), [x1, y1] = at(b);
+      hairs += '<path d="M' + fx(x0) + ',' + fx(y0) + 'L' + fx(x1) + ',' + fx(y1) + '" stroke="#fff" stroke-width=".6" stroke-opacity=".7"/>';
+    });
+  });
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + fx(w) + '" height="' + fx(h) + '" viewBox="0 0 ' + fx(w) + ' ' + fx(h) + '">' +
+    '<path d="' + smooth(outline, true) + '" fill="#fff"/>' + hairs + '</svg>';
+  return 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")';
+}
+
+/* One loaded stroke of a wide brush, pulled left to right: dense through
+   the middle, running dry at the end. Drawn once as an image and
+   stretched to the button that sends an order. */
+function inkBand() {
+  const rand = seeded('band');
+  const W = 400, H = 60;
+  const spine = trace((t) => [9 + t * (W - 18), H / 2 + Math.sin(t * Math.PI * 1.2 + .5) * 1.6], 48);
+  const d = brushD(spine, (t) => 42 * (.9 + .1 * Math.sin(t * Math.PI)), { rand, taper: .03, taperEnd: .06, vary: .1 });
+  let dry = '';
+  for (let i = 0; i < 9; i++) {
+    const y = 13 + rand() * 34, x0 = W * (.66 + rand() * .16), x1 = W - 8 - rand() * 22;
+    dry += '<path d="M' + fx(x0) + ',' + fx(y) + 'L' + fx(x1) + ',' + fx(y + (rand() - .5) * 2.4) + '" stroke="' + PAPER_WASH +
+      '" stroke-width="' + fx(.5 + rand() * 1.3) + '" stroke-opacity="' + fx(.18 + rand() * .3) + '" stroke-linecap="round"/>';
+  }
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none">' +
+    '<path d="' + d + '" fill="' + INK + '"/>' + dry + '</svg>';
+  return 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")';
+}
+
 /* ---------- icons, drawn with the same hand ---------- */
 
 const ICONS = {

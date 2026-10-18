@@ -699,8 +699,9 @@ main {
 }
 
 /* ================================================================
-   THE CARD — one drink, opened. Heavier stock than the menu, with a
-   fine frame printed just inside the edge.
+   THE CARD — one drink, opened, on a sheet of handmade paper: heavier
+   stock than the menu, a deckled edge, and a fine frame printed just
+   inside it.
    ================================================================ */
 
 dialog {
@@ -709,15 +710,35 @@ dialog {
   max-height: min(90svh, 920px);
   padding: 0;
   border: 0;
-  border-radius: var(--radius-lg);
-  background-color: var(--paper-hi);
-  background-image: var(--washi, none);
-  background-size: 420px 420px;
+  border-radius: 0;
+  background: none;
   color: var(--ink);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, .8) inset,
-    0 0 0 1px rgba(38, 34, 30, .06),
-    0 40px 70px -34px rgba(52, 38, 24, .55);
+  /* the sheet's shadow falls outside the card */
+  overflow: visible;
+}
+
+/* The paper itself, behind everything on it: washi, faintly uneven in
+   tone the way handmade paper is, a touch darker where the fibres crowd
+   at the edge, cut to its deckle (sheet.js), and lying on the table
+   rather than floating over it. */
+.paper {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 1px rgba(52, 38, 24, .2)) drop-shadow(0 14px 20px rgba(52, 38, 24, .2));
+}
+.paper-sheet {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(110% 70% at 12% 8%, rgba(255, 253, 247, .6), transparent 62%),
+    radial-gradient(80% 60% at 88% 96%, rgba(150, 122, 84, .1), transparent 66%),
+    radial-gradient(50% 36% at 72% 34%, rgba(150, 122, 84, .05), transparent 70%),
+    var(--washi, none) 0 0 / 420px 420px,
+    var(--paper-hi);
+  box-shadow: inset 0 0 24px rgba(140, 112, 76, .12);
+  -webkit-mask: var(--deckle) 0 0 / 100% 100% no-repeat;
+  mask: var(--deckle) 0 0 / 100% 100% no-repeat;
 }
 /* a phone lays the card out in a viewport taller than the visible one, so
    centring would slide the top of it under the toolbar — pin it high */
@@ -730,24 +751,25 @@ dialog {
 }
 dialog:focus { outline: none; }
 dialog::backdrop { background: rgba(48, 40, 32, .38); backdrop-filter: blur(2px); }
-dialog[open] { animation: card-in .34s var(--ease); }
-@keyframes card-in { from { opacity: 0; transform: translateY(16px) scale(.985); } }
+/* laid down on the table, settling square */
+dialog[open] { animation: card-in .4s var(--ease); }
+@keyframes card-in { from { opacity: 0; transform: translateY(14px) rotate(-.6deg); } }
 
 .sheet {
   position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   max-height: inherit;
   overflow: hidden;
 }
-/* the printed frame, its corners following the card's */
+/* the frame printed just inside the edge, square, as letterpress is */
 .sheet::before {
   content: '';
   position: absolute;
-  inset: 7px;
+  inset: 12px;
   z-index: 3;
   border: 1px solid var(--rule);
-  border-radius: calc(var(--radius-lg) - 7px);
   pointer-events: none;
 }
 
@@ -761,12 +783,12 @@ dialog[open] { animation: card-in .34s var(--ease); }
   grid-template-columns: auto 1fr;
   grid-template-areas: 'art title' 'art hook';
   gap: 8px 20px;
-  margin: 0 7px;
-  padding: 30px 48px 22px 19px;
+  margin: 0 12px;
+  padding: 32px 46px 22px 14px;
   border-bottom: 1px solid var(--rule);
 }
 @media (max-width: 640px) {
-  .sheet-head { grid-template-areas: 'art title' 'hook hook'; padding: 26px 44px 18px 15px; }
+  .sheet-head { grid-template-areas: 'art title' 'hook hook'; padding: 28px 42px 18px 10px; }
   .sheet-title { align-self: center; }
   .sheet-hook { padding-left: 6px; }
 }
@@ -794,8 +816,8 @@ dialog[open] { animation: card-in .34s var(--ease); }
 
 .sheet-close {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 18px;
+  right: 18px;
   z-index: 4;
   display: grid;
   place-items: center;
@@ -817,15 +839,15 @@ dialog[open] { animation: card-in .34s var(--ease); }
   min-height: 0;
   display: grid;
   gap: 30px;
-  padding: 26px 28px 30px;
+  padding: 26px 30px 30px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 }
 .sheet-foot {
   flex: none;
-  margin: 0 7px;
-  padding: 16px 17px 22px;
+  margin: 0 12px;
+  padding: 16px 14px 26px;
   border-top: 1px solid var(--rule);
 }
 
@@ -859,7 +881,7 @@ dialog[open] { animation: card-in .34s var(--ease); }
   align-items: start;
   padding: 14px 16px;
   border: 1px solid rgba(176, 57, 42, .35);
-  border-radius: var(--radius);
+  border-radius: 1px;
   font-size: .9375rem;
   line-height: 1.5;
   color: var(--ink-2);
@@ -920,33 +942,32 @@ dialog[open] { animation: card-in .34s var(--ease); }
 }
 .dots i.on { background: var(--ink); border-color: var(--ink); }
 
-/* options — smoke, egg white, zero sugar */
+/* options — smoke, egg white, zero sugar — printed as lines of a form,
+   each with a square to tick */
 .option {
   position: relative;
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 14px;
   align-items: start;
-  padding: 16px 16px 16px 14px;
-  border: 1px solid var(--rule-2);
-  border-radius: var(--radius);
+  padding: 15px 2px 16px;
+  border-block: 1px solid var(--rule);
   cursor: pointer;
-  transition: border-color .25s, background-color .25s;
+  transition: border-color .25s;
 }
-.option:hover { border-color: var(--ink-3); }
+.option:hover { border-color: var(--rule-2); }
 .option input { position: absolute; opacity: 0; pointer-events: none; }
 .option .box {
-  width: 20px;
-  height: 20px;
-  margin-top: 2px;
+  width: 19px;
+  height: 19px;
+  margin-top: 3px;
   border: 1px solid var(--ink-2);
-  border-radius: 5px;
-  background: var(--paper-hi);
+  border-radius: 1px;
   display: grid;
   place-items: center;
 }
-.option .box svg { width: 16px; height: 16px; opacity: 0; transform: scale(.6); transition: opacity .2s, transform .3s var(--ease); }
-.option:has(input:checked) { border-color: var(--ink-2); background: rgba(255, 255, 255, .35); }
+.option .box svg { width: 17px; height: 17px; opacity: 0; transform: scale(.6); transition: opacity .2s, transform .3s var(--ease); }
+.option:has(input:checked) { border-color: var(--rule-2); }
 .option:has(input:checked) .box svg { opacity: 1; transform: scale(1); }
 .option:has(input:focus-visible) { outline: 1.5px solid var(--shu); outline-offset: 3px; }
 .option-text { display: grid; gap: 4px; }
@@ -958,15 +979,11 @@ dialog[open] { animation: card-in .34s var(--ease); }
 .woods {
   display: grid;
   gap: 10px;
-  margin-top: -1px;
-  padding: 16px 16px 18px 48px;
-  border: 1px solid var(--ink-2);
-  border-radius: 0 0 var(--radius) var(--radius);
-  border-top-style: dashed;
-  border-top-color: var(--rule-2);
+  padding: 2px 2px 18px 35px;
+  border-bottom: 1px solid var(--rule-2);
 }
-/* the smoke option and its woods read as one card while the woods are open */
-.option.smoke:has(+ .woods:not([hidden])) { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+/* the smoke line and its woods read as one entry while the woods are open */
+.option.smoke:has(+ .woods:not([hidden])) { border-bottom-color: transparent; }
 .wood-row { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 .wood {
   padding: 4px 0;
@@ -1013,16 +1030,19 @@ textarea.write { min-height: 64px; resize: vertical; line-height: 1.5; }
 .write.wanting { border-color: var(--shu); }
 .write.wanting::placeholder { color: var(--shu); }
 
+/* the order button: one stroke of sumi across the foot of the card */
 .btn {
+  position: relative;
+  isolation: isolate;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   width: 100%;
-  padding: 16px 20px;
+  padding: 17px 20px;
   border: 0;
-  border-radius: var(--radius);
-  background: var(--ink);
+  border-radius: 0;
+  background: none;
   color: var(--paper-hi);
   font-family: var(--sans);
   font-size: .8125rem;
@@ -1032,7 +1052,15 @@ textarea.write { min-height: 64px; resize: vertical; line-height: 1.5; }
   cursor: pointer;
   transition: background-color .3s ease;
 }
-.btn:hover { background: #3A332D; }
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0 -3px;
+  z-index: -1;
+  background: var(--ink-band, var(--ink)) center / 100% 100% no-repeat;
+  transition: filter .3s ease;
+}
+.btn:hover::before { filter: brightness(1.45); }
 :lang(th) .btn { font-size: 1rem; letter-spacing: .02em; }
 
 /* ================================================================
@@ -4855,6 +4883,75 @@ function warnSeal() {
   return svg;
 }
 
+/* ---------- the card's paper ---------- */
+
+/* The deckled edge of a sheet of handmade paper, as a mask w × h pixels
+   for the card: the edge wanders a few pixels in from the box, slowly
+   and finely, the corners are worn round, and the odd fibre stands out
+   past it. Each side keeps its own waver, so a card that only grows
+   taller keeps its top and bottom edges. Not blurred: WebKit softens a
+   blurred mask several times over. */
+function paperEdge(w, h) {
+  const IN = 3.4, ROUND = 9;
+  const side = (name, len) => {
+    const rand = seeded('deckle-' + name);
+    const slow = wave(rand, Math.max(3, Math.round(len / 120)));
+    const n = Math.max(10, Math.round(len / 5));
+    const pts = [];
+    for (let i = 0; i <= n; i++) {
+      const along = i / n * len;
+      const end = Math.min(along, len - along);
+      /* worn round at the corners */
+      const worn = end < ROUND ? ROUND * (1 - Math.sqrt(Math.max(0, 1 - ((ROUND - end) / ROUND) ** 2))) : 0;
+      pts.push([along, IN * (.5 + .3 * slow(i / n) + .3 * (rand() - .5)) + worn]);
+    }
+    const hairs = [];
+    for (let a = 20 + rand() * 40; a < len - 20; a += 26 + rand() * 60) {
+      const tilt = (rand() - .5) * 4;
+      hairs.push([[a, IN + 1.2 + rand() * 1.4], [a + tilt, .6 + rand() * .8]]);
+    }
+    return { pts, hairs };
+  };
+  /* each side runs clockwise; put it in the box */
+  const sides = [
+    [side('top', w), ([s, i]) => [s, i]],
+    [side('right', h), ([s, i]) => [w - i, s]],
+    [side('bottom', w), ([s, i]) => [w - s, h - i]],
+    [side('left', h), ([s, i]) => [i, h - s]]
+  ];
+  const outline = [];
+  let hairs = '';
+  sides.forEach(([{ pts, hairs: hs }, at]) => {
+    pts.slice(0, -1).forEach((p) => outline.push(at(p)));
+    hs.forEach(([a, b]) => {
+      const [x0, y0] = at(a), [x1, y1] = at(b);
+      hairs += '<path d="M' + fx(x0) + ',' + fx(y0) + 'L' + fx(x1) + ',' + fx(y1) + '" stroke="#fff" stroke-width=".6" stroke-opacity=".7"/>';
+    });
+  });
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + fx(w) + '" height="' + fx(h) + '" viewBox="0 0 ' + fx(w) + ' ' + fx(h) + '">' +
+    '<path d="' + smooth(outline, true) + '" fill="#fff"/>' + hairs + '</svg>';
+  return 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")';
+}
+
+/* One loaded stroke of a wide brush, pulled left to right: dense through
+   the middle, running dry at the end. Drawn once as an image and
+   stretched to the button that sends an order. */
+function inkBand() {
+  const rand = seeded('band');
+  const W = 400, H = 60;
+  const spine = trace((t) => [9 + t * (W - 18), H / 2 + Math.sin(t * Math.PI * 1.2 + .5) * 1.6], 48);
+  const d = brushD(spine, (t) => 42 * (.9 + .1 * Math.sin(t * Math.PI)), { rand, taper: .03, taperEnd: .06, vary: .1 });
+  let dry = '';
+  for (let i = 0; i < 9; i++) {
+    const y = 13 + rand() * 34, x0 = W * (.66 + rand() * .16), x1 = W - 8 - rand() * 22;
+    dry += '<path d="M' + fx(x0) + ',' + fx(y) + 'L' + fx(x1) + ',' + fx(y + (rand() - .5) * 2.4) + '" stroke="' + PAPER_WASH +
+      '" stroke-width="' + fx(.5 + rand() * 1.3) + '" stroke-opacity="' + fx(.18 + rand() * .3) + '" stroke-linecap="round"/>';
+  }
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none">' +
+    '<path d="' + d + '" fill="' + INK + '"/>' + dry + '</svg>';
+  return 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")';
+}
+
 /* ---------- icons, drawn with the same hand ---------- */
 
 const ICONS = {
@@ -5125,11 +5222,28 @@ function optionRow(cls, title, why) {
 
 const sheet = $('#sheet');
 
+/* The card is printed on a sheet of handmade paper. The sheet sits behind
+   the card's contents, and its deckled edge is drawn to the card's size
+   each time that changes. */
+function paperSheet() {
+  const paper = el('div', 'paper');
+  paper.setAttribute('aria-hidden', 'true');
+  paper.appendChild(el('div', 'paper-sheet'));
+  return paper;
+}
+if ('ResizeObserver' in window) {
+  new ResizeObserver(([entry]) => {
+    const { width, height } = entry.contentRect;
+    if (width && height) sheet.style.setProperty('--deckle', paperEdge(width, height));
+  }).observe(sheet);
+}
+
 /* the card fills the dialog, so a click on the dialog itself is the backdrop */
 sheet.addEventListener('click', (e) => { if (e.target === sheet) sheet.close(); });
 
 function openSheet(drink) {
   sheet.innerHTML = '';
+  sheet.appendChild(paperSheet());
   /* a drink that takes smoke opens with it on, on the wood that suits it
      best (each drink lists that one first); the guest can take it off */
   const state = { smoke: !!drink.smoke, egg: false, zero: false, wood: drink.woods ? drink.woods[0] : null };
@@ -5688,6 +5802,8 @@ function paintStatic() {
 /* ---------- switch it on ---------- */
 
 makeWashi();
+/* the stroke of ink the order button is printed in */
+document.documentElement.style.setProperty('--ink-band', inkBand());
 
 applyPhase();
 setInterval(applyPhase, 60000);

@@ -1,6 +1,7 @@
 /* ================================================================
-   THE CARD — one drink, opened. Heavier stock than the menu, with a
-   fine frame printed just inside the edge.
+   THE CARD — one drink, opened, on a sheet of handmade paper: heavier
+   stock than the menu, a deckled edge, and a fine frame printed just
+   inside it.
    ================================================================ */
 
 dialog {
@@ -9,15 +10,35 @@ dialog {
   max-height: min(90svh, 920px);
   padding: 0;
   border: 0;
-  border-radius: var(--radius-lg);
-  background-color: var(--paper-hi);
-  background-image: var(--washi, none);
-  background-size: 420px 420px;
+  border-radius: 0;
+  background: none;
   color: var(--ink);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, .8) inset,
-    0 0 0 1px rgba(38, 34, 30, .06),
-    0 40px 70px -34px rgba(52, 38, 24, .55);
+  /* the sheet's shadow falls outside the card */
+  overflow: visible;
+}
+
+/* The paper itself, behind everything on it: washi, faintly uneven in
+   tone the way handmade paper is, a touch darker where the fibres crowd
+   at the edge, cut to its deckle (sheet.js), and lying on the table
+   rather than floating over it. */
+.paper {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 1px rgba(52, 38, 24, .2)) drop-shadow(0 14px 20px rgba(52, 38, 24, .2));
+}
+.paper-sheet {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(110% 70% at 12% 8%, rgba(255, 253, 247, .6), transparent 62%),
+    radial-gradient(80% 60% at 88% 96%, rgba(150, 122, 84, .1), transparent 66%),
+    radial-gradient(50% 36% at 72% 34%, rgba(150, 122, 84, .05), transparent 70%),
+    var(--washi, none) 0 0 / 420px 420px,
+    var(--paper-hi);
+  box-shadow: inset 0 0 24px rgba(140, 112, 76, .12);
+  -webkit-mask: var(--deckle) 0 0 / 100% 100% no-repeat;
+  mask: var(--deckle) 0 0 / 100% 100% no-repeat;
 }
 /* a phone lays the card out in a viewport taller than the visible one, so
    centring would slide the top of it under the toolbar — pin it high */
@@ -30,24 +51,25 @@ dialog {
 }
 dialog:focus { outline: none; }
 dialog::backdrop { background: rgba(48, 40, 32, .38); backdrop-filter: blur(2px); }
-dialog[open] { animation: card-in .34s var(--ease); }
-@keyframes card-in { from { opacity: 0; transform: translateY(16px) scale(.985); } }
+/* laid down on the table, settling square */
+dialog[open] { animation: card-in .4s var(--ease); }
+@keyframes card-in { from { opacity: 0; transform: translateY(14px) rotate(-.6deg); } }
 
 .sheet {
   position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   max-height: inherit;
   overflow: hidden;
 }
-/* the printed frame, its corners following the card's */
+/* the frame printed just inside the edge, square, as letterpress is */
 .sheet::before {
   content: '';
   position: absolute;
-  inset: 7px;
+  inset: 12px;
   z-index: 3;
   border: 1px solid var(--rule);
-  border-radius: calc(var(--radius-lg) - 7px);
   pointer-events: none;
 }
 
@@ -61,12 +83,12 @@ dialog[open] { animation: card-in .34s var(--ease); }
   grid-template-columns: auto 1fr;
   grid-template-areas: 'art title' 'art hook';
   gap: 8px 20px;
-  margin: 0 7px;
-  padding: 30px 48px 22px 19px;
+  margin: 0 12px;
+  padding: 32px 46px 22px 14px;
   border-bottom: 1px solid var(--rule);
 }
 @media (max-width: 640px) {
-  .sheet-head { grid-template-areas: 'art title' 'hook hook'; padding: 26px 44px 18px 15px; }
+  .sheet-head { grid-template-areas: 'art title' 'hook hook'; padding: 28px 42px 18px 10px; }
   .sheet-title { align-self: center; }
   .sheet-hook { padding-left: 6px; }
 }
@@ -94,8 +116,8 @@ dialog[open] { animation: card-in .34s var(--ease); }
 
 .sheet-close {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 18px;
+  right: 18px;
   z-index: 4;
   display: grid;
   place-items: center;
@@ -117,15 +139,15 @@ dialog[open] { animation: card-in .34s var(--ease); }
   min-height: 0;
   display: grid;
   gap: 30px;
-  padding: 26px 28px 30px;
+  padding: 26px 30px 30px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 }
 .sheet-foot {
   flex: none;
-  margin: 0 7px;
-  padding: 16px 17px 22px;
+  margin: 0 12px;
+  padding: 16px 14px 26px;
   border-top: 1px solid var(--rule);
 }
 
@@ -159,7 +181,7 @@ dialog[open] { animation: card-in .34s var(--ease); }
   align-items: start;
   padding: 14px 16px;
   border: 1px solid rgba(176, 57, 42, .35);
-  border-radius: var(--radius);
+  border-radius: 1px;
   font-size: .9375rem;
   line-height: 1.5;
   color: var(--ink-2);
@@ -220,33 +242,32 @@ dialog[open] { animation: card-in .34s var(--ease); }
 }
 .dots i.on { background: var(--ink); border-color: var(--ink); }
 
-/* options — smoke, egg white, zero sugar */
+/* options — smoke, egg white, zero sugar — printed as lines of a form,
+   each with a square to tick */
 .option {
   position: relative;
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 14px;
   align-items: start;
-  padding: 16px 16px 16px 14px;
-  border: 1px solid var(--rule-2);
-  border-radius: var(--radius);
+  padding: 15px 2px 16px;
+  border-block: 1px solid var(--rule);
   cursor: pointer;
-  transition: border-color .25s, background-color .25s;
+  transition: border-color .25s;
 }
-.option:hover { border-color: var(--ink-3); }
+.option:hover { border-color: var(--rule-2); }
 .option input { position: absolute; opacity: 0; pointer-events: none; }
 .option .box {
-  width: 20px;
-  height: 20px;
-  margin-top: 2px;
+  width: 19px;
+  height: 19px;
+  margin-top: 3px;
   border: 1px solid var(--ink-2);
-  border-radius: 5px;
-  background: var(--paper-hi);
+  border-radius: 1px;
   display: grid;
   place-items: center;
 }
-.option .box svg { width: 16px; height: 16px; opacity: 0; transform: scale(.6); transition: opacity .2s, transform .3s var(--ease); }
-.option:has(input:checked) { border-color: var(--ink-2); background: rgba(255, 255, 255, .35); }
+.option .box svg { width: 17px; height: 17px; opacity: 0; transform: scale(.6); transition: opacity .2s, transform .3s var(--ease); }
+.option:has(input:checked) { border-color: var(--rule-2); }
 .option:has(input:checked) .box svg { opacity: 1; transform: scale(1); }
 .option:has(input:focus-visible) { outline: 1.5px solid var(--shu); outline-offset: 3px; }
 .option-text { display: grid; gap: 4px; }
@@ -258,15 +279,11 @@ dialog[open] { animation: card-in .34s var(--ease); }
 .woods {
   display: grid;
   gap: 10px;
-  margin-top: -1px;
-  padding: 16px 16px 18px 48px;
-  border: 1px solid var(--ink-2);
-  border-radius: 0 0 var(--radius) var(--radius);
-  border-top-style: dashed;
-  border-top-color: var(--rule-2);
+  padding: 2px 2px 18px 35px;
+  border-bottom: 1px solid var(--rule-2);
 }
-/* the smoke option and its woods read as one card while the woods are open */
-.option.smoke:has(+ .woods:not([hidden])) { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+/* the smoke line and its woods read as one entry while the woods are open */
+.option.smoke:has(+ .woods:not([hidden])) { border-bottom-color: transparent; }
 .wood-row { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 .wood {
   padding: 4px 0;
@@ -313,16 +330,19 @@ textarea.write { min-height: 64px; resize: vertical; line-height: 1.5; }
 .write.wanting { border-color: var(--shu); }
 .write.wanting::placeholder { color: var(--shu); }
 
+/* the order button: one stroke of sumi across the foot of the card */
 .btn {
+  position: relative;
+  isolation: isolate;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   width: 100%;
-  padding: 16px 20px;
+  padding: 17px 20px;
   border: 0;
-  border-radius: var(--radius);
-  background: var(--ink);
+  border-radius: 0;
+  background: none;
   color: var(--paper-hi);
   font-family: var(--sans);
   font-size: .8125rem;
@@ -332,5 +352,13 @@ textarea.write { min-height: 64px; resize: vertical; line-height: 1.5; }
   cursor: pointer;
   transition: background-color .3s ease;
 }
-.btn:hover { background: #3A332D; }
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0 -3px;
+  z-index: -1;
+  background: var(--ink-band, var(--ink)) center / 100% 100% no-repeat;
+  transition: filter .3s ease;
+}
+.btn:hover::before { filter: brightness(1.45); }
 :lang(th) .btn { font-size: 1rem; letter-spacing: .02em; }

@@ -174,6 +174,8 @@ function paintStatic() {
 /* ---------- switch it on ---------- */
 
 makeWashi();
+/* the stroke of ink the order button is printed in */
+document.documentElement.style.setProperty('--ink-band', inkBand());
 
 applyPhase();
 setInterval(applyPhase, 60000);
