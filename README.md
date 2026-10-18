@@ -1,7 +1,7 @@
 # Paul's Bar
 
 A cocktail menu that friends order from on their phones, in English or Thai.
-It's set like a printed card on washi paper: 28 drinks in four sections, each
+It's set like a printed card on washi paper: 27 drinks in four sections, each
 one drawn in ink and wash from its own recipe, plus one that isn't on the
 list.
 
@@ -17,7 +17,7 @@ list.
   counter and it does a party piece for ten seconds. The four filters show
   one section at a time; with none chosen, the whole card shows.
 - A **drink's card** has its story, what's in it, how it tastes, and the
-  options it takes: smoke and a choice of wood on 10 drinks, egg white on 2,
+  options it takes: smoke and a choice of wood on 9 drinks, egg white on 2,
   zero-sugar syrup on 6.
 - **Orders** land on a rail as tickets, each with the full build behind it.
   Ticking a ticket stamps it poured.

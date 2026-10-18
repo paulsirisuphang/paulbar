@@ -164,7 +164,7 @@ const checks = [
 
   ['the menu lists every drink but the secret one', {}, async (page) => {
     await enter(page);
-    eq(await count(page, '.entry'), 28, 'drinks on the menu');
+    eq(await count(page, '.entry'), 27, 'drinks on the menu');
     eq(await count(page, '.entry[data-drink="vieux-carre"]'), 0, 'the secret drink on the menu');
     eq(await count(page, '.section'), 4, 'sections');
   }],

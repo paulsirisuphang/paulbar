@@ -122,7 +122,9 @@ function renderOrders(isNew) {
   if (key === lastOrdersKey) return;
   lastOrdersKey = key;
 
-  const orders = Book.orders;
+  /* an order for a drink that has since come off the menu isn't shown,
+     so it isn't counted either */
+  const orders = Book.orders.filter((o) => drinkById(o.drink));
   const working = orders.filter((o) => !o.done);
   const poured = orders.filter((o) => o.done);
 

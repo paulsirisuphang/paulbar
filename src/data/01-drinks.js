@@ -494,24 +494,6 @@ const DRINKS = [
   },
 
   {
-    id: 'smoked-tea-sour', name: 'Smoked Tea Sour', method: 'Shaken', section: 'mocktail', na: true,
-    hook: "Tea tannin does the job that alcohol usually does here.",
-    story: "Brew it at double strength and the tannin gives you grip and a little body, which is the part most alcohol-free drinks are missing. Smoke the glass and the salt handles the rest.",
-    flavor: { bitter: 2, sweet: 3, citrus: 4, herbal: 2, strength: 0 },
-    build: [['2 oz', 'strong cold-brewed black tea'], ['0.75 oz', 'lemon'], ['0.75 oz', 'honey syrup'], ['pinch', 'salt']],
-    steps: [
-      "Brew the tea at double strength — 2 bags in 6 oz of hot water for 5 minutes — then chill it.",
-      "Add the tea, lemon, honey syrup and salt to a shaker with ice.",
-      "Shake hard for 12 seconds.",
-      "Strain over one large cube.",
-      "Express a lemon peel over the top."
-    ],
-    tip: 'Tea tannin gives you the structure alcohol usually provides.',
-    smoke: true, woods: ['Apple', 'Cherry', 'Pear', 'Peach'],
-    smokeNote: 'Smoke is the one flavor tool here that needs no alcohol. It makes a mocktail taste intentional rather than apologetic.',
-    glass: 'rocks', color: '#A8763A', ice: 'cube', garnish: 'lemon-twist'
-  },
-  {
     id: 'honey-lemon-fizz', name: 'Honey Lemon Fizz', method: 'Shaken + soda', section: 'mocktail', na: true,
     hook: "A pinch of salt does more for this than any expensive substitute.",
     story: "Salt suppresses bitterness and lifts everything else, which is what stops a drink without alcohol tasting like flat juice. The whole trick costs nothing.",
