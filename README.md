@@ -7,11 +7,13 @@ list.
 
 - The **menu** opens on the bar at rest: shelves of bottles, a paper
   lantern, and the tools left out on a hinoki counter. Every visit paints
-  it onto the page, line by line and wash by wash, and presses the house
-  seal on the front of the bar to finish; a tap finishes it at once. Tap
-  a piece on the counter and it does a party piece for ten seconds. The
-  four filters show one section at a time; with none chosen, the whole
-  card shows.
+  it onto the page the way a painter would, a part at a time: the counter
+  and the tools on it, outlined in ink and then washed with colour; then
+  the shelves behind; then the lantern, which is lit last; then the house
+  seal, pressed on the front of the bar. It takes about 13 seconds, and a
+  tap finishes it at once. Tap a piece on the counter and it does a party
+  piece for ten seconds. The four filters show one section at a time;
+  with none chosen, the whole card shows.
 - A **drink's card** has its story, what's in it, how it tastes, and the
   options it takes: smoke and a choice of wood on 10 drinks, egg white on 2,
   zero-sugar syrup on 6.

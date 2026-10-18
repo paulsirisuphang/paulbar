@@ -7,8 +7,9 @@
    golf ball is chipped into a coupe. An order arriving sets the shaker
    going too.
 
-   Every arrival paints it onto the page, stroke by stroke, and presses
-   the house seal on the front of the bar to finish.
+   Every arrival paints it onto the page the way a painter would, a part
+   at a time, and presses the house seal on the front of the bar to
+   finish.
 
    Things are drawn on a stage 340 units wide that keeps its size: up
    to 560px on a phone and 800px on a desktop. The counter and the
@@ -31,6 +32,13 @@ const moving = (x, y, cls, kids) => {
   const j = joint(x, y, cls);
   kids.forEach((k) => j.inner.appendChild(k));
   return j.outer;
+};
+/* a thing the painter draws as one: the part of the bar it belongs to,
+   and where it comes in that part's order (see "painted in") */
+const paintAs = (el, part, order) => {
+  el.setAttribute('data-part', part);
+  el.setAttribute('data-order', order);
+  return el;
 };
 
 /* ---------- the room ---------- */
@@ -58,48 +66,58 @@ function lantern(rand) {
   }
   g.appendChild(S('path', { d: body, fill: 'none', stroke: INK, 'stroke-width': .9, 'stroke-opacity': .75 }));
   g.appendChild(S('rect', { x: -4.2, y: 54.4, width: 8.4, height: 2.4, rx: .8, fill: '#3B3530' }));
-  return hang.outer;
+  return paintAs(hang.outer, 'lantern', 0);
 }
 
-/* the bar top and the front of the slab, from x0 to x1 */
+/* The bar top and the front of the slab, from x0 to x1, and the vase and
+   the bottle at either end of the stage. The long front edge of the bar
+   top is the first line the painter draws; the rest of the slab, its
+   other edges and its washes, waits until what stands on it is drawn. */
 function counter(rand, x0, x1) {
   const g = S('g');
   const top = COUNTER_Y;
-  g.appendChild(wash(poly([[x0, top - 6], [x1, top - 6], [x1, top], [x0, top]]), '#E6D2B0', { alpha: 1, edge: 0 }));
-  g.appendChild(wash(poly([[x0, top], [x1, top], [x1, top + 22], [x0, top + 22]]), '#D2B288', { alpha: 1, edge: 0 }));
+  const slab = paintAs(S('g'), 'counter', 13);
+  slab.appendChild(wash(poly([[x0, top - 6], [x1, top - 6], [x1, top], [x0, top]]), '#E6D2B0', { alpha: 1, edge: 0 }));
+  slab.appendChild(wash(poly([[x0, top], [x1, top], [x1, top + 22], [x0, top + 22]]), '#D2B288', { alpha: 1, edge: 0 }));
   /* grain, in long runs along the slab */
   const runs = Math.ceil((x1 - x0) / 38);
   for (let i = 0; i < runs; i++) {
     const y = top + 3 + (i % 9) * 2.2 + rand() * 1.2;
     const sx = x0 - 40 + (i / runs) * (x1 - x0) + rand() * 50;
     const pts = trace((t) => [sx + t * (180 + rand() * 60), y + Math.sin(t * Math.PI * (1 + rand())) * 1.2], 10);
-    g.appendChild(pen(pts, .35, { color: '#8C6A43', alpha: .28 + rand() * .2 }));
+    slab.appendChild(pen(pts, .35, { color: '#8C6A43', alpha: .28 + rand() * .2 }));
   }
-  g.appendChild(brush(line([x0, top], [x1, top], Math.ceil((x1 - x0) / 16)), 1.2, { rand, taper: 0 }));
-  g.appendChild(pen(line([x0, top - 6], [x1, top - 6], 2), .5, { alpha: .45, straight: true }));
-  g.appendChild(pen(line([x0, top + 22], [x1, top + 22], 2), .7, { alpha: .55, straight: true }));
-  g.appendChild(pen(line([x0, top - 3.2], [x1, top - 3.2], 2), .8, { color: GOUACHE, alpha: .5, straight: true }));
+  const edge = paintAs(brush(line([x0, top], [x1, top], Math.ceil((x1 - x0) / 16)), 1.2, { rand, taper: 0 }), 'counter', 0);
+  slab.appendChild(pen(line([x0, top - 6], [x1, top - 6], 2), .5, { alpha: .45, straight: true }));
+  slab.appendChild(pen(line([x0, top + 22], [x1, top + 22], 2), .7, { alpha: .55, straight: true }));
+  slab.appendChild(pen(line([x0, top - 3.2], [x1, top - 3.2], 2), .8, { color: GOUACHE, alpha: .5, straight: true }));
+  g.appendChild(slab);
+  g.appendChild(edge);
 
   /* a single branch in a stoneware vase at one end of the stage… */
   const vx = 30, vy = top - 3;
-  g.appendChild(wash('M' + (vx - 5) + ',' + vy + ' Q' + (vx - 7.4) + ',' + (vy - 9) + ' ' + (vx - 2.2) + ',' + (vy - 13) + ' L' + (vx - 2.2) + ',' + (vy - 17) +
+  const vase = paintAs(S('g'), 'counter', 7);
+  g.appendChild(vase);
+  vase.appendChild(wash('M' + (vx - 5) + ',' + vy + ' Q' + (vx - 7.4) + ',' + (vy - 9) + ' ' + (vx - 2.2) + ',' + (vy - 13) + ' L' + (vx - 2.2) + ',' + (vy - 17) +
     ' L' + (vx + 2.2) + ',' + (vy - 17) + ' L' + (vx + 2.2) + ',' + (vy - 13) + ' Q' + (vx + 7.4) + ',' + (vy - 9) + ' ' + (vx + 5) + ',' + vy + ' Z',
     '#B9AC97', { alpha: .97, edge: .35, edgeWidth: .8, edgeAlpha: .8 }));
   const branch = [[vx, vy - 16], [vx + 3, vy - 30], [vx + 1, vy - 44], [vx + 7, vy - 56]];
-  g.appendChild(brush(branch, 1.2, { rand, taper: .1, taperEnd: .5 }));
+  vase.appendChild(brush(branch, 1.2, { rand, taper: .1, taperEnd: .5 }));
   [[vx + 3, vy - 30, 1], [vx + 1.4, vy - 41, -1], [vx + 5.6, vy - 51, 1]].forEach(([x, y, s]) => {
-    g.appendChild(wash(smooth([[x, y], [x + 4 * s, y - 3], [x + 7.5 * s, y - 1.5], [x + 3.6 * s, y + 1.2]], true), '#7F8F55', { alpha: .9, edge: .3, edgeWidth: .5 }));
+    vase.appendChild(wash(smooth([[x, y], [x + 4 * s, y - 3], [x + 7.5 * s, y - 1.5], [x + 3.6 * s, y + 1.2]], true), '#7F8F55', { alpha: .9, edge: .3, edgeWidth: .5 }));
   });
 
   /* …and the bottle that's being poured at the other */
   const bx = 334, by = top - 3;
   const bottleD = 'M' + (bx - 5) + ',' + by + ' L' + (bx - 5) + ',' + (by - 22) + ' Q' + (bx - 5) + ',' + (by - 27) + ' ' + (bx - 1.6) + ',' + (by - 29) +
     ' L' + (bx - 1.6) + ',' + (by - 36) + ' L' + (bx + 1.6) + ',' + (by - 36) + ' L' + (bx + 1.6) + ',' + (by - 29) + ' Q' + (bx + 5) + ',' + (by - 27) + ' ' + (bx + 5) + ',' + (by - 22) + ' L' + (bx + 5) + ',' + by + ' Z';
-  g.appendChild(wash(bottleD, '#A86A2C', { alpha: .9, edge: .3, edgeWidth: .8 }));
-  g.appendChild(S('rect', { x: bx - 4, y: by - 17, width: 8, height: 8, fill: LABEL, stroke: INK, 'stroke-width': .4, 'stroke-opacity': .6 }));
-  g.appendChild(brush(line([bx - 3, by - 3], [bx - 3, by - 20], 4), .9, { color: GOUACHE, alpha: .6, taper: .3, even: true }));
-  g.appendChild(S('rect', { x: bx - 2, y: by - 38.5, width: 4, height: 3, fill: '#3B3530' }));
-  g.appendChild(S('path', { d: bottleD, fill: 'none', stroke: INK, 'stroke-width': .7, 'stroke-opacity': .8 }));
+  const bottle = paintAs(S('g'), 'counter', 12);
+  g.appendChild(bottle);
+  bottle.appendChild(wash(bottleD, '#A86A2C', { alpha: .9, edge: .3, edgeWidth: .8 }));
+  bottle.appendChild(S('rect', { x: bx - 4, y: by - 17, width: 8, height: 8, fill: LABEL, stroke: INK, 'stroke-width': .4, 'stroke-opacity': .6 }));
+  bottle.appendChild(brush(line([bx - 3, by - 3], [bx - 3, by - 20], 4), .9, { color: GOUACHE, alpha: .6, taper: .3, even: true }));
+  bottle.appendChild(S('rect', { x: bx - 2, y: by - 38.5, width: 4, height: 3, fill: '#3B3530' }));
+  bottle.appendChild(S('path', { d: bottleD, fill: 'none', stroke: INK, 'stroke-width': .7, 'stroke-opacity': .8 }));
   return g;
 }
 
@@ -203,12 +221,16 @@ function backBar(defs, x0, x1) {
   ]));
   SHELVES.forEach((y, row) => {
     g.appendChild(S('rect', { x: x0, y: y - 26, width: x1 - x0, height: 26, fill: 'url(#' + glow + ')', class: 'shelf-glow' }));
-    shelfItems(row, x0, x1).forEach((item) => g.appendChild(item.jar ? shelfJar(item) : shelfBottle(item)));
+    /* each shelf is painted from the top down: its plank, then what
+       stands on it from left to right */
+    shelfItems(row, x0, x1).forEach((item, i) => g.appendChild(paintAs(item.jar ? shelfJar(item) : shelfBottle(item), 'shelves', row * 1000 + 1 + i)));
     /* the plank edge-on, and its shadow on the wall */
-    g.appendChild(S('rect', { x: x0, y: y + 3.4, width: x1 - x0, height: 5, fill: 'url(#' + shade + ')' }));
-    g.appendChild(wash(poly([[x0, y], [x1, y], [x1, y + 3.4], [x0, y + 3.4]]), '#D3B48A', { alpha: 1, edge: 0 }));
-    g.appendChild(pen(line([x0, y + .5], [x1, y + .5], 2), .6, { color: GOUACHE, alpha: .6, straight: true }));
-    g.appendChild(pen(line([x0, y + 3.4], [x1, y + 3.4], 2), .45, { alpha: .45, straight: true }));
+    g.appendChild(paintAs(S('g', {}, [
+      S('rect', { x: x0, y: y + 3.4, width: x1 - x0, height: 5, fill: 'url(#' + shade + ')' }),
+      wash(poly([[x0, y], [x1, y], [x1, y + 3.4], [x0, y + 3.4]]), '#D3B48A', { alpha: 1, edge: 0 }),
+      pen(line([x0, y + .5], [x1, y + .5], 2), .6, { color: GOUACHE, alpha: .6, straight: true }),
+      pen(line([x0, y + 3.4], [x1, y + 3.4], 2), .45, { alpha: .45, straight: true })
+    ]), 'shelves', row * 1000));
   });
   return g;
 }
@@ -307,7 +329,10 @@ function drawPieces(rand) {
   };
 
   /* three wine bottles, and the same three going round in the air */
-  const standing = [92, 103, 114].map((x) => S('g', { transform: 'translate(' + x + ' ' + (BAR_TOP - 14) + ') scale(1.75)' }, [wineBottle()]));
+  /* the painter's order along the counter: the shaker, the mixing glass and
+     its spoon, the wine bottles from the right, then (past the vase) the
+     jigger, the tee and its ball, and the coupe */
+  const standing = [92, 103, 114].map((x, i) => paintAs(S('g', { transform: 'translate(' + x + ' ' + (BAR_TOP - 14) + ') scale(1.75)' }, [wineBottle()]), 'counter', 6 - i));
   const loop = S('g', { transform: 'translate(103 64)' });
   for (let i = 0; i < 3; i++) {
     const b = S('g', { class: 'moves bottle' }, [S('g', { transform: 'scale(1.4)' }, [wineBottle()])]);
@@ -316,18 +341,21 @@ function drawPieces(rand) {
   }
 
   /* a ball teed up beside a coupe, which is a Sidecar */
-  const coupe = drawDrink(drinkById('sidecar'), {}, 'static');
+  const coupe = paintAs(drawDrink(drinkById('sidecar'), {}, 'static'), 'counter', 11);
   [['x', 266], ['y', BAR_TOP - 41], ['width', 32], ['height', 45.3]].forEach(([k, v]) => coupe.setAttribute(k, v));
 
   return [
     piece('juggle', standing, [loop]),
-    piece('stir', [S('g', { transform: 'translate(152 ' + BAR_TOP + ')' }, [mixingGlass(rand)]), moving(152, BAR_TOP - 22, 'spoon', [barSpoon()])]),
-    piece('shake', [moving(190, BAR_TOP, 'shake-body', [S('g', { transform: 'scale(1.85)' }, [shaker()])])]),
+    piece('stir', [
+      paintAs(S('g', { transform: 'translate(152 ' + BAR_TOP + ')' }, [mixingGlass(rand)]), 'counter', 2),
+      paintAs(moving(152, BAR_TOP - 22, 'spoon', [barSpoon()]), 'counter', 3)
+    ]),
+    piece('shake', [paintAs(moving(190, BAR_TOP, 'shake-body', [S('g', { transform: 'scale(1.85)' }, [shaker()])]), 'counter', 1)]),
     piece('chip', [
-      S('g', { transform: 'translate(216 ' + BAR_TOP + ')' }, [jigger()]),
+      paintAs(S('g', { transform: 'translate(216 ' + BAR_TOP + ')' }, [jigger()]), 'counter', 8),
       coupe,
-      pen([[244, BAR_TOP], [244, BAR_TOP - 3.6]], 1.1, { color: '#C7A26A', alpha: 1, straight: true }),
-      moving(244, BAR_TOP - 6, 'chip-ball', [S('circle', { cx: 0, cy: 0, r: 2.6, fill: GOUACHE, stroke: INK, 'stroke-width': .6, 'stroke-opacity': .8 })])
+      paintAs(pen([[244, BAR_TOP], [244, BAR_TOP - 3.6]], 1.1, { color: '#C7A26A', alpha: 1, straight: true }), 'counter', 9),
+      paintAs(moving(244, BAR_TOP - 6, 'chip-ball', [S('circle', { cx: 0, cy: 0, r: 2.6, fill: GOUACHE, stroke: INK, 'stroke-width': .6, 'stroke-opacity': .8 })]), 'counter', 10)
     ])
   ];
 }
@@ -350,64 +378,244 @@ const stirTheBar = () => perform('shake', 3000);
 
 /* ---------- painted in ---------- */
 
-/* On arrival the bar is painted onto the page. Each ink line is traced
-   on, the shelves and their bottles from left to right, then the counter
-   and what stands on it; each wash bleeds in just after its outline; the
-   lantern is drawn and lit last, and the seal pressed. A tap, a key or a
-   scroll finishes it at once. */
-const PAINT_LAYERS = [
-  /* the layer, when it starts (s), how long its left-to-right sweep takes */
-  ['paint-shelves', .1, 1.9],
-  ['paint-counter', 1.4, 1.1],
-  ['paint-pieces', 2.2, .9],
-  ['paint-lantern', 3, 0]
+/* On arrival the bar is painted onto the page the way a painter works: a
+   part at a time, and each part outlined in ink, then washed with colour,
+   then finished with its fine lines and highlights before the hand moves
+   on. The counter comes first: the long line of its front edge, then what
+   stands on it, the shaker before anything; then the shelves behind, each
+   plank and then its bottles; then the lantern, which is lit last; then
+   the seal. A tap, a key or a scroll finishes it at once.
+
+   Each thing in the drawing says which part it belongs to and where it
+   comes in that part's order (paintAs). What each of its marks is, an ink
+   line, a wash, a highlight, is read from how it's drawn (markOf), so a
+   drawing needn't be written with the painting in mind. */
+
+/* How long each part's ink, washes and finishing take, in seconds. A part
+   with more in it gets a little longer for each thing, up to `most`; past
+   that it's drawn faster, and then a quick hand starts the next thing
+   before the last is done, the way it runs along a shelf. */
+const PAINT_PARTS = [
+  { part: 'counter', ink: 3.3, wash: 1.7, finish: .6 },
+  { part: 'shelves', ink: 1.6, each: .015, most: 2.6, wash: 1.6, finish: .5 },
+  { part: 'lantern', ink: .8, wash: .5, finish: .3 }
 ];
-const PAINT_DONE = 4.9;
+const PAINT_FROM = .5;          /* a moment of bare paper first */
+const INK_SPEED = 150;          /* an unhurried hand, in units of the stage a second */
 const PAINT_SKIP = ['pointerdown', 'keydown', 'wheel', 'touchstart'];
 const PAINTED = 'path, rect, circle, ellipse';
+const UNPAINTED = 'defs, clipPath, mask, pattern, .act';
+const HIGHLIGHT = [GOUACHE, PAPER_WASH];     /* white, put on last */
+const PAPER = [LABEL, '#F3EDE1'];             /* labels: the wash goes round them */
+const INKS = [INK, '#3B3530'];
 
-function paintIn(box, svg, x0, span) {
-  const frame = svg.getBoundingClientRect();
-  const units = (px) => x0 + (px - frame.left) / frame.width * span;
-  PAINT_LAYERS.forEach(([cls, start, sweep]) => {
-    const layer = svg.querySelector('.' + cls);
-    if (!layer) return;
-    Array.from(layer.children).forEach((unit) => {
-      /* each thing starts when the sweep reaches it; a long thing is drawn
-         along its length from its left end */
-      const r = unit.getBoundingClientRect();
-      const left = units(r.left), right = units(r.right);
-      const long = right - left > 120;
-      const x = long ? Math.max(left, x0) : (left + right) / 2;
-      unit.style.setProperty('--d', (start + sweep * Math.min(1, Math.max(0, (x - x0) / span))).toFixed(2) + 's');
-      if (long) unit.style.setProperty('--len', '1.8s');
-      /* a thing is a group of shapes, or a single line or wash */
-      const shapes = unit.matches(PAINTED) ? [unit] : unit.querySelectorAll(PAINTED);
-      shapes.forEach((shape) => {
-        /* masks and gradients aren't painted, and what moves or glows keeps its own animation */
-        if (shape.closest('defs, clipPath, mask, pattern') || shape.getAttribute('class')) return;
-        const stroke = shape.getAttribute('stroke');
-        if (shape.getAttribute('fill') === 'none' && stroke && stroke !== 'none') {
-          shape.setAttribute('pathLength', 1);
-          shape.classList.add('paint-line');
-        } else shape.classList.add(long && !shape.hasAttribute('clip-path') ? 'paint-wipe' : 'paint-fill');
-      });
-    });
+const filled = (s) => (s.getAttribute('fill') || '').toLowerCase() !== 'none';
+
+/* how far the hand travels along a mark, in units of the stage: a stroke
+   of the brush is about half the way round its outline */
+function reach(s, k, half) {
+  let len = 0;
+  try { len = s.getTotalLength(); } catch (e) { /* measured from its box below */ }
+  if (!len) { const b = s.getBBox(); len = 2 * (b.width + b.height); }
+  return len * k * (half ? .5 : 1);
+}
+
+/* What a mark is, from how it's drawn: an ink line, a stroke of the brush
+   in ink, a dab of ink, a wash, the ring a wash dries to, a label left as
+   paper, a fine line, a highlight, or the lantern's light. k is how big
+   the mark is drawn against the stage. */
+function markOf(s, k) {
+  const attr = (a) => (s.getAttribute(a) || '').toUpperCase();
+  const num = (a) => { const v = parseFloat(s.getAttribute(a)); return isNaN(v) ? 1 : v; };
+  if (/lantern-light/.test(s.getAttribute('class') || '')) return 'light';
+  const fill = attr('fill'), stroke = attr('stroke');
+  const stroked = stroke !== '' && stroke !== 'NONE';
+  if (fill === 'NONE') {
+    if (!stroked) return null;
+    if (HIGHLIGHT.includes(stroke)) return 'shine';
+    const body = s.previousElementSibling;
+    if (body && s.getAttribute('d') && body.getAttribute('d') === s.getAttribute('d') && filled(body)) return 'ring';
+    if (num('stroke-opacity') < .3 || num('stroke-width') * k < .4 || reach(s, k) < 4) return 'fine';
+    return 'line';
+  }
+  if (stroked && !HIGHLIGHT.includes(stroke)) return 'line';
+  if (HIGHLIGHT.includes(fill)) return 'shine';
+  if (PAPER.includes(fill)) return 'paper';
+  if (INKS.includes(fill) && num('fill-opacity') >= .3) return s.tagName === 'path' ? 'stroke' : 'dab';
+  return 'wash';
+}
+
+/* which way a stroke of the brush was pulled: from the end its outline
+   starts at, along its longer side */
+function pulled(s) {
+  const b = s.getBBox();
+  const m = /M\s*(-?[\d.]+)[\s,]+(-?[\d.]+)/.exec(s.getAttribute('d') || '');
+  if (b.width >= b.height) return !m || +m[1] - b.x <= b.x + b.width - +m[1] ? 'r' : 'l';
+  return !m || +m[2] - b.y <= b.y + b.height - +m[2] ? 'd' : 'u';
+}
+
+/* a wash laid along with a wide brush rather than dropped in */
+const longWash = (s, k) => { const b = s.getBBox(); return b.width * k > 60 && b.width > b.height * 4; };
+
+function paintIn(box, svg) {
+  const view = svg.getScreenCTM();
+  if (!view || !box.clientWidth) return;
+  const unit = Math.hypot(view.a, view.b);
+
+  /* the hand's timetable: when each mark starts (--d) and how long it takes (--len) */
+  const timed = new Set();
+  const put = (s, how, at, len) => {
+    how.split(' ').forEach((c) => s.classList.add(c));
+    if (how.includes('paint-line')) s.setAttribute('pathLength', 1);
+    s.style.setProperty('--d', at.toFixed(2) + 's');
+    s.style.setProperty('--len', len.toFixed(2) + 's');
+    timed.add(s);
+    return at + len;
+  };
+
+  /* what's in each part, in order, and every mark of every thing */
+  const parts = {};
+  svg.querySelectorAll('[data-part]').forEach((o) => {
+    const part = o.getAttribute('data-part');
+    (parts[part] = parts[part] || []).push(o);
   });
-  svg.querySelectorAll('.lantern-glow, .shelf-glow, .lantern-light').forEach((g) => g.classList.add('paint-glow'));
+  const marks = new Map();
+  const marksOf = (o) => {
+    if (!marks.has(o)) {
+      const shapes = o.matches(PAINTED) ? [o] : Array.from(o.querySelectorAll(PAINTED));
+      marks.set(o, shapes.filter((s) => !s.closest(UNPAINTED)).map((s) => {
+        const m = s.getScreenCTM();
+        const k = m ? Math.hypot(m.a, m.b) / unit : 1;
+        const kind = markOf(s, k);
+        return { s, k, kind, long: kind === 'wash' && longWash(s, k) };
+      }).filter((m) => m.kind));
+    }
+    return marks.get(o);
+  };
+
+  /* The ink: each thing's outlines one after another, the longest first,
+     so its contour goes down before what's inside it, and its dark dabs
+     last; then on to the next thing. */
+  function ink(list, from, time) {
+    const plans = list.map((o) => {
+      const steps = [];
+      let t = 0;
+      marksOf(o).filter((m) => m.kind === 'line' || m.kind === 'stroke')
+        .map((m) => [m, reach(m.s, m.k, m.kind === 'stroke')])
+        .sort((a, b) => b[1] - a[1])
+        .forEach(([m, far]) => {
+          const len = Math.min(.9, Math.max(.1, far / INK_SPEED));
+          steps.push([m, t, len]);
+          t += len + .05;
+        });
+      marksOf(o).forEach((m) => {
+        if (m.kind !== 'dab') return;
+        steps.push([m, Math.max(0, t - .1), .2]);
+        t += .05;
+      });
+      return { steps, len: t };
+    });
+    const GAP = .12;
+    const whole = plans.reduce((sum, p) => sum + p.len + GAP, 0);
+    const pace = Math.min(1.2, Math.max(.3, time / whole));
+    const tail = plans.length ? plans[plans.length - 1].len * pace : 0;
+    const spread = whole * pace > time ? Math.max(.08, (time - tail) / (whole * pace - tail)) : 1;
+    let t = from, end = from;
+    plans.forEach((p) => {
+      p.steps.forEach(([m, at, len]) => {
+        const how = m.kind === 'line' ? 'paint-line' + (filled(m.s) ? ' paint-filled' : '')
+          : m.kind === 'dab' || m.s.hasAttribute('clip-path') ? 'paint-fade' : 'paint-wipe-' + pulled(m.s);
+        end = Math.max(end, put(m.s, how, t + at * pace, len * pace));
+      });
+      t += (p.len + GAP) * pace * spread;
+    });
+    return end;
+  }
+
+  /* The colour: the long washes first, laid along one after another with a
+     wide brush, then each thing's own, a thing at a time, spreading from
+     where the brush touched. The ring a wash dries to comes up after it,
+     and a label is left as paper. */
+  function washes(list, from, time) {
+    let lead = 0, end = from;
+    list.forEach((o) => marksOf(o).forEach((m) => {
+      if (!m.long) return;
+      end = Math.max(end, put(m.s, 'paint-wipe-r', from + lead, Math.min(1.2, Math.max(.5, m.s.getBBox().width * m.k / 320))));
+      lead += .15;
+    }));
+    const coloured = list.filter((o) => marksOf(o).some((m) => m.kind === 'wash' && !m.long));
+    const step = Math.min(.14, Math.max(.015, (time - 1.1) / Math.max(1, coloured.length)));
+    let t = from + Math.min(lead, .3), n = 0;
+    coloured.forEach((o) => {
+      const when = new Map();
+      /* a thing's own washes go on within a third of a second of each other */
+      const inner = Math.min(.05, .3 / marksOf(o).filter((m) => m.kind === 'wash' && !m.long).length);
+      let i = 0;
+      marksOf(o).forEach((m) => {
+        if (m.kind === 'wash' && !m.long) {
+          const at = t + i++ * inner;
+          when.set(m.s, at);
+          end = Math.max(end, put(m.s, m.s.hasAttribute('clip-path') ? 'paint-fade' : 'paint-bleed' + (n++ % 2 ? ' paint-bleed-b' : ''), at, .8));
+        } else if (m.kind === 'ring') {
+          const body = m.s.previousElementSibling;
+          end = Math.max(end, put(m.s, 'paint-fade', (when.has(body) ? when.get(body) : t) + .35, .6));
+        } else if (m.kind === 'paper') end = Math.max(end, put(m.s, 'paint-fade', t, .4));
+      });
+      t += step;
+    });
+    return end;
+  }
+
+  /* The finish: fine lines and highlights, quickly, thing by thing. */
+  function finish(list, from, time) {
+    const all = [];
+    list.forEach((o) => marksOf(o).forEach((m) => { if (m.kind === 'fine' || m.kind === 'shine') all.push(m); }));
+    const step = Math.min(.03, (time - .4) / Math.max(1, all.length));
+    let end = from;
+    all.forEach((m, i) => {
+      const line = !filled(m.s);
+      end = Math.max(end, put(m.s, line ? 'paint-line' : m.s.hasAttribute('clip-path') ? 'paint-fade' : 'paint-wipe-' + pulled(m.s),
+        from + i * step, line ? Math.min(.6, Math.max(.08, reach(m.s, m.k) / 300)) : .3));
+    });
+    return end;
+  }
+
+  let t = PAINT_FROM, menuAt = 0;
+  PAINT_PARTS.forEach((p) => {
+    const list = (parts[p.part] || []).sort((a, b) => a.getAttribute('data-order') - b.getAttribute('data-order'));
+    t = ink(list, t, Math.min(p.most || p.ink, p.ink + (p.each || 0) * list.length));
+    t = washes(list, t - .1, p.wash);
+    t = finish(list, t - .3, p.finish);
+    if (p.part === 'counter') menuAt = t;
+  });
+
+  /* the lantern is lit, then its light reaches the room and the shelves */
+  const lit = t + .1;
+  svg.querySelectorAll('.lantern-light').forEach((s) => put(s, 'paint-fade', lit, .8));
+  svg.querySelectorAll('.lantern-glow').forEach((s) => put(s, 'paint-fade', lit + .25, 1.3));
+  svg.querySelectorAll('.shelf-glow').forEach((s) => put(s, 'paint-fade', lit + .4, 1.3));
+  /* anything the timetable missed comes up with the light, never before */
+  svg.querySelectorAll(PAINTED).forEach((s) => {
+    if (!timed.has(s) && !s.closest(UNPAINTED + ', .bar-seal')) put(s, 'paint-fade', lit, 1);
+  });
+  const sealAt = lit + 1.1;
+  svg.style.setProperty('--seal-at', sealAt.toFixed(2) + 's');
+  /* the menu comes in under the bar once the counter is painted */
+  document.documentElement.style.setProperty('--menu-at', menuAt.toFixed(2) + 's');
   box.classList.add('painting');
   document.documentElement.classList.add('painting-page');
 
   let done = false;
-  const finish = () => {
+  const end = () => {
     if (done) return;
     done = true;
     box.classList.remove('painting');
     document.documentElement.classList.remove('painting-page');
-    PAINT_SKIP.forEach((type) => window.removeEventListener(type, finish));
+    document.documentElement.style.removeProperty('--menu-at');
+    PAINT_SKIP.forEach((type) => window.removeEventListener(type, end));
   };
-  PAINT_SKIP.forEach((type) => window.addEventListener(type, finish, { passive: true }));
-  setTimeout(finish, PAINT_DONE * 1000);
+  PAINT_SKIP.forEach((type) => window.addEventListener(type, end, { passive: true }));
+  setTimeout(end, (sealAt + .6) * 1000);
 }
 
 /* ---------- the scene ---------- */
@@ -442,12 +650,11 @@ function renderScene(paint = false) {
   ]));
   svg.appendChild(defs);
 
-  const layer = (cls, g) => { g.classList.add(cls); svg.appendChild(g); };
-  layer('paint-shelves', backBar(defs, x0 - 2, x1 + 2));
+  svg.appendChild(backBar(defs, x0 - 2, x1 + 2));
   svg.appendChild(S('rect', { x: x0, y: -2, width: span, height: COUNTER_Y + 2, fill: 'url(#' + glow + ')', class: 'lantern-glow' }));
-  layer('paint-lantern', lantern(rand));
-  layer('paint-counter', counter(rand, x0 - 2, x1 + 2));
-  layer('paint-pieces', S('g', {}, drawPieces(rand)));
+  svg.appendChild(lantern(rand));
+  svg.appendChild(counter(rand, x0 - 2, x1 + 2));
+  drawPieces(rand).forEach((g) => svg.appendChild(g));
   /* the house seal on the front of the bar, the way a painter signs */
   svg.appendChild(S('g', { transform: 'translate(322 151.5)' }, [S('g', { class: 'bar-seal' }, [houseSeal(17)])]));
 
@@ -466,7 +673,7 @@ function renderScene(paint = false) {
     taps.appendChild(b);
   });
   box.appendChild(taps);
-  if (paint && !prefersStill()) paintIn(box, svg, x0, span);
+  if (paint && !prefersStill()) paintIn(box, svg);
 }
 
 /* a turned phone or a resized window gets the bar redrawn to its new width */

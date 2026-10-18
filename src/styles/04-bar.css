@@ -120,37 +120,60 @@
 
 /* ---------- painted in on arrival (bar.js) ---------- */
 
-/* lines trace on along their length; washes bleed in after them; long
-   washes are laid left to right; the light comes up last. A line starts
-   just short of its first point: starting on it leaves a dot of ink
-   where a round end sits before anything is drawn. */
+/* Every mark waits for the hand (--d) and takes as long as the hand does
+   (--len). A line is traced along its length, starting just short of its
+   first point: starting on it leaves a dot of ink where a round end sits
+   before anything is drawn. A shape outlined in ink fills as it's drawn. */
 .painting .paint-line {
   stroke-dasharray: 1 2;
-  animation: paint-line var(--len, .8s) cubic-bezier(.45, .05, .3, 1) var(--d, 0s) both;
+  animation: paint-line var(--len, .5s) cubic-bezier(.4, 0, .3, 1) var(--d, 0s) both;
+}
+.painting .paint-line.paint-filled {
+  animation: paint-line var(--len, .5s) cubic-bezier(.4, 0, .3, 1) var(--d, 0s) both,
+    paint-filled var(--len, .5s) ease-in var(--d, 0s) both;
 }
 @keyframes paint-line {
   from { stroke-dashoffset: 1.01; }
   to   { stroke-dashoffset: 0; }
 }
-.painting .paint-fill { animation: paint-fill 1s ease-out calc(var(--d, 0s) + .3s) both; }
-@keyframes paint-fill { from { opacity: 0; } }
-.painting .paint-wipe { animation: paint-wipe var(--len, 1.8s) cubic-bezier(.45, .05, .3, 1) var(--d, 0s) both; }
-@keyframes paint-wipe {
-  from { clip-path: inset(0 100% 0 0); }
-  to   { clip-path: inset(0 0 0 0); }
+@keyframes paint-filled { from { fill-opacity: 0; } }
+
+/* a stroke of the brush, uncovered the way it was pulled */
+.painting .paint-wipe-r { animation: paint-wipe-r var(--len, .5s) cubic-bezier(.4, 0, .3, 1) var(--d, 0s) both; }
+.painting .paint-wipe-l { animation: paint-wipe-l var(--len, .5s) cubic-bezier(.4, 0, .3, 1) var(--d, 0s) both; }
+.painting .paint-wipe-d { animation: paint-wipe-d var(--len, .5s) cubic-bezier(.4, 0, .3, 1) var(--d, 0s) both; }
+.painting .paint-wipe-u { animation: paint-wipe-u var(--len, .5s) cubic-bezier(.4, 0, .3, 1) var(--d, 0s) both; }
+@keyframes paint-wipe-r { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes paint-wipe-l { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0 0 0 0); } }
+@keyframes paint-wipe-d { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes paint-wipe-u { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0 0 0 0); } }
+
+/* a wash spreads from where the brush touched, and darkens as it settles */
+.painting .paint-bleed { animation: paint-bleed var(--len, .8s) cubic-bezier(.2, .6, .35, 1) var(--d, 0s) both; }
+.painting .paint-bleed.paint-bleed-b { animation-name: paint-bleed-b; }
+@keyframes paint-bleed {
+  from { clip-path: circle(0% at 40% 60%); opacity: .35; }
+  to   { clip-path: circle(120% at 40% 60%); opacity: 1; }
 }
-.painting .paint-glow { animation: paint-fill 1.4s ease-out 3.3s both; }
+@keyframes paint-bleed-b {
+  from { clip-path: circle(0% at 60% 35%); opacity: .35; }
+  to   { clip-path: circle(120% at 60% 35%); opacity: 1; }
+}
+
+/* the ring a wash dries to, a label, a dab of ink, the light */
+.painting .paint-fade { animation: paint-fade var(--len, .6s) ease-out var(--d, 0s) both; }
+@keyframes paint-fade { from { opacity: 0; } }
 
 /* the seal is pressed last, slightly askew, and stays */
 .bar-seal { transform-box: fill-box; transform-origin: center; transform: rotate(-6deg); }
-.painting .bar-seal { animation: seal .5s cubic-bezier(.3, 1.5, .5, 1) 4.1s both; }
+.painting .bar-seal { animation: seal .5s cubic-bezier(.3, 1.5, .5, 1) var(--seal-at, 4s) both; }
 @keyframes seal {
   0%   { opacity: 0; transform: scale(1.7) rotate(-6deg); }
   60%  { opacity: 1; transform: scale(.94) rotate(-6deg); }
   100% { opacity: 1; transform: scale(1) rotate(-6deg); }
 }
 
-/* the menu comes in under it while the last of the bar goes on */
+/* the menu comes in under it once the counter is painted */
 .painting-page #filters,
-.painting-page #menu-body { animation: paint-fill .9s ease-out 2.2s both; }
-.painting-page .choice { animation: paint-fill .7s ease-out 3.6s both; }
+.painting-page #menu-body,
+.painting-page .choice { animation: paint-fade .9s ease-out var(--menu-at, 2s) both; }
