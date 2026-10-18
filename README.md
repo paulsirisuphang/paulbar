@@ -81,11 +81,16 @@ page says it's offline.
 
 ## Thai
 
-Drink names stay in Latin, the way Thai bar menus print them; everything else
-is translated in `src/data/03-strings-th.js`. Thai is written without spaces,
-so the browser finds line breaks with a dictionary that cuts loanwords in
-half (ออร์เด|อร์). The page sets Thai one whole word at a time instead, and
-`TH_KEEP` lists the words the dictionary gets wrong. After changing Thai copy,
+Drink names and brand names (Campari, Suze, Peychaud's) stay in Latin, the
+way Thai bar menus print them; everything else is written in Thai in
+`src/data/03-strings-th.js`, as a Thai bar would put it rather than line by
+line from the English. Thai is never set in italic: a slanted Thai face reads
+as a mistake, so anything in Thai stands upright.
+
+Thai is written without spaces, so the browser finds line breaks with a
+dictionary that cuts loanwords in half (ออร์เด|อร์) and splits some compounds
+(น้ำ|แข็ง). The page sets Thai one whole word at a time instead, and `TH_KEEP`
+lists the words the dictionary gets wrong. After changing Thai copy,
 `node tools/thai_check.mjs --short` shows the short pieces with their
 neighbours, which is where a cut word shows up.
 

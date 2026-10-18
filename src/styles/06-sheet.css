@@ -271,7 +271,7 @@ dialog[open] { animation: card-in .4s var(--ease); }
 .option:has(input:checked) .box svg { opacity: 1; transform: scale(1); }
 .option:has(input:focus-visible) { outline: 1.5px solid var(--shu); outline-offset: 3px; }
 .option-text { display: grid; gap: 4px; }
-.option-title { font-family: var(--display); font-size: 1.375rem; font-weight: 600; line-height: 1.1; }
+.option-title { font-family: var(--display); font-size: 1.375rem; font-weight: 600; line-height: 1.1; font-variant-numeric: lining-nums; }
 .option-why { font-size: .9375rem; line-height: 1.5; color: var(--ink-3); }
 .option.smoke:has(input:checked) .box { border-color: var(--smoke); }
 .option.zero:has(input:checked) .option-title { color: var(--matcha); }

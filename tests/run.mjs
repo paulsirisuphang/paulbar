@@ -352,8 +352,20 @@ const checks = [
     ok(words.includes('มาร์ตินี่') && words.includes('ก่อน'), 'a loanword is cut in two: ' + words.join('|'));
     const split = await page.$$eval('.note', (n) => n.filter((x) => x.children.length !== 2).length);
     eq(split, 0, 'notes whose words came apart');
+    eq(await page.$eval('.entry-hook', (n) => getComputedStyle(n).fontStyle), 'normal', 'a Thai hook set in italic');
     await comeBack(page);
     eq(await page.getAttribute('html', 'lang'), 'th', 'language after a refresh');
+  }],
+
+  ['a Thai name stands upright on the English page too', {}, async (page) => {
+    await enter(page);
+    await order(page, 'negroni', 'นก');
+    await order(page, 'gimlet', 'Ben');
+    await page.click('#burger');
+    await page.click('#tab-orders');
+    const names = await page.$$eval('.ticket-guest', (n) => n.map((g) => g.textContent + ' ' + getComputedStyle(g.firstElementChild || g).fontStyle));
+    ok(names.includes('นก normal'), 'a Thai name set in italic: ' + names.join(', '));
+    ok(names.includes('Ben italic'), 'an English name lost its italic: ' + names.join(', '));
   }],
 
   ['with reduced motion the bar is simply there, and nothing performs', { reducedMotion: true }, async (page) => {

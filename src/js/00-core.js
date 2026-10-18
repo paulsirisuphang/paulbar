@@ -17,7 +17,8 @@ function el(tag, cls, text) {
    with a place to break between them: the words in TH_KEEP first (the
    browser's dictionary cuts those mid-word), then the dictionary splits
    what's left. The words come wrapped in one span, so a flex row they
-   land in sees a single item. Text with no Thai in it is just text. */
+   land in sees a single item, marked as Thai so it is never set in
+   italic. Text with no Thai in it is just text. */
 const THAI = /[\u0E00-\u0E7F]/;
 let thaiKeep = null;
 let thaiWords = null;
@@ -29,6 +30,7 @@ function txt(text) {
     thaiKeep = new RegExp('(' + TH_KEEP.slice().sort((a, b) => b.length - a.length).join('|') + ')');
   }
   const run = document.createElement('span');
+  run.lang = 'th';
   let lastThai = false;
   /* the repeat mark ๆ belongs to the word before it, never the next line */
   text.replace(/ ๆ/g, '\u00a0ๆ').split(thaiKeep).forEach((part, i) => {

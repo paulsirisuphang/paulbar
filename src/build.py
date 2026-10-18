@@ -38,7 +38,6 @@ FACES = [
     ("Trirong", 400, "normal", "trirong-400.woff2", THAI),
     ("Trirong", 500, "normal", "trirong-500.woff2", THAI),
     ("Trirong", 600, "normal", "trirong-600.woff2", THAI),
-    ("Trirong", 400, "italic", "trirong-400i.woff2", THAI),
     ("Jost", 400, "normal", "jost-400.woff2", LATIN),
     ("Jost", 500, "normal", "jost-500.woff2", LATIN),
     ("Anuphan", 400, "normal", "anuphan-400.woff2", THAI),

@@ -82,4 +82,13 @@ img, svg { max-width: 100%; }
   text-transform: none;
 }
 
+/* Thai has no italic, and slanted Thai reads as a mistake. Anything set in
+   Thai stands upright, whatever the style around it asks for: the Thai
+   copy, and a name or note a guest types in Thai on the English page
+   (txt in core.js marks that as Thai). */
+:lang(th), :lang(th)::placeholder { font-style: normal !important; }
+
+/* and a Thai paragraph never ends on one short word alone on its line */
+:lang(th) :is(p, li) { text-wrap: pretty; }
+
 [hidden] { display: none !important; }
