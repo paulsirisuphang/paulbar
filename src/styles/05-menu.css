@@ -139,30 +139,3 @@
   font-style: italic;
   color: var(--ink-3);
 }
-
-/* found, not advertised — the eighteenth green at the foot of the card.
-   The button covers the pin and its flag (x 211–288, y 9–108 of 320 × 150). */
-.secret { margin: 72px auto 0; max-width: 380px; text-align: center; }
-.green { position: relative; animation: entry-in 1.4s var(--ease) both; }
-.green svg { display: block; width: 100%; height: auto; overflow: visible; }
-.green text { font-family: var(--sans); font-weight: 500; }
-.pennant { transform-box: fill-box; transform-origin: 0 50%; animation: pennant 3.8s ease-in-out infinite; }
-@keyframes pennant {
-  0%, 100% { transform: scaleX(1) skewY(0deg); }
-  34%      { transform: scaleX(.92) skewY(-4deg); }
-  68%      { transform: scaleX(1.03) skewY(2deg); }
-}
-.flag-hit {
-  position: absolute;
-  left: 66%;
-  top: 6%;
-  width: 24%;
-  height: 66%;
-  padding: 0;
-  border: 0;
-  background: none;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-.green:has(.flag-hit:hover) .pennant path { fill: var(--shu-2); }
-.flag-hit:focus-visible { outline: 1.5px solid var(--shu); outline-offset: 2px; }

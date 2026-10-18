@@ -86,6 +86,5 @@ const store = {
 const KEYS = {
   orders: 'paulsbar.orders.v1',
   guest: 'paulsbar.guest.v1',
-  lang: 'paulsbar.lang.v1',
-  found: 'paulsbar.found.v1'
+  lang: 'paulsbar.lang.v1'
 };

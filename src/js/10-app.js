@@ -1,6 +1,5 @@
 /* ================================================================
-   THE BAR — paper, tabs, language, the drink that isn't on
-   the list, and switching it all on
+   THE BAR — paper, smoke, tabs, language, and switching it all on
    ================================================================ */
 
 /* ---------- washi ---------- */
@@ -75,40 +74,6 @@ function releaseSmoke() {
   }
   document.body.appendChild(layer);
   setTimeout(() => layer.remove(), 7000);
-}
-
-/* ---------- the drink that isn't on the list ---------- */
-
-const SECRET = 'vieux-carre';
-const secretFound = () => store.get(KEYS.found) === '1';
-const openSecret = () => { const d = drinkById(SECRET); if (d) openSheet(d); };
-
-/* once the tee has been found, the eighteenth green appears at the foot
-   of the menu, and its flag is the way back */
-function paintSecret() {
-  const spot = $('#secret');
-  spot.hidden = !secretFound();
-  spot.innerHTML = '';
-  if (spot.hidden) return;
-  const green = el('div', 'green');
-  green.appendChild(greenScene());
-  const flag = el('button', 'flag-hit');
-  flag.type = 'button';
-  flag.setAttribute('aria-label', U('secret_line'));
-  flag.addEventListener('click', openSecret);
-  green.appendChild(flag);
-  spot.appendChild(green);
-}
-
-function wireTee() {
-  const tee = $('#tee');
-  tee.appendChild(teeMark());
-  tee.addEventListener('click', () => {
-    if (secretFound()) { openSecret(); return; }
-    store.set(KEYS.found, '1');
-    paintSecret();
-    $('#secret').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  });
 }
 
 /* ---------- tabs and the menu button ---------- */
@@ -187,7 +152,6 @@ function paintStatic() {
   $('#tab-menu-text').textContent = U('tab_menu');
   $('#tab-orders-text').textContent = U('tab_orders');
   $('#orders-title').textContent = U('tab_orders');
-  $('#tee').setAttribute('aria-label', U('tee_label'));
 
   const choice = $('#choice');
   choice.innerHTML = '';
@@ -218,8 +182,8 @@ paintStatic();
 /* every arrival paints the bar in, however many times you come back */
 renderScene(true);
 wireChrome();
-wireTee();
-paintSecret();
+/* the golf tee is the exclamation mark in the name, and only that */
+$('#tee').appendChild(teeMark());
 renderFilters();
 renderMenu();
 renderOrders();
@@ -233,7 +197,6 @@ onLang(() => {
   renderMenu();
   renderOrders();
   renderNotes();
-  paintSecret();
   paintSync();
 });
 

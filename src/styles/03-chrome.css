@@ -49,15 +49,9 @@
    hard against the r, and the same height as the capitals */
 .tee {
   display: inline-block;
-  padding: 10px 6px;
-  margin: -10px -6px -10px -7px;
-  border: 0;
-  background: none;
-  font: inherit;
+  margin-left: -1px;
   line-height: 1;
   vertical-align: baseline;
-  cursor: pointer;
-  touch-action: manipulation;
 }
 .tee svg {
   display: inline-block;
@@ -65,19 +59,6 @@
   width: auto;
   height: .7em;
   overflow: visible;
-  transform-box: fill-box;
-  transform-origin: 50% 96%;
-  animation: tee-shiver 3.6s ease-in-out infinite;
-}
-.tee:hover svg { animation-duration: 1.2s; }
-/* still most of the time, then a small shiver that catches the eye */
-@keyframes tee-shiver {
-  0%, 74%, 100% { transform: rotate(0); }
-  77% { transform: rotate(-9deg); }
-  81% { transform: rotate(8deg); }
-  85% { transform: rotate(-6deg); }
-  89% { transform: rotate(4deg); }
-  93% { transform: rotate(-2deg); }
 }
 
 .topbar-right {

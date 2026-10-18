@@ -22,11 +22,11 @@
    SVG transform attribute on the same element. */
 .scene .moves { transform-box: view-box; transform-origin: 0 0; }
 
-/* the paper lantern sways a little on its long cord and is lit by the hour */
-.lantern { animation: lantern 8s ease-in-out infinite alternate; }
+/* the paper lantern sways slowly on its long cord and is lit by the hour */
+.lantern { animation: lantern 5s ease-in-out infinite alternate; }
 @keyframes lantern {
-  from { transform: rotate(-.8deg); }
-  to   { transform: rotate(.8deg); }
+  from { transform: rotate(-1.6deg); }
+  to   { transform: rotate(1.6deg); }
 }
 .lantern-glow { opacity: var(--lantern); transition: opacity 2s ease; }
 /* the strip of light behind each shelf, never quite off */
@@ -38,6 +38,19 @@
    where each one sits along the bar. */
 /* over what stands on the counter, below the lantern */
 .piece-taps { position: absolute; inset: 36% 0 14%; z-index: 1; }
+/* over the lantern: hovering it turns the light up */
+.lantern-tap {
+  position: absolute;
+  z-index: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.lantern-tap:focus-visible { outline-offset: 2px; }
+.scene:has(.lantern-tap:hover) .lantern-light { opacity: 1; }
 .piece-tap {
   position: absolute;
   top: 0;
@@ -85,11 +98,22 @@
 .piece-chip.acting .chip-ball { animation: chip 2.4s ease-in-out infinite; }
 @keyframes chip {
   0%, 26%  { transform: translate(0, 0); opacity: 1; }
-  48%      { transform: translate(18px, -40px); opacity: 1; }
-  68%      { transform: translate(36px, -12px); opacity: 1; }
-  72%, 94% { transform: translate(38px, -2px); opacity: 0; }
+  48%      { transform: translate(19px, -30px); opacity: 1; }
+  66%      { transform: translate(37px, -16px); opacity: 1; }
+  70%, 94% { transform: translate(39px, -11px); opacity: 0; }
   100%     { transform: translate(0, 0); opacity: 1; }
 }
+
+/* smoke from the smoking gun rises slowly and thins out; tapped, it pours
+   out more for a while */
+.smoke-wisp { transform-box: fill-box; transform-origin: 50% 100%; animation: wisp 7.2s ease-in-out infinite; }
+@keyframes wisp {
+  0%   { opacity: 0; transform: translateY(1.5px) scaleY(.92); }
+  22%  { opacity: 1; }
+  70%  { opacity: .7; }
+  100% { opacity: 0; transform: translateY(-6px) scaleY(1.08) skewX(-5deg); }
+}
+.piece-smoke.acting .act .smoke-wisp { animation-duration: 3.6s; }
 
 /* sits on the front edge of the counter */
 .choice {

@@ -20,7 +20,7 @@ const T_EN = {
 
   piece_juggle: 'Juggle the wine bottles', piece_stir: 'Stir the mixing glass',
   piece_shake: 'Shake the shaker', piece_chip: 'Chip the golf ball into the glass',
-  tee_label: 'A golf tee',
+  piece_smoke: 'Fire up the smoking gun',
   filters_label: 'Show one kind of drink',
   stamp_poured: 'Poured',
   ago_now: 'just now',

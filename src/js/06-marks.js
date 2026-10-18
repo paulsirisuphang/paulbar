@@ -1,6 +1,6 @@
 /* ================================================================
-   MARKS — the small drawings around the menu: the tee, the seal, the
-   brushed circle, icons, the eighteenth green, smoke that leaves.
+   MARKS — the small drawings around the menu: the tee, the seals, icons,
+   smoke that leaves.
    ================================================================ */
 
 const SEAL_RED = '#B0392A';
@@ -110,75 +110,6 @@ function brushRule() {
   const rand = seeded('rule');
   const svg = S('svg', { viewBox: '0 0 56 8', 'aria-hidden': 'true', focusable: 'false' });
   svg.appendChild(brush(trace((t) => [3 + t * 50, 4.6 - Math.sin(t * Math.PI) * 1.1], 12), (t) => 2.6 * (1 - t * .4), { rand, taper: .1, taperEnd: .45, alpha: .75 }));
-  return svg;
-}
-
-/* ---------- the eighteenth: a green beside a raked bunker ---------- */
-
-function greenScene() {
-  const rand = seeded('green');
-  const svg = S('svg', { viewBox: '0 0 320 150', 'aria-hidden': 'true', focusable: 'false' });
-  const defs = S('defs');
-  svg.appendChild(defs);
-
-  /* the bunker, raked the way a temple garden is */
-  const bunker = wobble(trace((t) => {
-    const a = t * Math.PI * 2;
-    return [96 + Math.cos(a) * 62 + Math.cos(a * 2) * 6, 112 + Math.sin(a) * 19 + Math.sin(a * 3) * 2];
-  }, 40).slice(0, 40), 1.2, rand);
-  const bunkerD = smooth(bunker, true);
-  const bclip = clipPath(defs, bunkerD);
-  svg.appendChild(wash(bunkerD, '#DCCDAE', { fill: '#E9DEC6', alpha: 1, edge: .22, edgeWidth: 1.4, edgeAlpha: .5, clipTo: bclip }));
-  const rake = S('g', { 'clip-path': 'url(#' + bclip + ')' });
-  for (let i = 1; i <= 7; i++) {
-    rake.appendChild(pen(trace((t) => [20 + t * 160, 92 + i * 5.2 + Math.sin(t * Math.PI * 2 + i * .4) * 1.6], 24), .55, { color: '#9C8C6C', alpha: .55 }));
-  }
-  /* raked in rings around the stone */
-  for (let r = 6; r <= 16; r += 4.2) rake.appendChild(pen(arc(64, 110, r * 1.5, r * .6, 0, Math.PI * 2, 26), .55, { color: '#9C8C6C', alpha: .6 }));
-  svg.appendChild(rake);
-  svg.appendChild(brush(bunker.concat([bunker[0]]), .9, { rand, taper: 0, alpha: .55 }));
-  const stone = 'M54,111 Q53,101 62,99 Q72,98 75,105 Q77,112 67,114 Q57,115 54,111 Z';
-  svg.appendChild(wash(stone, '#8F8B82', { alpha: .95, edge: .35, edgeWidth: 1 }));
-  svg.appendChild(wash('M58,103 Q62,99.4 68,100 Q64,102 58,103 Z', '#7F8F55', { alpha: .85, edge: 0 }));
-  svg.appendChild(S('path', { d: stone, fill: 'none', stroke: INK, 'stroke-width': .8, 'stroke-opacity': .75 }));
-
-  /* the green */
-  const green = wobble(trace((t) => {
-    const a = t * Math.PI * 2;
-    return [212 + Math.cos(a) * 92 + Math.sin(a * 2) * 5, 104 + Math.sin(a) * 25 + Math.cos(a * 3) * 2];
-  }, 44).slice(0, 44), 1.4, rand);
-  const greenD = smooth(green, true);
-  const gclip = clipPath(defs, greenD);
-  const shade = inkId('turf');
-  defs.appendChild(S('radialGradient', { id: shade, cx: .55, cy: .4, r: .65 }, [
-    S('stop', { offset: 0, 'stop-color': '#A9B67E' }),
-    S('stop', { offset: 1, 'stop-color': '#7E8D55' })
-  ]));
-  svg.appendChild(wash(greenD, '#7E8D55', { fill: 'url(#' + shade + ')', alpha: .92, edge: .3, edgeWidth: 2, edgeAlpha: .4, clipTo: gclip }));
-  const mown = S('g', { 'clip-path': 'url(#' + gclip + ')' });
-  for (let i = 0; i < 6; i++) {
-    const x = 120 + i * 34;
-    mown.appendChild(S('path', { d: poly([[x, 70], [x + 17, 70], [x + 4, 140], [x - 13, 140]]), fill: GOUACHE, 'fill-opacity': .07 }));
-  }
-  svg.appendChild(mown);
-  svg.appendChild(S('path', { d: greenD, fill: 'url(#' + grainPattern(defs, rand, '#3F4A28') + ')' }));
-  svg.appendChild(brush(green.concat([green[0]]), 1, { rand, taper: 0, alpha: .6 }));
-  /* a few blades at the edge */
-  [[126, 112], [131, 115], [292, 98], [297, 101], [250, 128]].forEach(([x, y]) =>
-    svg.appendChild(pen([[x, y], [x + 1.2, y - 4.5]], .6, { alpha: .55, straight: true })));
-
-  /* the cup, the pin and the flag */
-  svg.appendChild(S('ellipse', { cx: 236, cy: 100, rx: 7, ry: 2.5, fill: INK, 'fill-opacity': .92 }));
-  svg.appendChild(pen(arc(236, 100.3, 7, 2.5, Math.PI * .1, Math.PI * .9, 10), .6, { color: GOUACHE, alpha: .6 }));
-  svg.appendChild(brush(line([236, 100], [236, 18], 10), 1.4, { rand, taper: .04, even: true }));
-  svg.appendChild(brush(line([235.4, 24], [235.4, 92], 4), .5, { color: GOUACHE, alpha: .7, taper: .2, even: true }));
-  const flag = S('g', { class: 'pennant' });
-  flag.appendChild(S('path', { d: 'M236.6,19 C247,21 258,24.6 270,27.6 C258,30.6 247,34.2 236.6,36.6 Z', fill: SEAL_RED }));
-  flag.appendChild(S('text', { x: 244.5, y: 31.2, fill: PAPER_WASH, 'font-size': 9.4 }, [document.createTextNode('18')]));
-  svg.appendChild(flag);
-  /* the ball, a putt short */
-  svg.appendChild(S('ellipse', { cx: 203, cy: 108.6, rx: 4.6, ry: 1.4, fill: INK, 'fill-opacity': .18 }));
-  svg.appendChild(S('circle', { cx: 202, cy: 105.4, r: 3.4, fill: GOUACHE, stroke: INK, 'stroke-width': .7, 'stroke-opacity': .8 }));
   return svg;
 }
 

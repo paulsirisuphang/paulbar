@@ -123,7 +123,10 @@ const checks = [
     ok(s.counter.to <= s.shelves.from + .05, `the shelves start at ${s.shelves.from.toFixed(2)}s, before the counter is done at ${s.counter.to.toFixed(2)}s`);
     ok(s.shelves.to <= s.lantern.from + .05, `the lantern starts at ${s.lantern.from.toFixed(2)}s, before the shelves are done at ${s.shelves.to.toFixed(2)}s`);
     eq(s['counter 0'].from, s.all.from, 'the first mark is not the front edge of the bar');
-    ok(s['counter 1'].from < s['counter 11'].from, 'the coupe is drawn before the shaker');
+    ok(s['counter 1'].from < s['counter 12'].from, 'the coupe is drawn before the shaker');
+    /* Paul's name goes on the lantern stroke by stroke, in the order it's written */
+    const written = await page.$$eval('#scene .lantern-name path', (p) => p.map((s) => parseFloat(s.style.getPropertyValue('--d'))));
+    ok(written.every((d, i) => !i || d > written[i - 1]), 'the name is not written stroke after stroke: ' + written.join(', '));
     ok(s['counter 1 lines'].to <= s['counter 1 washes'].from, 'the shaker is coloured before it is outlined');
     ok(s['shelves 0'].from < s['shelves 1'].from, 'a bottle is drawn before the shelf it stands on');
     const total = plan.seal + .6;
@@ -137,10 +140,18 @@ const checks = [
       const unit = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
       const cord = document.querySelector('#scene .lantern > path');
       const paper = [...document.querySelectorAll('#scene .lantern path')].find((p) => p.getAttribute('fill') === '#EFE6D4');
-      return { top: cord.getBoundingClientRect().top + window.scrollY, wide: paper.getBoundingClientRect().width / unit };
+      return {
+        top: cord.getBoundingClientRect().top + window.scrollY,
+        wide: paper.getBoundingClientRect().width / unit,
+        name: document.querySelectorAll('#scene .lantern-name path').length,
+        sways: getComputedStyle(document.querySelector('#scene .lantern')).animationName
+      };
     });
     ok(m.top <= 0, `the cord stops ${m.top.toFixed(0)}px below the top of the page`);
     ok(m.wide >= 38, `the lantern is only ${m.wide.toFixed(0)} units wide`);
+    /* ホ is four strokes and the small circle makes it ポ; then ー, then ル in two */
+    eq(m.name, 8, 'brush marks in ポール on the lantern');
+    eq(m.sways, 'lantern', 'the lantern\'s sway');
   }],
 
   ['a tap finishes the painting at once', {}, async (page) => {
@@ -249,25 +260,23 @@ const checks = [
     ok(await page.$('.empty'), 'no quiet-bar message');
   }],
 
-  ['the tee finds the eighteenth green, and its flag opens the secret', {}, async (page) => {
-    await enter(page);
-    ok(!(await visible(page, '#secret')), 'the green shows before the tee is found');
-    await page.click('#tee');
-    ok(await visible(page, '#secret .green svg'), 'no green after tapping the tee');
-    /* tap where the flag is drawn, so the button has to be over it */
-    await settle(page);
-    const flag = await page.$eval('.green .pennant', (n) => { const r = n.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; });
-    await page.mouse.click(...flag);
+  ['the lantern opens the drink that isn\'t on the menu; the tee is only the !', {}, async (page) => {
+    await page.goto(TEST_PAGE);
+    /* the tap that finishes the painting doesn't open the lantern as well */
+    await page.click('.lantern-tap');
+    ok(!(await page.$('.painting')), 'the painting carried on after a tap');
+    ok(!(await page.$eval('#sheet', (d) => d.open)), 'the tap that finished the painting opened the lantern too');
+    await page.waitForTimeout(800);
+    await page.click('.lantern-tap');
     await page.waitForFunction(() => document.getElementById('sheet').open, null, { timeout: 2000 }).catch(() => {});
-    ok(await page.$eval('#sheet', (d) => d.open), 'tapping the flag opens nothing');
-    eq(await text(page, '#sheet-title'), 'Smoke Vieux Carré', 'the drink behind the flag');
+    ok(await page.$eval('#sheet', (d) => d.open), 'tapping the lantern opens nothing');
+    eq(await text(page, '#sheet-title'), 'Smoke Vieux Carré', 'the drink behind the lantern');
     ok(await page.$eval('#sheet .option.smoke input', (i) => i.checked), 'smoke is not on by default');
     await closeCard(page);
     await page.click('#tee');
-    eq(await text(page, '#sheet-title'), 'Smoke Vieux Carré', 'the drink behind the tee once found');
-    await closeCard(page);
-    await comeBack(page);
-    ok(await visible(page, '#secret .green svg'), 'the green is forgotten after a refresh');
+    await page.waitForTimeout(300);
+    ok(!(await page.$eval('#sheet', (d) => d.open)), 'the tee still opens something');
+    eq(await count(page, '#secret, .green, .flag-hit, button#tee'), 0, 'the old way to the green is still on the page');
   }],
 
   ['the name goes home: the whole menu, from the top', {}, async (page) => {
@@ -294,10 +303,10 @@ const checks = [
 
   ['each piece on the counter does its party piece, for ten seconds', { clock: true }, async (page) => {
     await enter(page);
-    eq(await count(page, '.piece-tap'), 4, 'buttons over the pieces');
+    eq(await count(page, '.piece-tap'), 5, 'buttons over the pieces');
     for (const b of await page.$$('.piece-tap')) await b.click();
     const acting = () => page.$$eval('.piece.acting', (p) => p.map((n) => n.className.baseVal.match(/piece-(\w+)/)[1]).join(', '));
-    eq(await acting(), 'juggle, stir, shake, chip', 'pieces performing');
+    eq(await acting(), 'juggle, stir, shake, chip, smoke', 'pieces performing');
     await page.clock.runFor(10100);
     eq(await acting(), '', 'pieces still performing after ten seconds');
     /* an order sets the shaker going for a few seconds */

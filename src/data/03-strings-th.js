@@ -74,7 +74,7 @@ const T_TH = {
 
   piece_juggle: 'โยนขวดไวน์เล่น', piece_stir: 'คนแก้วผสม',
   piece_shake: 'เขย่าเชคเกอร์', piece_chip: 'ตีลูกกอล์ฟลงแก้ว',
-  tee_label: 'ทีตั้งลูกกอล์ฟ',
+  piece_smoke: 'จุดเครื่องรมควัน',
   filters_label: 'เลือกดูทีละแบบ',
   stamp_poured: 'เสิร์ฟแล้ว',
   ago_now: 'เมื่อสักครู่',

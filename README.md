@@ -6,22 +6,23 @@ one drawn in ink and wash from its own recipe, plus one that isn't on the
 list.
 
 - The **menu** opens on the bar at rest: shelves of bottles, a paper
-  lantern, and the tools left out on a hinoki counter. Every visit paints
-  it onto the page the way a painter would, a part at a time: the counter
-  and the tools on it, outlined in ink and then washed with colour; then
-  the shelves behind; then the lantern, which is lit last; then the house
-  seal, pressed on the front of the bar. It takes about 13 seconds, and a
-  tap finishes it at once. Tap a piece on the counter and it does a party
-  piece for ten seconds. The four filters show one section at a time;
-  with none chosen, the whole card shows.
+  lantern hanging from the top of the page with Paul's name on it in
+  katakana (ポール), and the tools left out on a hinoki counter, a smoking
+  gun among them, all drawn to the same scale. Every visit paints it onto
+  the page the way a painter would, a part at a time: the counter and the
+  tools on it, outlined in ink and then washed with colour; then the
+  shelves behind; then the lantern, its name written stroke by stroke, and
+  lit last; then the house seal, pressed on the front of the bar. It takes
+  about 14 seconds, and a tap finishes it at once. Tap a piece on the
+  counter and it does a party piece for ten seconds. The four filters show
+  one section at a time; with none chosen, the whole card shows.
 - A **drink's card** has its story, what's in it, how it tastes, and the
   options it takes: smoke and a choice of wood on 10 drinks, egg white on 2,
   zero-sugar syrup on 6.
 - **Orders** land on a rail as tickets, each with the full build behind it.
   Ticking a ticket stamps it poured.
-- The golf tee in the name is the exclamation mark. It finds the eighteenth
-  green at the foot of the menu, and the flag opens the drink that isn't on
-  the list.
+- The **lantern** is the way to the drink that isn't on the list: tap it.
+  The golf tee in the name is the exclamation mark, and only that.
 
 ## Running it
 
@@ -57,8 +58,8 @@ The code, file by file:
 | `02-book.js` | The order book: this browser first, then the shared book |
 | `03-ink.js` | The brush: strokes, washes and paper grain |
 | `04-glass.js` | Every drink, drawn from its recipe |
-| `05-bar.js` | The bar: shelves, lantern, counter, the party pieces, and painting it in |
-| `06-marks.js` | The seal, the tee, the green, the icons |
+| `05-bar.js` | The bar: shelves, lantern, counter, the party pieces, the drink behind the lantern, and painting it in |
+| `06-marks.js` | The seals, the tee, the icons, smoke that leaves the glass |
 | `07-menu.js` | Filters, sections and the list |
 | `08-sheet.js` | A drink's card and placing an order |
 | `09-orders.js` | The tickets and their builds |
@@ -99,7 +100,7 @@ python3 tools/artlab.py            every drawing on one sheet, build/artlab.html
 ```
 
 The checks cover the painting, the menu, the filters, the card, ordering,
-the build panel, pouring, the tee and the green, the party pieces, Thai,
+the build panel, pouring, the lantern and the tee, the party pieces, Thai,
 reduced motion, and phone and desktop layouts.
 
 ## Fonts

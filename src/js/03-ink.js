@@ -91,6 +91,22 @@ function trace(fn, n = 20) {
   return pts;
 }
 
+/* points along a smooth curve through the given ones (Catmull-Rom), for a
+   brush to follow: `per` points to each stretch between two of them */
+function through(pts, per = 5) {
+  const out = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(pts.length - 1, i + 2)];
+    for (let j = 0; j < per; j++) {
+      const t = j / per, t2 = t * t, t3 = t2 * t;
+      out.push([0, 1].map((k) => .5 * (2 * p1[k] + (p2[k] - p0[k]) * t +
+        (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t2 + (3 * p1[k] - p0[k] - 3 * p2[k] + p3[k]) * t3)));
+    }
+  }
+  out.push(pts[pts.length - 1]);
+  return out;
+}
+
 /* join point runs end to end, dropping the duplicate where they meet */
 function join(...runs) {
   const out = [];
