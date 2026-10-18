@@ -1,0 +1,156 @@
+/* ================================================================
+   THE BAR — a lit back bar, a paper lantern, and the tools on the
+   counter, each with a party piece when tapped; painted in on arrival
+   ================================================================ */
+
+/* The bar runs the full width of the window, out past the page's
+   margins. The drawing keeps the stage at its size in the middle
+   (bar.js) and only the bar gets longer. */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-inline: calc(50% - 50vw);
+}
+
+.scene { position: relative; width: 100%; }
+.scene svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+/* Everything that moves turns about its own local origin, which the
+   drawing puts where it pivots: the cord, the rim, the base. The
+   position lives on a parent group, because a CSS transform replaces an
+   SVG transform attribute on the same element. */
+.scene .moves { transform-box: view-box; transform-origin: 0 0; }
+
+/* the paper lantern sways a little on its cord and is lit by the hour */
+.lantern { animation: lantern 7s ease-in-out infinite alternate; }
+@keyframes lantern {
+  from { transform: rotate(-1.4deg); }
+  to   { transform: rotate(1.4deg); }
+}
+.lantern-glow { opacity: var(--lantern); transition: opacity 2s ease; }
+/* the strip of light behind each shelf, never quite off */
+.shelf-glow { opacity: calc(.45 + var(--lantern) * .55); transition: opacity 2s ease; }
+.lantern-light { opacity: calc(.35 + var(--lantern) * .65); transition: opacity 2s ease; }
+
+/* a phone will not reliably fire a tap on an SVG shape, so each piece is
+   covered by a real button, which a keyboard can reach too. bar.js sets
+   where each one sits along the bar. */
+.piece-taps { position: absolute; inset: 22% 0 14%; z-index: 1; }
+.piece-tap {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.piece-tap:focus-visible { outline-offset: -6px; }
+
+/* ---------- the party pieces, ten seconds each ---------- */
+
+.act { display: none; }
+.acting .act { display: inline; }
+
+/* the wine bottles leave the bar and go round in the air */
+.piece-juggle.acting .still { visibility: hidden; }
+.bottle { animation: juggle 1.3s linear infinite; }
+@keyframes juggle {
+  0%   { transform: translate(-13px, 18px) rotate(0deg); }
+  25%  { transform: translate(-10px, -16px) rotate(180deg); }
+  50%  { transform: translate(11px, -23px) rotate(360deg); }
+  75%  { transform: translate(14px, 14px) rotate(540deg); }
+  100% { transform: translate(-13px, 18px) rotate(720deg); }
+}
+
+/* the spoon goes round the mixing glass */
+.piece-stir.acting .spoon { animation: stir .8s ease-in-out infinite alternate; }
+@keyframes stir {
+  from { transform: rotate(-7deg); }
+  to   { transform: rotate(7deg); }
+}
+
+/* the shaker gives a hard shake with nobody holding it */
+.piece-shake.acting .shake-body { animation: hard-shake .17s ease-in-out infinite alternate; }
+@keyframes hard-shake {
+  from { transform: translate(-1.6px, .6px) rotate(-8deg); }
+  to   { transform: translate(1.6px, -2.4px) rotate(8deg); }
+}
+
+/* the ball is chipped off its tee and drops into the coupe */
+.piece-chip.acting .chip-ball { animation: chip 2.4s ease-in-out infinite; }
+@keyframes chip {
+  0%, 26%  { transform: translate(0, 0); opacity: 1; }
+  48%      { transform: translate(18px, -40px); opacity: 1; }
+  68%      { transform: translate(36px, -12px); opacity: 1; }
+  72%, 94% { transform: translate(38px, -2px); opacity: 0; }
+  100%     { transform: translate(0, 0); opacity: 1; }
+}
+
+/* sits on the front edge of the counter */
+.choice {
+  position: relative;
+  z-index: 2;
+  margin-top: 18px;
+  border-radius: var(--radius);
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  padding: 13px 24px 13px 20px;
+  border: 0;
+  background: var(--ink);
+  color: var(--paper-hi);
+  font-family: var(--sans);
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 14px 24px -18px rgba(38, 34, 30, .7);
+  transition: background-color .3s ease, transform .3s var(--ease);
+}
+:lang(th) .choice { font-size: .9375rem; letter-spacing: .02em; }
+.choice:hover { background: #3A332D; transform: translateY(-1px); }
+.choice:active { transform: translateY(0); }
+.choice svg { width: 15px; height: 15px; flex: none; transition: transform .6s var(--ease); }
+.choice:hover svg, .choice.rolling svg { transform: rotate(180deg); }
+
+/* ---------- painted in on arrival (bar.js) ---------- */
+
+/* lines trace on along their length; washes bleed in after them; long
+   washes are laid left to right; the light comes up last. A line starts
+   just short of its first point: starting on it leaves a dot of ink
+   where a round end sits before anything is drawn. */
+.painting .paint-line {
+  stroke-dasharray: 1 2;
+  animation: paint-line var(--len, .8s) cubic-bezier(.45, .05, .3, 1) var(--d, 0s) both;
+}
+@keyframes paint-line {
+  from { stroke-dashoffset: 1.01; }
+  to   { stroke-dashoffset: 0; }
+}
+.painting .paint-fill { animation: paint-fill 1s ease-out calc(var(--d, 0s) + .3s) both; }
+@keyframes paint-fill { from { opacity: 0; } }
+.painting .paint-wipe { animation: paint-wipe var(--len, 1.8s) cubic-bezier(.45, .05, .3, 1) var(--d, 0s) both; }
+@keyframes paint-wipe {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+.painting .paint-glow { animation: paint-fill 1.4s ease-out 3.3s both; }
+
+/* the seal is pressed last, slightly askew, and stays */
+.bar-seal { transform-box: fill-box; transform-origin: center; transform: rotate(-6deg); }
+.painting .bar-seal { animation: seal .5s cubic-bezier(.3, 1.5, .5, 1) 4.1s both; }
+@keyframes seal {
+  0%   { opacity: 0; transform: scale(1.7) rotate(-6deg); }
+  60%  { opacity: 1; transform: scale(.94) rotate(-6deg); }
+  100% { opacity: 1; transform: scale(1) rotate(-6deg); }
+}
+
+/* the menu comes in under it while the last of the bar goes on */
+.painting-page #filters,
+.painting-page #menu-body { animation: paint-fill .9s ease-out 2.2s both; }
+.painting-page .choice { animation: paint-fill .7s ease-out 3.6s both; }

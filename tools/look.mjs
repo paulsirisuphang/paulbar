@@ -9,21 +9,26 @@
      open:<drink id>             open a drink's card from the menu
      orders | th                 the orders page; Thai
      wait:<ms>                   let animations run
+     at:<ms>                     hold every animation at that moment
      eval:<url-encoded js>       run a line of script on the page
      script:<file>               run a file of script on the page
 
    ENGINE=webkit for Safari's engine; SCALE=3 for a closer look;
-   ARRIVAL=1 keeps the arrival screen instead of tapping through it. */
+   PAINT=1 keeps the bar being painted in instead of finishing it, and
+   stops the clock so it never finishes on its own (pair it with at:);
+   QUERY='?a=b' adds a query string to the page's address. */
 import fs from 'node:fs';
 import { launch, openPage, TEST_PAGE } from './browser.mjs';
 
 const [name, w, h, ...steps] = process.argv.slice(2);
 const browser = await launch(process.env.ENGINE);
-const page = await openPage(browser, { width: +w, height: +h, scale: +(process.env.SCALE || 2) });
-await page.goto(TEST_PAGE);
-if (!process.env.ARRIVAL) {
+const paint = !!process.env.PAINT;
+const page = await openPage(browser, { width: +w, height: +h, scale: +(process.env.SCALE || 2), clock: paint });
+await page.goto(TEST_PAGE + (process.env.QUERY || ''));
+if (!paint) {
+  /* a key finishes the painting, the way a guest would skip it */
   await page.waitForTimeout(300);
-  await page.evaluate(() => document.getElementById('arrival')?.remove());
+  await page.keyboard.press('Shift');
   await page.waitForTimeout(700);
 }
 
@@ -39,6 +44,7 @@ for (const s of steps) {
   if (k === 'orders') { await page.evaluate(() => document.getElementById('tab-orders').click()); await page.waitForTimeout(500); }
   if (k === 'th') { await page.evaluate(() => document.getElementById('lang-th').click()); await page.waitForTimeout(500); }
   if (k === 'wait') await page.waitForTimeout(+v);
+  if (k === 'at') await page.evaluate((ms) => document.getAnimations().forEach((a) => { a.pause(); a.currentTime = ms; }), +v);
   if (k === 'eval') { await page.evaluate(decodeURIComponent(v)); await page.waitForTimeout(400); }
   if (k === 'script') { await page.evaluate(fs.readFileSync(v, 'utf8')); await page.waitForTimeout(600); }
 }

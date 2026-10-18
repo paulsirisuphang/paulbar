@@ -5,9 +5,13 @@ It's set like a printed card on washi paper: 28 drinks in four sections, each
 one drawn in ink and wash from its own recipe, plus one that isn't on the
 list.
 
-- The **menu** opens with three bartenders behind a hinoki counter. Tap one
-  and they do a party piece for ten seconds. The four filters show one
-  section at a time; with none chosen, the whole card shows.
+- The **menu** opens on the bar at rest: shelves of bottles, a paper
+  lantern, and the tools left out on a hinoki counter. Every visit paints
+  it onto the page, line by line and wash by wash, and presses the house
+  seal on the front of the bar to finish; a tap finishes it at once. Tap
+  a piece on the counter and it does a party piece for ten seconds. The
+  four filters show one section at a time; with none chosen, the whole
+  card shows.
 - A **drink's card** has its story, what's in it, how it tastes, and the
   options it takes: smoke and a choice of wood on 10 drinks, egg white on 2,
   zero-sugar syrup on 6.
@@ -37,7 +41,7 @@ build stops if the script doesn't parse or the stylesheets don't balance.
 | Where | What |
 | --- | --- |
 | `src/page.html` | The page's markup, with slots for fonts, styles and script |
-| `src/styles/` | The stylesheets, joined in order: tokens, base, chrome, crew, menu, card, orders, scenes |
+| `src/styles/` | The stylesheets, joined in order: tokens, base, chrome, bar, menu, card, orders, scenes |
 | `src/data/` | The drinks, the English and Thai copy, and the shared book's address |
 | `src/js/` | The code, joined in order into one script |
 | `src/fonts/` | The fonts, cut down to the letters the page uses (`tools/make_fonts.py`) |
@@ -51,12 +55,12 @@ The code, file by file:
 | `02-book.js` | The order book: this browser first, then the shared book |
 | `03-ink.js` | The brush: strokes, washes and paper grain |
 | `04-glass.js` | Every drink, drawn from its recipe |
-| `05-crew.js` | The bartenders, the counter, the lantern |
+| `05-bar.js` | The bar: shelves, lantern, counter, the party pieces, and painting it in |
 | `06-marks.js` | The seal, the tee, the green, the icons |
 | `07-menu.js` | Filters, sections and the list |
 | `08-sheet.js` | A drink's card and placing an order |
 | `09-orders.js` | The tickets and their builds |
-| `10-app.js` | Paper, arrival, tabs, the secret, and starting it all |
+| `10-app.js` | Paper, tabs, the secret, and starting it all |
 
 ## Orders on every phone
 
@@ -88,12 +92,13 @@ The checks and tools borrow a Playwright that's already installed;
 ```
 node tests/run.mjs                 every check, in Chromium and WebKit
 node tools/look.mjs <name> 390 844 shot open:negroni shot
+PAINT=1 node tools/look.mjs <name> 390 844 at:1500 shot   the painting, 1.5 s in
 python3 tools/artlab.py            every drawing on one sheet, build/artlab.html
 ```
 
-The checks cover the menu, the filters, the card, ordering, the build panel,
-pouring, the tee and the green, the party pieces, Thai, reduced motion, and
-phone and desktop layouts.
+The checks cover the painting, the menu, the filters, the card, ordering,
+the build panel, pouring, the tee and the green, the party pieces, Thai,
+reduced motion, and phone and desktop layouts.
 
 ## Fonts
 

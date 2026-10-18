@@ -16,12 +16,32 @@ class Failed extends Error {}
 const ok = (cond, msg) => { if (!cond) throw new Failed(msg); };
 const eq = (got, want, msg) => ok(got === want, `${msg}: expected ${JSON.stringify(want)}, got ${JSON.stringify(got)}`);
 
-/* through the door: the arrival screen goes on a tap */
+/* through the door: a key finishes painting the bar, the way a guest
+   would skip it */
+async function skipPainting(page) {
+  await page.keyboard.press('Shift');
+  await page.waitForFunction(() => !document.querySelector('.painting'));
+}
 async function enter(page) {
   await page.goto(TEST_PAGE);
-  if (await page.$('#arrival')) await page.click('#arrival');
-  await page.waitForFunction(() => !document.getElementById('arrival'));
+  await skipPainting(page);
 }
+async function comeBack(page) {
+  await page.reload();
+  await skipPainting(page);
+}
+/* everything in the bar's drawing that shows at this moment of the painting */
+const inkShowing = (page) => page.evaluate(() => {
+  const svg = document.querySelector('#scene svg');
+  return [...svg.querySelectorAll('path, rect, circle, ellipse, text')].filter((s) => {
+    if (s.closest('defs, clipPath, mask, pattern, .act')) return false;
+    for (let n = s; n !== svg; n = n.parentNode) if (+getComputedStyle(n).opacity < .02) return false;
+    const cs = getComputedStyle(s);
+    if (cs.strokeDasharray !== 'none' && parseFloat(cs.strokeDashoffset) >= 1) return false;
+    if (/inset\((0(px)? )?100%/.test(cs.clipPath)) return false;
+    return cs.display !== 'none' && cs.visibility !== 'hidden';
+  }).length;
+});
 /* until a smooth scroll has come to rest */
 async function settle(page) {
   let last = -1;
@@ -51,12 +71,31 @@ async function order(page, id, guest) {
 }
 
 const checks = [
-  ['the arrival screen comes back on every load and leaves on its own', {}, async (page) => {
+  ['the bar paints itself in on every load, from blank paper', { clock: true }, async (page) => {
     await page.goto(TEST_PAGE);
-    ok(await page.$('#arrival'), 'no arrival screen on the first load');
-    await page.waitForFunction(() => !document.getElementById('arrival'), null, { timeout: 4000 });
+    ok(await page.$('#scene.painting'), 'the bar is not painted in on the first load');
+    ok(await count(page, '#scene .paint-line') > 100, 'too few lines are drawn in');
+    ok(await count(page, '#scene .paint-fill') > 100, 'too few washes are laid in');
+    /* at the first moment the paper is blank; at the last the bar is all there */
+    const all = await page.evaluate(() => document.querySelectorAll('#scene svg *').length);
+    await page.evaluate(() => document.getAnimations().forEach((a) => { a.pause(); a.currentTime = 0; }));
+    eq(await inkShowing(page), 0, 'marks on the paper before the painting starts');
+    await page.evaluate(() => document.getAnimations().forEach((a) => { a.currentTime = 4800; }));
+    const done = await inkShowing(page);
+    ok(done > 300, `only ${done} marks of ${all} show at the end of the painting`);
+    await page.evaluate(() => document.getAnimations().forEach((a) => a.play()));
+    await page.clock.runFor(5000);
+    ok(!(await page.$('.painting, .painting-page')), 'the painting never finishes on its own');
     await page.reload();
-    ok(await page.$('#arrival'), 'no arrival screen after a refresh');
+    ok(await page.$('#scene.painting'), 'the bar is not painted in after a refresh');
+  }],
+
+  ['a tap finishes the painting at once', {}, async (page) => {
+    await page.goto(TEST_PAGE);
+    ok(await page.$('#scene.painting'), 'the bar is not being painted');
+    const box = await page.$eval('#scene', (n) => { const r = n.getBoundingClientRect(); return [r.left + 6, r.top + r.height * .3]; });
+    await page.mouse.click(...box);
+    ok(!(await page.$('.painting, .painting-page')), 'the painting carried on after a tap');
   }],
 
   ['the menu lists every drink but the secret one', {}, async (page) => {
@@ -174,8 +213,7 @@ const checks = [
     await page.click('#tee');
     eq(await text(page, '#sheet-title'), 'Smoke Vieux Carré', 'the drink behind the tee once found');
     await closeCard(page);
-    await page.reload();
-    await page.click('#arrival');
+    await comeBack(page);
     ok(await visible(page, '#secret .green svg'), 'the green is forgotten after a refresh');
   }],
 
@@ -201,15 +239,19 @@ const checks = [
     ok(m.bottom > .62 && m.bottom < .95, `the tee floats off the baseline (its foot at ${(m.bottom * 100).toFixed(0)}% of the line)`);
   }],
 
-  ['each bartender does their own party piece, for ten seconds', { clock: true }, async (page) => {
+  ['each piece on the counter does its party piece, for ten seconds', { clock: true }, async (page) => {
     await enter(page);
-    eq(await count(page, '.tender-tap'), 3, 'buttons over the bartenders');
-    for (const b of await page.$$('.tender-tap')) await b.click();
-    eq(await count(page, '.tender.acting'), 3, 'bartenders performing');
-    const flips = await page.$$eval('.tender', (t) => t.map((n) => getComputedStyle(n.querySelector('.flip')).animationName));
-    eq(flips.join(', '), 'none, none, headstand', 'who turns upside down');
+    eq(await count(page, '.piece-tap'), 4, 'buttons over the pieces');
+    for (const b of await page.$$('.piece-tap')) await b.click();
+    const acting = () => page.$$eval('.piece.acting', (p) => p.map((n) => n.className.baseVal.match(/piece-(\w+)/)[1]).join(', '));
+    eq(await acting(), 'juggle, stir, shake, chip', 'pieces performing');
     await page.clock.runFor(10100);
-    eq(await count(page, '.tender.acting'), 0, 'bartenders still performing after ten seconds');
+    eq(await acting(), '', 'pieces still performing after ten seconds');
+    /* an order sets the shaker going for a few seconds */
+    await order(page, 'gimlet', 'Ploy');
+    eq(await acting(), 'shake', 'pieces performing after an order');
+    await page.clock.runFor(3100);
+    eq(await acting(), '', 'the shaker still going after three seconds');
   }],
 
   ['Thai: everything moves, and words stay whole', {}, async (page) => {
@@ -222,16 +264,16 @@ const checks = [
     ok(words.includes('มาร์ตินี่') && words.includes('ก่อน'), 'a loanword is cut in two: ' + words.join('|'));
     const split = await page.$$eval('.note', (n) => n.filter((x) => x.children.length !== 2).length);
     eq(split, 0, 'notes whose words came apart');
-    await page.reload();
-    await page.click('#arrival');
+    await comeBack(page);
     eq(await page.getAttribute('html', 'lang'), 'th', 'language after a refresh');
   }],
 
-  ['with reduced motion there is no arrival and nobody performs', { reducedMotion: true }, async (page) => {
+  ['with reduced motion the bar is simply there, and nothing performs', { reducedMotion: true }, async (page) => {
     await page.goto(TEST_PAGE);
-    eq(await count(page, '#arrival'), 0, 'arrival screens');
-    await page.click('.tender-tap');
-    eq(await count(page, '.tender.acting'), 0, 'bartenders performing');
+    eq(await count(page, '.painting, .painting-page, #scene .paint-line'), 0, 'painting with reduced motion');
+    ok(await inkShowing(page) > 300, 'the bar is not all there');
+    for (const b of await page.$$('.piece-tap')) await b.click();
+    eq(await count(page, '.piece.acting'), 0, 'pieces performing');
   }],
 
   ['nothing scrolls sideways on a small phone', { width: 375, height: 667 }, async (page) => {
@@ -242,25 +284,27 @@ const checks = [
     eq(await wide(), 0, 'sideways overflow with a card open');
   }],
 
-  ['the bar runs the full width; the crew keep their size in the middle', { width: 1280, height: 860 }, async (page) => {
+  ['the bar runs the full width; what is on the counter keeps its size in the middle', { width: 1280, height: 860 }, async (page) => {
     await enter(page);
-    /* the crew's stage is 800px on a desktop, 340 units wide: tap areas 104 units apart */
+    /* the stage is 800px on a desktop and 340 units wide; the shaker stands
+       10 units right of its middle, and the wine bottles and the sidecar
+       stand 163 units apart */
     const measure = () => page.evaluate(() => {
-      const svg = document.querySelector('#crew svg').getBoundingClientRect();
-      const taps = [...document.querySelectorAll('.tender-tap')].map((b) => { const r = b.getBoundingClientRect(); return r.left + r.width / 2; });
-      return { left: svg.left, right: svg.right, width: document.documentElement.clientWidth, middle: taps[1], apart: taps[2] - taps[0] };
+      const svg = document.querySelector('#scene svg').getBoundingClientRect();
+      const taps = [...document.querySelectorAll('.piece-tap')].map((b) => { const r = b.getBoundingClientRect(); return r.left + r.width / 2; });
+      return { left: svg.left, right: svg.right, width: document.documentElement.clientWidth, shaker: taps[2], apart: taps[3] - taps[0] };
     });
     let m = await measure();
     ok(m.left <= 0 && m.right >= m.width - 1, `the bar spans ${m.left.toFixed(0)}–${m.right.toFixed(0)} of a ${m.width}px window`);
-    ok(Math.abs(m.middle - m.width / 2) < 2, `the middle bartender is ${(m.middle - m.width / 2).toFixed(1)}px off centre`);
-    ok(Math.abs(m.apart - 208 * 800 / 340) < 2, `the outer bartenders are ${m.apart.toFixed(1)}px apart on a desktop`);
+    ok(Math.abs(m.shaker - m.width / 2 - 10 * 800 / 340) < 2, `the shaker is ${(m.shaker - m.width / 2).toFixed(1)}px off centre`);
+    ok(Math.abs(m.apart - 163 * 800 / 340) < 2, `the outer pieces are ${m.apart.toFixed(1)}px apart on a desktop`);
     eq(await count(page, '.shelf-glow'), 2, 'lit shelves behind the bar');
-    /* a narrower window redraws the bar to fit, and the crew drop to the phone stage */
+    /* a narrower window redraws the bar to fit, on the phone's stage */
     await page.setViewportSize({ width: 700, height: 860 });
     await page.waitForTimeout(500);
     m = await measure();
     ok(m.left <= 0 && m.right >= m.width - 1, `after narrowing, the bar spans ${m.left.toFixed(0)}–${m.right.toFixed(0)} of ${m.width}px`);
-    ok(Math.abs(m.apart - 208 * 560 / 340) < 2, `after narrowing, the outer bartenders are ${m.apart.toFixed(1)}px apart`);
+    ok(Math.abs(m.apart - 163 * 560 / 340) < 2, `after narrowing, the outer pieces are ${m.apart.toFixed(1)}px apart`);
   }],
 
   ['spirit-forward comes first, in the filters and on the card', {}, async (page) => {

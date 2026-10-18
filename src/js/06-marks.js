@@ -86,37 +86,6 @@ function warnSeal() {
   return svg;
 }
 
-/* ---------- the brushed circle, for the arrival ---------- */
-
-function arrivalMark() {
-  const rand = seeded('enso');
-  const svg = S('svg', { viewBox: '0 0 200 200', focusable: 'false' });
-  const radius = wave(rand, 6);
-  const a0 = -Math.PI * .62;
-  const sweep = Math.PI * 1.86;
-  const centre = trace((t) => {
-    const a = a0 + sweep * t;
-    const r = 70 + radius(t) * 2.4;
-    return [100 + Math.cos(a) * r, 100 + Math.sin(a) * r];
-  }, 72);
-  const mid = inkId('enso');
-  const reveal = S('path', { d: smooth(centre), fill: 'none', stroke: '#fff', 'stroke-width': 26, 'stroke-linecap': 'round', pathLength: 1, class: 'enso-reveal' });
-  svg.appendChild(S('defs', {}, [S('mask', { id: mid, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: 200, height: 200 }, [reveal])]));
-  const ink = S('g', { mask: 'url(#' + mid + ')' });
-  /* loaded at the start, running dry at the end */
-  ink.appendChild(brush(centre, (t) => 12 * (1 - t * .62) + (t < .08 ? 3 : 0), { rand, taper: .05, taperEnd: .3, vary: .22, alpha: .92 }));
-  [-2.6, 1.8, 3.6].forEach((off, i) => {
-    const tail = centre.slice(46).map(([x, y]) => {
-      const dx = x - 100, dy = y - 100, d = Math.hypot(dx, dy);
-      return [x + (dx / d) * off, y + (dy / d) * off];
-    });
-    ink.appendChild(brush(tail, .9 - i * .2, { rand, taper: .1, taperEnd: .6, alpha: .5 }));
-  });
-  svg.appendChild(ink);
-  svg.appendChild(houseSeal(48, 100, 100));
-  return svg;
-}
-
 /* ---------- icons, drawn with the same hand ---------- */
 
 const ICONS = {

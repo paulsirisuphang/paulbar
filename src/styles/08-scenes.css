@@ -1,34 +1,7 @@
 /* ================================================================
-   SCENES — the arrival, smoke that leaves the glass, the slip that
+   SCENES — smoke that leaves the glass, the slip that
    confirms an order, and the motion inside the drawings
    ================================================================ */
-
-/* Every arrival: a blank sheet, one brushed circle, the seal pressed
-   inside it, then the room. Any tap skips it. */
-.arrival {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: grid;
-  place-items: center;
-  background-color: var(--paper);
-  background-image: var(--washi, none);
-  background-size: 420px 420px;
-  animation: arrive 2.5s ease-in forwards;
-}
-.arrival svg { width: min(220px, 56vw); height: auto; overflow: visible; }
-.enso-reveal { stroke-dasharray: 1; stroke-dashoffset: 1; animation: enso 1.15s cubic-bezier(.45, .1, .25, 1) .15s forwards; }
-@keyframes enso { to { stroke-dashoffset: 0; } }
-.arrival .seal { transform-box: fill-box; transform-origin: center; opacity: 0; animation: seal 0.5s cubic-bezier(.3, 1.5, .5, 1) 1.05s forwards; }
-@keyframes seal {
-  0%   { opacity: 0; transform: scale(1.7) rotate(-6deg); }
-  60%  { opacity: 1; transform: scale(.94) rotate(-6deg); }
-  100% { opacity: 1; transform: scale(1) rotate(-6deg); }
-}
-@keyframes arrive {
-  0%, 74% { opacity: 1; }
-  100%    { opacity: 0; visibility: hidden; }
-}
 
 /* smoke does not stay in the glass */
 .page-smoke {
@@ -111,7 +84,7 @@
 @keyframes melt { to { transform: scale(.62); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .arrival, .page-smoke { display: none; }
+  .page-smoke { display: none; }
   *, *::before, *::after {
     animation-duration: .001ms !important;
     animation-delay: 0s !important;

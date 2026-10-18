@@ -38,7 +38,6 @@
   --sun:     rgba(255, 252, 244, .55);  /* daylight from the window, top left */
   --lamp:    rgba(214, 146, 72, .16);   /* the paper lantern over the bar */
   --lantern: 1;                         /* how lit the lantern is, 0–1 */
-  --tempo:   1;                         /* how fast the crew works */
 
   /* type — Garamond for reading, Cormorant for names, Jost for small print.
      Thai falls through to Trirong and Anuphan glyph by glyph. */
@@ -58,18 +57,15 @@
   --sun: rgba(255, 255, 250, .7);
   --lamp: rgba(214, 146, 72, .05);
   --lantern: .15;
-  --tempo: 1.8;
 }
 :root[data-phase='late'] {
   --paper: #E9E1D2;
   --sun: rgba(255, 248, 232, .3);
   --lamp: rgba(214, 140, 64, .22);
-  --tempo: 1.25;
 }
 :root[data-phase='lastcall'] {
   --paper: #E3D9C8;
   --sun: rgba(255, 244, 226, .18);
   --lamp: rgba(196, 122, 56, .18);
   --lantern: .7;
-  --tempo: 2.4;
 }

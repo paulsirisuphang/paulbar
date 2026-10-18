@@ -60,7 +60,6 @@
   --sun:     rgba(255, 252, 244, .55);  /* daylight from the window, top left */
   --lamp:    rgba(214, 146, 72, .16);   /* the paper lantern over the bar */
   --lantern: 1;                         /* how lit the lantern is, 0–1 */
-  --tempo:   1;                         /* how fast the crew works */
 
   /* type — Garamond for reading, Cormorant for names, Jost for small print.
      Thai falls through to Trirong and Anuphan glyph by glyph. */
@@ -80,20 +79,17 @@
   --sun: rgba(255, 255, 250, .7);
   --lamp: rgba(214, 146, 72, .05);
   --lantern: .15;
-  --tempo: 1.8;
 }
 :root[data-phase='late'] {
   --paper: #E9E1D2;
   --sun: rgba(255, 248, 232, .3);
   --lamp: rgba(214, 140, 64, .22);
-  --tempo: 1.25;
 }
 :root[data-phase='lastcall'] {
   --paper: #E3D9C8;
   --sun: rgba(255, 244, 226, .18);
   --lamp: rgba(196, 122, 56, .18);
   --lantern: .7;
-  --tempo: 2.4;
 }
 
 /* ================================================================
@@ -375,14 +371,13 @@ main {
 }
 
 /* ================================================================
-   THE CREW — three behind a hinoki counter under a paper lantern,
-   in front of a lit back bar, always shaking, each with a party
-   piece when tapped
+   THE BAR — a lit back bar, a paper lantern, and the tools on the
+   counter, each with a party piece when tapped; painted in on arrival
    ================================================================ */
 
 /* The bar runs the full width of the window, out past the page's
-   margins. The drawing keeps the crew at their size in the middle
-   (crew.js) and only the bar gets longer. */
+   margins. The drawing keeps the stage at its size in the middle
+   (bar.js) and only the bar gets longer. */
 .hero {
   display: flex;
   flex-direction: column;
@@ -390,37 +385,14 @@ main {
   margin-inline: calc(50% - 50vw);
 }
 
-.crew {
-  position: relative;
-  width: 100%;
-  --busy: 1;
-}
-.crew svg { display: block; width: 100%; height: auto; overflow: visible; }
-/* an order lands and they pick up the pace for a few seconds */
-.crew.busy { --busy: .55; }
+.scene { position: relative; width: 100%; }
+.scene svg { display: block; width: 100%; height: auto; overflow: visible; }
 
-/* Everything that moves rotates about its own local origin, which the
-   drawing puts at the joint — the waist, the shoulder, the grip. The
+/* Everything that moves turns about its own local origin, which the
+   drawing puts where it pivots: the cord, the rim, the base. The
    position lives on a parent group, because a CSS transform replaces an
    SVG transform attribute on the same element. */
-.crew .moves { transform-box: view-box; transform-origin: 0 0; }
-
-.tender-body {
-  animation: t-body calc(var(--d) * var(--tempo) * var(--busy)) ease-in-out infinite alternate;
-  animation-delay: var(--t);
-}
-.tender-arms {
-  animation: t-arms calc(var(--d) * var(--tempo) * var(--busy)) ease-in-out infinite alternate;
-  animation-delay: var(--t);
-}
-@keyframes t-body {
-  from { transform: rotate(-1.6deg); }
-  to   { transform: rotate(1.4deg) translateY(-.6px); }
-}
-@keyframes t-arms {
-  from { transform: rotate(-10deg) translateY(.8px); }
-  to   { transform: rotate(9deg) translateY(-1.6px); }
-}
+.scene .moves { transform-box: view-box; transform-origin: 0 0; }
 
 /* the paper lantern sways a little on its cord and is lit by the hour */
 .lantern { animation: lantern 7s ease-in-out infinite alternate; }
@@ -433,11 +405,11 @@ main {
 .shelf-glow { opacity: calc(.45 + var(--lantern) * .55); transition: opacity 2s ease; }
 .lantern-light { opacity: calc(.35 + var(--lantern) * .65); transition: opacity 2s ease; }
 
-/* a phone will not reliably fire a tap on an SVG shape, so each of them
-   is covered by a real button — which a keyboard can reach too. crew.js
-   sets where each one sits along the bar. */
-.tender-taps { position: absolute; inset: 22% 0 14%; z-index: 1; }
-.tender-tap {
+/* a phone will not reliably fire a tap on an SVG shape, so each piece is
+   covered by a real button, which a keyboard can reach too. bar.js sets
+   where each one sits along the bar. */
+.piece-taps { position: absolute; inset: 22% 0 14%; z-index: 1; }
+.piece-tap {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -448,13 +420,15 @@ main {
   cursor: pointer;
   touch-action: manipulation;
 }
-.tender-tap:focus-visible { outline-offset: -6px; }
+.piece-tap:focus-visible { outline-offset: -6px; }
+
+/* ---------- the party pieces, ten seconds each ---------- */
 
 .act { display: none; }
 .acting .act { display: inline; }
-.acting .tender-arms { visibility: hidden; }
 
-/* left: the sommelier keeps three bottles going over his head */
+/* the wine bottles leave the bar and go round in the air */
+.piece-juggle.acting .still { visibility: hidden; }
 .bottle { animation: juggle 1.3s linear infinite; }
 @keyframes juggle {
   0%   { transform: translate(-13px, 18px) rotate(0deg); }
@@ -464,40 +438,28 @@ main {
   100% { transform: translate(-13px, 18px) rotate(720deg); }
 }
 
-/* centre: address, backswing over the left shoulder, strike, follow-through */
-.swing { animation: swing 2.4s ease-in-out infinite; }
-@keyframes swing {
-  0%   { transform: rotate(-30deg); }
-  30%  { transform: rotate(140deg); }
-  42%  { transform: rotate(-42deg); }
-  54%  { transform: rotate(-150deg); }
-  76%  { transform: rotate(-150deg); }
-  100% { transform: rotate(-30deg); }
-}
-.golf-ball { animation: golf-ball 2.4s ease-out infinite; }
-@keyframes golf-ball {
-  0%, 41%  { transform: translate(0, 0); opacity: 1; }
-  72%      { transform: translate(150px, -96px); opacity: 0; }
-  73%, 99% { transform: translate(0, 0); opacity: 0; }
-  100%     { transform: translate(0, 0); opacity: 1; }
-}
-
-/* Right: up onto her head, hold, and down again, ten seconds. Turned
-   about her middle, the crown of her head lands on the bar top. */
-.act-headstand.acting .flip { animation: headstand 10s ease-in-out 1 both; }
-@keyframes headstand {
-  0%       { transform: rotate(0deg) translateY(0); }
-  11%      { transform: rotate(186deg) translateY(-3px); }
-  15%      { transform: rotate(175deg) translateY(-3px); }
-  19%, 86% { transform: rotate(180deg) translateY(-3px); }
-  100%     { transform: rotate(0deg) translateY(0); }
-}
-.legs { display: none; }
-.acting .legs { display: inline; }
-.legs .moves { animation: legs 1.9s ease-in-out infinite alternate; }
-@keyframes legs {
+/* the spoon goes round the mixing glass */
+.piece-stir.acting .spoon { animation: stir .8s ease-in-out infinite alternate; }
+@keyframes stir {
   from { transform: rotate(-7deg); }
   to   { transform: rotate(7deg); }
+}
+
+/* the shaker gives a hard shake with nobody holding it */
+.piece-shake.acting .shake-body { animation: hard-shake .17s ease-in-out infinite alternate; }
+@keyframes hard-shake {
+  from { transform: translate(-1.6px, .6px) rotate(-8deg); }
+  to   { transform: translate(1.6px, -2.4px) rotate(8deg); }
+}
+
+/* the ball is chipped off its tee and drops into the coupe */
+.piece-chip.acting .chip-ball { animation: chip 2.4s ease-in-out infinite; }
+@keyframes chip {
+  0%, 26%  { transform: translate(0, 0); opacity: 1; }
+  48%      { transform: translate(18px, -40px); opacity: 1; }
+  68%      { transform: translate(36px, -12px); opacity: 1; }
+  72%, 94% { transform: translate(38px, -2px); opacity: 0; }
+  100%     { transform: translate(0, 0); opacity: 1; }
 }
 
 /* sits on the front edge of the counter */
@@ -527,6 +489,43 @@ main {
 .choice:active { transform: translateY(0); }
 .choice svg { width: 15px; height: 15px; flex: none; transition: transform .6s var(--ease); }
 .choice:hover svg, .choice.rolling svg { transform: rotate(180deg); }
+
+/* ---------- painted in on arrival (bar.js) ---------- */
+
+/* lines trace on along their length; washes bleed in after them; long
+   washes are laid left to right; the light comes up last. A line starts
+   just short of its first point: starting on it leaves a dot of ink
+   where a round end sits before anything is drawn. */
+.painting .paint-line {
+  stroke-dasharray: 1 2;
+  animation: paint-line var(--len, .8s) cubic-bezier(.45, .05, .3, 1) var(--d, 0s) both;
+}
+@keyframes paint-line {
+  from { stroke-dashoffset: 1.01; }
+  to   { stroke-dashoffset: 0; }
+}
+.painting .paint-fill { animation: paint-fill 1s ease-out calc(var(--d, 0s) + .3s) both; }
+@keyframes paint-fill { from { opacity: 0; } }
+.painting .paint-wipe { animation: paint-wipe var(--len, 1.8s) cubic-bezier(.45, .05, .3, 1) var(--d, 0s) both; }
+@keyframes paint-wipe {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+.painting .paint-glow { animation: paint-fill 1.4s ease-out 3.3s both; }
+
+/* the seal is pressed last, slightly askew, and stays */
+.bar-seal { transform-box: fill-box; transform-origin: center; transform: rotate(-6deg); }
+.painting .bar-seal { animation: seal .5s cubic-bezier(.3, 1.5, .5, 1) 4.1s both; }
+@keyframes seal {
+  0%   { opacity: 0; transform: scale(1.7) rotate(-6deg); }
+  60%  { opacity: 1; transform: scale(.94) rotate(-6deg); }
+  100% { opacity: 1; transform: scale(1) rotate(-6deg); }
+}
+
+/* the menu comes in under it while the last of the bar goes on */
+.painting-page #filters,
+.painting-page #menu-body { animation: paint-fill .9s ease-out 2.2s both; }
+.painting-page .choice { animation: paint-fill .7s ease-out 3.6s both; }
 
 /* ================================================================
    THE MENU — sections of drinks set like a printed card
@@ -1295,36 +1294,9 @@ details.notes[open] summary svg { transform: rotate(90deg); }
 .wood-table td:first-child { font-family: var(--display); font-size: 1.1875rem; font-weight: 600; color: var(--ink); white-space: nowrap; }
 
 /* ================================================================
-   SCENES — the arrival, smoke that leaves the glass, the slip that
+   SCENES — smoke that leaves the glass, the slip that
    confirms an order, and the motion inside the drawings
    ================================================================ */
-
-/* Every arrival: a blank sheet, one brushed circle, the seal pressed
-   inside it, then the room. Any tap skips it. */
-.arrival {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: grid;
-  place-items: center;
-  background-color: var(--paper);
-  background-image: var(--washi, none);
-  background-size: 420px 420px;
-  animation: arrive 2.5s ease-in forwards;
-}
-.arrival svg { width: min(220px, 56vw); height: auto; overflow: visible; }
-.enso-reveal { stroke-dasharray: 1; stroke-dashoffset: 1; animation: enso 1.15s cubic-bezier(.45, .1, .25, 1) .15s forwards; }
-@keyframes enso { to { stroke-dashoffset: 0; } }
-.arrival .seal { transform-box: fill-box; transform-origin: center; opacity: 0; animation: seal 0.5s cubic-bezier(.3, 1.5, .5, 1) 1.05s forwards; }
-@keyframes seal {
-  0%   { opacity: 0; transform: scale(1.7) rotate(-6deg); }
-  60%  { opacity: 1; transform: scale(.94) rotate(-6deg); }
-  100% { opacity: 1; transform: scale(1) rotate(-6deg); }
-}
-@keyframes arrive {
-  0%, 74% { opacity: 1; }
-  100%    { opacity: 0; visibility: hidden; }
-}
 
 /* smoke does not stay in the glass */
 .page-smoke {
@@ -1407,7 +1379,7 @@ details.notes[open] summary svg { transform: rotate(90deg); }
 @keyframes melt { to { transform: scale(.62); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .arrival, .page-smoke { display: none; }
+  .page-smoke { display: none; }
   *, *::before, *::after {
     animation-duration: .001ms !important;
     animation-delay: 0s !important;
@@ -1422,7 +1394,6 @@ details.notes[open] summary svg { transform: rotate(90deg); }
 </head>
 <body>
 
-<div class="arrival" id="arrival" aria-hidden="true"></div>
 
 <div class="page">
   <header class="topbar">
@@ -1449,7 +1420,7 @@ details.notes[open] summary svg { transform: rotate(90deg); }
   <main>
     <section class="view" id="view-menu" role="tabpanel" aria-labelledby="tab-menu">
       <div class="hero">
-        <div class="crew" id="crew"></div>
+        <div class="scene" id="scene"></div>
         <button class="choice" id="choice" type="button"></button>
       </div>
       <nav class="filters" id="filters" aria-label="Show one kind of drink"></nav>
@@ -2074,7 +2045,8 @@ const T_EN = {
   name_ph_err: 'The bar needs a name for this one',
   note_ph: 'Optional — light on the vermouth, no garnish, make it two…',
 
-  tender_tap: 'Get their attention',
+  piece_juggle: 'Juggle the wine bottles', piece_stir: 'Stir the mixing glass',
+  piece_shake: 'Shake the shaker', piece_chip: 'Chip the golf ball into the glass',
   tee_label: 'A golf tee',
   filters_label: 'Show one kind of drink',
   stamp_poured: 'Poured',
@@ -2211,7 +2183,8 @@ const T_TH = {
   name_ph_err: 'ใส่ชื่อด้วยนะ',
   note_ph: 'ไม่บังคับ — เวอร์มุตน้อยหน่อย, ไม่ใส่การ์นิช, ขอสองแก้ว…',
 
-  tender_tap: 'เรียกความสนใจ',
+  piece_juggle: 'โยนขวดไวน์เล่น', piece_stir: 'คนแก้วผสม',
+  piece_shake: 'เขย่าเชคเกอร์', piece_chip: 'ตีลูกกอล์ฟลงแก้ว',
   tee_label: 'ทีตั้งลูกกอล์ฟ',
   filters_label: 'เลือกดูทีละแบบ',
   stamp_poured: 'เสิร์ฟแล้ว',
@@ -3936,34 +3909,29 @@ function artBox(cls, drink, opts, mode) {
   return box;
 }
 
-/* ---------- js/05-crew.js ---------- */
+/* ---------- js/05-bar.js ---------- */
 /* ================================================================
-   THE CREW
-   Three behind a hinoki counter, under a paper lantern, in front of a
-   back bar of lit shelves. Always shaking, each on their own rhythm so they never
-   fall into step. Tap one and they do their party piece for ten
-   seconds: the sommelier juggles three bottles of wine, the golfer
-   drives a ball off the bar top, and the yogi stands on her head.
+   THE BAR
+   The bar with nobody at it: a lit back bar of bottles, a paper
+   lantern, and on the hinoki counter the tools of the trade. Tap one
+   and it does its party piece for ten seconds: the wine bottles juggle
+   themselves, the spoon stirs, the shaker gives a hard shake, and a
+   golf ball is chipped into a coupe. An order arriving sets the shaker
+   going too.
 
-   Each figure is drawn about its waist, at the counter line; arms are
-   drawn about the shoulder they swing from. Groups that move carry the
-   class `moves` and no transform attribute of their own (crew.css).
+   Every arrival paints it onto the page, stroke by stroke, and presses
+   the house seal on the front of the bar to finish.
 
-   The crew stand on a stage 340 units wide, which keeps the size it
-   always had: up to 560px on a phone and 800px on a desktop. The bar
-   and the shelves behind them run on to the edges of the window.
+   Things are drawn on a stage 340 units wide that keeps its size: up
+   to 560px on a phone and 800px on a desktop. The counter and the
+   shelves run on past it to the edges of the window. Groups that move
+   carry the class `moves` and no transform attribute of their own; a
+   parent group places them (bar.css).
    ================================================================ */
 
-const SKIN = '#E6CDB2';
-const HAIR = '#2F2924';
-const SHIRT = '#F4F0E8';
-
-const CREW = [
-  { x: 76,  scale: 1.08, dur: .46, delay: 0,    costume: 'somm', act: 'juggle' },
-  { x: 180, scale: 1.14, dur: .53, delay: -.21, costume: 'golf', act: 'golf' },
-  { x: 284, scale: 1.06, dur: .49, delay: -.36, costume: 'yoga', act: 'headstand' }
-];
-const COUNTER_Y = 140;
+const COUNTER_Y = 140;                /* the front edge of the bar top */
+const BAR_TOP = COUNTER_Y - 2;        /* where things stand on it */
+const LABEL = '#F4F0E8';              /* paper labels */
 
 /* a group the stylesheet animates, sitting inside one that places it */
 function joint(x, y, cls) {
@@ -3971,190 +3939,13 @@ function joint(x, y, cls) {
   const outer = S('g', { transform: 'translate(' + fx(x) + ' ' + fx(y) + ')' }, [inner]);
   return { outer, inner };
 }
+const moving = (x, y, cls, kids) => {
+  const j = joint(x, y, cls);
+  kids.forEach((k) => j.inner.appendChild(k));
+  return j.outer;
+};
 
-/* a limb as a brush stroke in its sleeve colour, edged in ink */
-function limb(pts, width, color, rand) {
-  const g = S('g');
-  g.appendChild(S('path', { d: brushD(pts, width + 1.1, { rand, taper: 0, vary: .08 }), fill: INK, 'fill-opacity': .78 }));
-  g.appendChild(S('path', { d: brushD(pts, width, { rand, taper: 0, vary: .08 }), fill: color }));
-  return g;
-}
-const hand = (x, y, r = 2.6) => S('circle', { cx: x, cy: y, r, fill: SKIN, stroke: INK, 'stroke-width': .7, 'stroke-opacity': .75 });
-
-/* A cobbler shaker, the one Japanese bartenders use: a body that widens
-   to the shoulder, a strainer cone, a small cap. Held about its base. */
-function shaker() {
-  const g = S('g', { transform: 'rotate(14)' });
-  const outline = 'M-3.3,0 L3.3,0 L4.6,-14.6 L4.6,-15.8 C4.2,-18 2.9,-19.6 2.2,-20.4 L2.2,-21.2 ' +
-    'C2.2,-23.4 1.4,-24.6 0,-24.6 C-1.4,-24.6 -2.2,-23.4 -2.2,-21.2 L-2.2,-20.4 C-2.9,-19.6 -4.2,-18 -4.6,-15.8 L-4.6,-14.6 Z';
-  g.appendChild(wash(outline, '#C6C9C5', { alpha: .97, edge: .3, edgeWidth: .8, edgeAlpha: .8 }));
-  /* the seams where the cone and the cap sit */
-  g.appendChild(pen([[-4.6, -14.8], [4.6, -14.8]], .5, { alpha: .5, straight: true }));
-  g.appendChild(pen([[-2.2, -20.6], [2.2, -20.6]], .45, { alpha: .5, straight: true }));
-  g.appendChild(brush(line([-1.5, -2], [-2.4, -13.6], 4), 1.1, { color: GOUACHE, alpha: .85, taper: .3, even: true }));
-  g.appendChild(brush(line([-1.6, -16.4], [-.9, -19.4], 3), .7, { color: GOUACHE, alpha: .7, taper: .3, even: true }));
-  g.appendChild(S('path', { d: outline, fill: 'none', stroke: INK, 'stroke-width': .7, 'stroke-opacity': .8, 'stroke-linejoin': 'round' }));
-  g.appendChild(hand(0, -1.8, 2.8));
-  return g;
-}
-
-function bottle(rand) {
-  const g = S('g');
-  const shape = 'M-3.3,8 L3.3,8 L3.3,-2.5 Q3.3,-5.6 1.3,-7.2 L1.3,-12 L-1.3,-12 L-1.3,-7.2 Q-3.3,-5.6 -3.3,-2.5 Z';
-  g.appendChild(wash(shape, '#3E5A43', { alpha: .95, edge: .3, edgeWidth: .7 }));
-  g.appendChild(S('rect', { x: -2.6, y: -1, width: 5.2, height: 5, fill: SHIRT, stroke: INK, 'stroke-width': .35, 'stroke-opacity': .6 }));
-  g.appendChild(S('rect', { x: -1.5, y: -13, width: 3, height: 3.4, fill: '#7B2B22' }));
-  g.appendChild(brush(line([-1.9, 6], [-1.9, -3], 3), .7, { color: GOUACHE, alpha: .6, taper: .3, even: true }));
-  g.appendChild(S('path', { d: shape, fill: 'none', stroke: INK, 'stroke-width': .6, 'stroke-opacity': .8 }));
-  return g;
-}
-
-function figure(cfg, rand) {
-  const c = cfg.costume;
-  const sleeve = c === 'somm' ? SHIRT : c === 'golf' ? '#A6B08B' : SKIN;
-  const cloth = c === 'somm' ? '#3D3833' : c === 'golf' ? '#A6B08B' : '#6F7F99';
-
-  const place = S('g', { transform: 'translate(' + fx(cfg.x) + ' ' + COUNTER_Y + ') scale(' + cfg.scale + ')' });
-  const tender = S('g', { class: 'tender act-' + cfg.act });
-  place.appendChild(tender);
-
-  /* the headstand turns the whole body about its middle */
-  const mid = S('g', { transform: 'translate(0 -34)' });
-  const flip = S('g', { class: 'moves flip' });
-  const back = S('g', { transform: 'translate(0 34)' });
-  mid.appendChild(flip);
-  flip.appendChild(back);
-  tender.appendChild(mid);
-
-  const body = S('g', { class: 'moves tender-body' });
-  body.style.setProperty('--d', cfg.dur + 's');
-  body.style.setProperty('--t', cfg.delay + 's');
-  back.appendChild(body);
-
-  const swingArm = (x, y) => {
-    const j = joint(x, y, 'tender-arms');
-    j.inner.style.setProperty('--d', cfg.dur + 's');
-    j.inner.style.setProperty('--t', cfg.delay + 's');
-    return j;
-  };
-
-  /* legs, only ever seen upside down */
-  if (cfg.act === 'headstand') {
-    const legs = S('g', { class: 'legs' });
-    const sway = joint(0, 0, '');
-    sway.inner.appendChild(limb([[-4.5, 0], [-5.5, 20], [-6.2, 40]], 6.4, '#3F4960', rand));
-    sway.inner.appendChild(limb([[4.5, 0], [5.6, 20], [6.6, 40]], 6.4, '#3F4960', rand));
-    sway.inner.appendChild(hand(-6.3, 42, 2.8));
-    sway.inner.appendChild(hand(6.7, 42, 2.8));
-    legs.appendChild(sway.outer);
-    body.appendChild(legs);
-  }
-
-  /* torso */
-  const torso = 'M-14,2 C-14.6,-14 -15.4,-27 -14,-32.6 Q-12,-37.6 -6,-38.6 L6,-38.6 Q12,-37.6 14,-32.6 C15.4,-27 14.6,-14 14,2 Z';
-  body.appendChild(wash(torso, cloth, { alpha: .96, edge: .25, edgeWidth: .8 }));
-  if (c === 'somm') {
-    /* white shirt in the V of a black waistcoat, bow tie, tastevin on its chain */
-    body.appendChild(S('path', { d: 'M-6,-38.6 L0,-24 L6,-38.6 Z', fill: SHIRT }));
-    body.appendChild(S('path', { d: 'M-6.6,-40.4 L-.6,-37.8 L-6.6,-35.2 Z M6.6,-40.4 L.6,-37.8 L6.6,-35.2 Z', fill: '#B0392A' }));
-    body.appendChild(S('circle', { cx: 0, cy: -37.8, r: 1.1, fill: '#93301F' }));
-    body.appendChild(pen([[-5.5, -36], [-3, -27], [3.5, -22.5]], .4, { color: '#8D928F', alpha: .9 }));
-    body.appendChild(wash(smooth(arc(4.6, -21.5, 2.6, 2.3, 0, Math.PI * 2, 10), true), '#C3C6C2', { alpha: 1, edge: .4, edgeWidth: .6 }));
-    [-19, -13, -7].forEach((y) => body.appendChild(S('circle', { cx: .3, cy: y, r: .7, fill: '#C9C2B4' })));
-  } else if (c === 'golf') {
-    /* polo: collar points, a short placket, two buttons */
-    body.appendChild(S('path', { d: 'M-6,-38.6 L-1,-32 L-3.6,-38.6 Z M6,-38.6 L1,-32 L3.6,-38.6 Z', fill: SHIRT, stroke: INK, 'stroke-width': .45, 'stroke-opacity': .7 }));
-    body.appendChild(pen([[0, -34], [0, -26]], .5, { alpha: .5, straight: true }));
-    [-31.5, -28].forEach((y) => body.appendChild(S('circle', { cx: 1.1, cy: y, r: .55, fill: INK, 'fill-opacity': .55 })));
-  } else {
-    /* a scoop-neck vest, bare shoulders */
-    body.appendChild(S('path', { d: 'M-14,-32.6 Q-12,-37.6 -9,-38.4 L-8.2,-31 Q0,-24.6 8.2,-31 L9,-38.4 Q12,-37.6 14,-32.6 Z', fill: SKIN }));
-    body.appendChild(pen([[-8.2, -31], [0, -25.2], [8.2, -31]], .6, { alpha: .55 }));
-  }
-  body.appendChild(S('path', { d: torso, fill: 'none', stroke: INK, 'stroke-width': .9, 'stroke-opacity': .78, 'stroke-linejoin': 'round' }));
-
-  /* neck and head */
-  body.appendChild(S('rect', { x: -3.2, y: -44.6, width: 6.4, height: 7, fill: SKIN }));
-  body.appendChild(pen([[-3.2, -44], [-3.2, -38.4]], .6, { alpha: .6, straight: true }));
-  body.appendChild(pen([[3.2, -44], [3.2, -38.4]], .6, { alpha: .6, straight: true }));
-  body.appendChild(S('circle', { cx: 0, cy: -53.2, r: 9.6, fill: SKIN, stroke: INK, 'stroke-width': .9, 'stroke-opacity': .8 }));
-  /* eyes closed, concentrating */
-  body.appendChild(pen([[-4.9, -51.4], [-3.6, -50.5], [-2.3, -51.4]], .55, { alpha: .7 }));
-  body.appendChild(pen([[2.3, -51.4], [3.6, -50.5], [4.9, -51.4]], .55, { alpha: .7 }));
-
-  if (c === 'somm') {
-    body.appendChild(wash('M-9.8,-54 Q-10.6,-64.6 -1,-63.6 Q8.8,-63.8 9.8,-55 Q5,-60 -2.4,-58.6 Q-7.2,-57.8 -9.8,-54 Z', HAIR, { alpha: .95, edge: .2, edgeWidth: .6 }));
-    /* round spectacles */
-    [-3.6, 3.6].forEach((x) => body.appendChild(S('circle', { cx: x, cy: -51.2, r: 2.9, fill: GOUACHE, 'fill-opacity': .35, stroke: INK, 'stroke-width': .6, 'stroke-opacity': .9 })));
-    body.appendChild(pen([[-.7, -51.6], [.7, -51.6]], .55, { straight: true, alpha: .9 }));
-  } else if (c === 'golf') {
-    /* a flat cap in tweed */
-    body.appendChild(wash('M-10.4,-55.4 Q-11,-66.6 0,-66.4 Q10.6,-66.2 10.8,-56.2 Q0,-59.8 -10.4,-55.4 Z', '#A17F55', { alpha: .97, edge: .3, edgeWidth: .8 }));
-    body.appendChild(wash('M-10.6,-56 Q0,-60.4 11.2,-56.6 Q12.8,-54.2 9.6,-53.8 Q0,-56.4 -9.2,-53.6 Q-12.2,-53.8 -10.6,-56 Z', '#8C6B44', { alpha: .97, edge: .3, edgeWidth: .7 }));
-    body.appendChild(S('circle', { cx: 0, cy: -66.2, r: .9, fill: '#6E5234' }));
-    body.appendChild(pen([[-7, -61.6], [-2, -63.4], [5, -62.6]], .35, { alpha: .35 }));
-  } else {
-    /* hair up in a knot, a band to keep it there */
-    body.appendChild(wash('M-9.8,-54.6 Q-10.4,-64 -1,-63.4 Q9.6,-63.4 9.8,-54.4 Q6,-59.2 0,-59 Q-6,-59.2 -9.8,-54.6 Z', HAIR, { alpha: .95, edge: .2, edgeWidth: .6 }));
-    body.appendChild(wash(smooth(arc(0, -66.4, 4.6, 4.2, 0, Math.PI * 2, 12), true), HAIR, { alpha: .95, edge: .2, edgeWidth: .6 }));
-    body.appendChild(brush(arc(0, -53.2, 9.7, 9.7, -Math.PI * .9, -Math.PI * .1, 12), 2.2, { color: '#8B9A5D', alpha: .95, taper: .1, even: true }));
-  }
-
-  /* hands planted either side of the head, for when she's upside down */
-  if (cfg.act === 'headstand') {
-    const act = S('g', { class: 'act' });
-    act.appendChild(limb([[-11, -34], [-16, -45], [-11.5, -58]], 4.4, SKIN, rand));
-    act.appendChild(limb([[11, -34], [16, -45], [11.5, -58]], 4.4, SKIN, rand));
-    act.appendChild(hand(-11.4, -60));
-    act.appendChild(hand(11.4, -60));
-    body.appendChild(act);
-  }
-
-  /* the near arm and the shaker, in front of everything */
-  const near = swingArm(11, -34);
-  near.inner.appendChild(limb([[0, 0], [8, 9], [14, -5]], 5, sleeve, rand));
-  near.inner.appendChild(S('g', { transform: 'translate(14.4 -4.4)' }, [shaker()]));
-  body.appendChild(near.outer);
-
-  /* ---------- the party pieces ---------- */
-
-  if (cfg.act === 'juggle') {
-    const act = S('g', { class: 'act' });
-    act.appendChild(limb([[-11, -34], [-15, -46], [-12, -60]], 4.6, sleeve, rand));
-    act.appendChild(limb([[11, -34], [15, -46], [12, -60]], 4.6, sleeve, rand));
-    act.appendChild(hand(-12, -61));
-    act.appendChild(hand(12, -61));
-    const loop = S('g', { transform: 'translate(0 -88)' });
-    for (let i = 0; i < 3; i++) {
-      const b = S('g', { class: 'moves bottle' }, [bottle(rand)]);
-      b.style.animationDelay = (-i * 1.3 / 3).toFixed(2) + 's';
-      loop.appendChild(b);
-    }
-    act.appendChild(loop);
-    tender.appendChild(act);
-  }
-
-  if (cfg.act === 'golf') {
-    const act = S('g', { class: 'act' });
-    act.appendChild(limb([[-11, -34], [-6, -28], [1, -25]], 4.6, sleeve, rand));
-    act.appendChild(limb([[11, -34], [8, -28], [3, -25]], 4.6, sleeve, rand));
-    /* the club turns about the grip */
-    const grip = joint(2, -25, 'swing');
-    grip.inner.appendChild(pen([[0, 0], [0, 29]], 1.1, { color: '#5C5650', alpha: .95, straight: true }));
-    grip.inner.appendChild(wash('M-1.2,28 L5.4,29.6 L5.6,32.4 L-1.2,31.6 Z', '#8E9391', { alpha: 1, edge: .4, edgeWidth: .6 }));
-    grip.inner.appendChild(S('rect', { x: -1.3, y: -1, width: 2.6, height: 6, rx: 1, fill: '#2F2924' }));
-    act.appendChild(grip.outer);
-    act.appendChild(hand(1, -25));
-    act.appendChild(hand(3, -21.5));
-    /* teed up on the bar top, beside him */
-    act.appendChild(pen([[21, 0], [21, -3]], 1, { color: '#C7A26A', alpha: 1, straight: true }));
-    const ball = S('g', { class: 'moves golf-ball' }, [S('circle', { cx: 21, cy: -5.3, r: 2.4, fill: GOUACHE, stroke: INK, 'stroke-width': .6, 'stroke-opacity': .8 })]);
-    act.appendChild(ball);
-    tender.appendChild(act);
-  }
-
-  return place;
-}
+/* ---------- the room ---------- */
 
 function lantern(rand) {
   /* hung from the top edge; it sways about where the cord is tied */
@@ -4217,7 +4008,7 @@ function counter(rand, x0, x1) {
   const bottleD = 'M' + (bx - 5) + ',' + by + ' L' + (bx - 5) + ',' + (by - 22) + ' Q' + (bx - 5) + ',' + (by - 27) + ' ' + (bx - 1.6) + ',' + (by - 29) +
     ' L' + (bx - 1.6) + ',' + (by - 36) + ' L' + (bx + 1.6) + ',' + (by - 36) + ' L' + (bx + 1.6) + ',' + (by - 29) + ' Q' + (bx + 5) + ',' + (by - 27) + ' ' + (bx + 5) + ',' + (by - 22) + ' L' + (bx + 5) + ',' + by + ' Z';
   g.appendChild(wash(bottleD, '#A86A2C', { alpha: .9, edge: .3, edgeWidth: .8 }));
-  g.appendChild(S('rect', { x: bx - 4, y: by - 17, width: 8, height: 8, fill: SHIRT, stroke: INK, 'stroke-width': .4, 'stroke-opacity': .6 }));
+  g.appendChild(S('rect', { x: bx - 4, y: by - 17, width: 8, height: 8, fill: LABEL, stroke: INK, 'stroke-width': .4, 'stroke-opacity': .6 }));
   g.appendChild(brush(line([bx - 3, by - 3], [bx - 3, by - 20], 4), .9, { color: GOUACHE, alpha: .6, taper: .3, even: true }));
   g.appendChild(S('rect', { x: bx - 2, y: by - 38.5, width: 4, height: 3, fill: '#3B3530' }));
   g.appendChild(S('path', { d: bottleD, fill: 'none', stroke: INK, 'stroke-width': .7, 'stroke-opacity': .8 }));
@@ -4244,7 +4035,7 @@ const BOTTLE_KINDS = Object.keys(BOTTLES);
 /* whisky, brandy, gin, a blue gin, the bitter red, vermouth, chartreuse,
    amaro, tequila, a green sake bottle, an old gold liqueur */
 const SPIRITS = ['#B47A34', '#8C5426', '#D5DED7', '#6E8BA3', '#A93A2E', '#6F2C28', '#7E8F4A', '#4B3A2E', '#E2DBC9', '#5F7656', '#C59A4A'];
-/* where each shelf's bottles stand: one above the crew, one at their shoulders */
+/* where each shelf's bottles stand: one high, one behind the counter */
 const SHELVES = [44, 100];
 
 const placed = (item) => 'translate(' + fx(item.x) + ' ' + item.y + ') scale(' + fx(item.scale) + ')';
@@ -4276,10 +4067,10 @@ function shelfJar(item) {
    them, and now and then a jar. The run is laid out from a fixed point far
    to the left, so a wider window shows more of the same bar rather than a
    different one. Nothing stands where the lantern hangs, or on the lower
-   shelf behind a bartender, their raised shaker, or what's on the counter. */
+   shelf right behind the tall things on the counter. */
 const clearOnShelf = [
   (x) => Math.abs(x - 180) > 26,
-  (x) => CREW.every((c) => x < c.x - 21 || x > c.x + 40) && Math.abs(x - 30) > 13 && Math.abs(x - 334) > 9
+  (x) => Math.abs(x - 30) > 13 && Math.abs(x - 334) > 9 && Math.abs(x - 160) > 12 && Math.abs(x - 190) > 11
 ];
 function shelfItems(row, x0, x1) {
   const r = seeded('shelf' + row);
@@ -4334,6 +4125,203 @@ function backBar(defs, x0, x1) {
   return g;
 }
 
+/* ---------- on the counter ---------- */
+
+/* A cobbler shaker, the one Japanese bartenders use: a body that widens
+   to the shoulder, a strainer cone, a small cap. Drawn standing on 0,0. */
+function shaker() {
+  const g = S('g');
+  const outline = 'M-3.3,0 L3.3,0 L4.6,-14.6 L4.6,-15.8 C4.2,-18 2.9,-19.6 2.2,-20.4 L2.2,-21.2 ' +
+    'C2.2,-23.4 1.4,-24.6 0,-24.6 C-1.4,-24.6 -2.2,-23.4 -2.2,-21.2 L-2.2,-20.4 C-2.9,-19.6 -4.2,-18 -4.6,-15.8 L-4.6,-14.6 Z';
+  g.appendChild(wash(outline, '#C6C9C5', { alpha: .97, edge: .3, edgeWidth: .8, edgeAlpha: .8 }));
+  /* the seams where the cone and the cap sit */
+  g.appendChild(pen([[-4.6, -14.8], [4.6, -14.8]], .5, { alpha: .5, straight: true }));
+  g.appendChild(pen([[-2.2, -20.6], [2.2, -20.6]], .45, { alpha: .5, straight: true }));
+  g.appendChild(brush(line([-1.5, -2], [-2.4, -13.6], 4), 1.1, { color: GOUACHE, alpha: .85, taper: .3, even: true }));
+  g.appendChild(brush(line([-1.6, -16.4], [-.9, -19.4], 3), .7, { color: GOUACHE, alpha: .7, taper: .3, even: true }));
+  g.appendChild(S('path', { d: outline, fill: 'none', stroke: INK, 'stroke-width': .7, 'stroke-opacity': .8, 'stroke-linejoin': 'round' }));
+  return g;
+}
+
+/* a bottle of red, standing about its middle */
+function wineBottle() {
+  const g = S('g');
+  const shape = 'M-3.3,8 L3.3,8 L3.3,-2.5 Q3.3,-5.6 1.3,-7.2 L1.3,-12 L-1.3,-12 L-1.3,-7.2 Q-3.3,-5.6 -3.3,-2.5 Z';
+  g.appendChild(wash(shape, '#3E5A43', { alpha: .95, edge: .3, edgeWidth: .7 }));
+  g.appendChild(S('rect', { x: -2.6, y: -1, width: 5.2, height: 5, fill: LABEL, stroke: INK, 'stroke-width': .35, 'stroke-opacity': .6 }));
+  g.appendChild(S('rect', { x: -1.5, y: -13, width: 3, height: 3.4, fill: '#7B2B22' }));
+  g.appendChild(brush(line([-1.9, 6], [-1.9, -3], 3), .7, { color: GOUACHE, alpha: .6, taper: .3, even: true }));
+  g.appendChild(S('path', { d: shape, fill: 'none', stroke: INK, 'stroke-width': .6, 'stroke-opacity': .8 }));
+  return g;
+}
+
+/* a cut-glass mixing glass, half full and stirred, the spoon leaning out of it */
+function mixingGlass(rand) {
+  const g = S('g');
+  const body = 'M-12.4,0 Q-13,0 -13,-1.6 L-13.8,-28 L13.8,-28 L13,-1.6 Q13,0 12.4,0 Z';
+  g.appendChild(S('path', { d: body, fill: GLASS_TINT, 'fill-opacity': .35 }));
+  const liquid = 'M-11.6,-2 L-12.3,-17 L12.3,-17 L11.6,-2 Z';
+  g.appendChild(wash(liquid, '#B4823F', { alpha: .82, edge: .3, edgeWidth: 1.2, edgeAlpha: .4 }));
+  g.appendChild(S('ellipse', { cx: 0, cy: -17, rx: 12.3, ry: 2.2, fill: lighten('#B4823F', .4), 'fill-opacity': .8 }));
+  /* the diamond cut, low on the glass */
+  for (let i = -4; i <= 4; i++) {
+    g.appendChild(pen([[i * 3.2 - 5, -2], [i * 3.2 + 5, -14]], .45, { color: GOUACHE, alpha: .4, straight: true }));
+    g.appendChild(pen([[i * 3.2 + 5, -2], [i * 3.2 - 5, -14]], .45, { color: INK, alpha: .12, straight: true }));
+  }
+  g.appendChild(S('path', { d: body, fill: 'none', stroke: INK, 'stroke-width': .8, 'stroke-opacity': .75, 'stroke-linejoin': 'round' }));
+  g.appendChild(S('ellipse', { cx: 0, cy: -28, rx: 13.8, ry: 2.6, fill: 'none', stroke: INK, 'stroke-width': .7, 'stroke-opacity': .7 }));
+  g.appendChild(brush(line([-10.5, -4], [-11.2, -25], 5), 1.6, { color: GOUACHE, alpha: .7, taper: .3, even: true }));
+  return g;
+}
+
+/* a bar spoon, twisted along its length, drawn from where it rests on the rim */
+function barSpoon() {
+  const g = S('g');
+  const tip = [9, -46];
+  g.appendChild(pen([[-5, 16], tip], 1, { color: '#8E9391', alpha: 1, straight: true }));
+  for (let i = 1; i < 14; i++) {
+    const u = i / 14;
+    const x = -5 + (tip[0] + 5) * u, y = 16 + (tip[1] - 16) * u;
+    g.appendChild(pen([[x - 1, y + .4], [x + 1, y - .4]], .45, { color: INK, alpha: .45, straight: true }));
+  }
+  g.appendChild(wash(smooth(arc(tip[0] + .8, tip[1] - 2.2, 1.6, 2.6, 0, Math.PI * 2, 10), true), '#A7ACAA', { alpha: 1, edge: .4, edgeWidth: .6 }));
+  return g;
+}
+
+/* a Japanese jigger: two cones point to point */
+function jigger() {
+  const d = 'M-4.6,-17 L4.6,-17 L1.2,-8.6 L4.2,0 L-4.2,0 L-1.2,-8.6 Z';
+  return S('g', {}, [
+    wash(d, '#C6C9C5', { alpha: .97, edge: .3, edgeWidth: .7 }),
+    S('ellipse', { cx: 0, cy: -17, rx: 4.6, ry: 1, fill: '#9EA3A1' }),
+    pen([[-2.6, -15], [-.9, -9.6]], .7, { color: GOUACHE, alpha: .7, straight: true }),
+    S('path', { d, fill: 'none', stroke: INK, 'stroke-width': .6, 'stroke-opacity': .75 })
+  ]);
+}
+
+/* What's on the bar, left to right, the stretch of it each one's button
+   covers, and the words a screen reader says for it. */
+const PIECES = [
+  { id: 'juggle', x0: 82, x1: 124, label: 'piece_juggle' },
+  { id: 'stir', x0: 136, x1: 170, label: 'piece_stir' },
+  { id: 'shake', x0: 176, x1: 204, label: 'piece_shake' },
+  { id: 'chip', x0: 232, x1: 300, label: 'piece_chip' }
+];
+
+/* each piece as a group: what's always there (.still), and what only
+   appears while it performs (.act) */
+function drawPieces(rand) {
+  const piece = (id, still, act) => {
+    const g = S('g', { class: 'piece piece-' + id });
+    if (still) g.appendChild(S('g', { class: 'still' }, still));
+    if (act) g.appendChild(S('g', { class: 'act' }, act));
+    return g;
+  };
+
+  /* three wine bottles, and the same three going round in the air */
+  const standing = [92, 103, 114].map((x) => S('g', { transform: 'translate(' + x + ' ' + (BAR_TOP - 14) + ') scale(1.75)' }, [wineBottle()]));
+  const loop = S('g', { transform: 'translate(103 64)' });
+  for (let i = 0; i < 3; i++) {
+    const b = S('g', { class: 'moves bottle' }, [S('g', { transform: 'scale(1.4)' }, [wineBottle()])]);
+    b.style.animationDelay = (-i * 1.3 / 3).toFixed(2) + 's';
+    loop.appendChild(b);
+  }
+
+  /* a ball teed up beside a coupe, which is a Sidecar */
+  const coupe = drawDrink(drinkById('sidecar'), {}, 'static');
+  [['x', 266], ['y', BAR_TOP - 41], ['width', 32], ['height', 45.3]].forEach(([k, v]) => coupe.setAttribute(k, v));
+
+  return [
+    piece('juggle', standing, [loop]),
+    piece('stir', [S('g', { transform: 'translate(152 ' + BAR_TOP + ')' }, [mixingGlass(rand)]), moving(152, BAR_TOP - 22, 'spoon', [barSpoon()])]),
+    piece('shake', [moving(190, BAR_TOP, 'shake-body', [S('g', { transform: 'scale(1.85)' }, [shaker()])])]),
+    piece('chip', [
+      S('g', { transform: 'translate(216 ' + BAR_TOP + ')' }, [jigger()]),
+      coupe,
+      pen([[244, BAR_TOP], [244, BAR_TOP - 3.6]], 1.1, { color: '#C7A26A', alpha: 1, straight: true }),
+      moving(244, BAR_TOP - 6, 'chip-ball', [S('circle', { cx: 0, cy: 0, r: 2.6, fill: GOUACHE, stroke: INK, 'stroke-width': .6, 'stroke-opacity': .8 })])
+    ])
+  ];
+}
+
+/* how long a piece keeps going, so a short turn never cuts a long one off */
+const pieceUntil = {};
+const pieceTimers = {};
+function perform(id, ms) {
+  if (prefersStill()) return;
+  const el = $('#scene .piece-' + id);
+  if (!el) return;
+  pieceUntil[id] = Math.max(pieceUntil[id] || 0, Date.now() + ms);
+  el.classList.add('acting');
+  clearTimeout(pieceTimers[id]);
+  pieceTimers[id] = setTimeout(() => el.classList.remove('acting'), pieceUntil[id] - Date.now());
+}
+
+/* an order lands and the shaker goes for a few seconds */
+const stirTheBar = () => perform('shake', 3000);
+
+/* ---------- painted in ---------- */
+
+/* On arrival the bar is painted onto the page. Each ink line is traced
+   on, the shelves and their bottles from left to right, then the counter
+   and what stands on it; each wash bleeds in just after its outline; the
+   lantern is drawn and lit last, and the seal pressed. A tap, a key or a
+   scroll finishes it at once. */
+const PAINT_LAYERS = [
+  /* the layer, when it starts (s), how long its left-to-right sweep takes */
+  ['paint-shelves', .1, 1.9],
+  ['paint-counter', 1.4, 1.1],
+  ['paint-pieces', 2.2, .9],
+  ['paint-lantern', 3, 0]
+];
+const PAINT_DONE = 4.9;
+const PAINT_SKIP = ['pointerdown', 'keydown', 'wheel', 'touchstart'];
+const PAINTED = 'path, rect, circle, ellipse';
+
+function paintIn(box, svg, x0, span) {
+  const frame = svg.getBoundingClientRect();
+  const units = (px) => x0 + (px - frame.left) / frame.width * span;
+  PAINT_LAYERS.forEach(([cls, start, sweep]) => {
+    const layer = svg.querySelector('.' + cls);
+    if (!layer) return;
+    Array.from(layer.children).forEach((unit) => {
+      /* each thing starts when the sweep reaches it; a long thing is drawn
+         along its length from its left end */
+      const r = unit.getBoundingClientRect();
+      const left = units(r.left), right = units(r.right);
+      const long = right - left > 120;
+      const x = long ? Math.max(left, x0) : (left + right) / 2;
+      unit.style.setProperty('--d', (start + sweep * Math.min(1, Math.max(0, (x - x0) / span))).toFixed(2) + 's');
+      if (long) unit.style.setProperty('--len', '1.8s');
+      /* a thing is a group of shapes, or a single line or wash */
+      const shapes = unit.matches(PAINTED) ? [unit] : unit.querySelectorAll(PAINTED);
+      shapes.forEach((shape) => {
+        /* masks and gradients aren't painted, and what moves or glows keeps its own animation */
+        if (shape.closest('defs, clipPath, mask, pattern') || shape.getAttribute('class')) return;
+        const stroke = shape.getAttribute('stroke');
+        if (shape.getAttribute('fill') === 'none' && stroke && stroke !== 'none') {
+          shape.setAttribute('pathLength', 1);
+          shape.classList.add('paint-line');
+        } else shape.classList.add(long && !shape.hasAttribute('clip-path') ? 'paint-wipe' : 'paint-fill');
+      });
+    });
+  });
+  svg.querySelectorAll('.lantern-glow, .shelf-glow, .lantern-light').forEach((g) => g.classList.add('paint-glow'));
+  box.classList.add('painting');
+  document.documentElement.classList.add('painting-page');
+
+  let done = false;
+  const finish = () => {
+    if (done) return;
+    done = true;
+    box.classList.remove('painting');
+    document.documentElement.classList.remove('painting-page');
+    PAINT_SKIP.forEach((type) => window.removeEventListener(type, finish));
+  };
+  PAINT_SKIP.forEach((type) => window.addEventListener(type, finish, { passive: true }));
+  setTimeout(finish, PAINT_DONE * 1000);
+}
+
 /* ---------- the scene ---------- */
 
 const STAGE_W = 340;
@@ -4346,14 +4334,15 @@ function stageUnit() {
 }
 
 /* the width the bar was last drawn at, so a resize only redraws it when it has to */
-let crewWidth = 0;
+let sceneWidth = 0;
 
-function renderCrew() {
-  const box = $('#crew');
-  crewWidth = box.clientWidth;
-  const span = Math.max(crewWidth / stageUnit(), STAGE_W);
+/* paint: draw it in, the way it arrives on a fresh visit */
+function renderScene(paint = false) {
+  const box = $('#scene');
+  sceneWidth = box.clientWidth;
+  const span = Math.max(sceneWidth / stageUnit(), STAGE_W);
   const x0 = 180 - span / 2, x1 = 180 + span / 2;
-  const rand = seeded('crew');
+  const rand = seeded('bar');
   const svg = S('svg', { viewBox: [x0, -2, span, 176].map((n) => fx(n)).join(' '), 'aria-hidden': 'true', focusable: 'false' });
   const defs = S('defs');
   const glow = inkId('room');
@@ -4365,49 +4354,37 @@ function renderCrew() {
   ]));
   svg.appendChild(defs);
 
-  svg.appendChild(backBar(defs, x0 - 2, x1 + 2));
+  const layer = (cls, g) => { g.classList.add(cls); svg.appendChild(g); };
+  layer('paint-shelves', backBar(defs, x0 - 2, x1 + 2));
   svg.appendChild(S('rect', { x: x0, y: -2, width: span, height: COUNTER_Y + 2, fill: 'url(#' + glow + ')', class: 'lantern-glow' }));
-  CREW.forEach((cfg) => svg.appendChild(figure(cfg, rand)));
-  svg.appendChild(lantern(rand));
-  svg.appendChild(counter(rand, x0 - 2, x1 + 2));
+  layer('paint-lantern', lantern(rand));
+  layer('paint-counter', counter(rand, x0 - 2, x1 + 2));
+  layer('paint-pieces', S('g', {}, drawPieces(rand)));
+  /* the house seal on the front of the bar, the way a painter signs */
+  svg.appendChild(S('g', { transform: 'translate(322 151.5)' }, [S('g', { class: 'bar-seal' }, [houseSeal(17)])]));
 
   box.innerHTML = '';
   box.appendChild(svg);
 
-  /* one real button over each of them — taps on SVG shapes are unreliable on phones */
-  const taps = el('div', 'tender-taps');
-  const figures = $$('.tender', svg);
-  const timers = [];
-  CREW.forEach((cfg, i) => {
-    const b = el('button', 'tender-tap');
+  /* a real button over each piece: a phone won't reliably tap an SVG shape */
+  const taps = el('div', 'piece-taps');
+  PIECES.forEach((p) => {
+    const b = el('button', 'piece-tap');
     b.type = 'button';
-    b.style.left = ((cfg.x - 52 - x0) / span * 100).toFixed(3) + '%';
-    b.style.width = (104 / span * 100).toFixed(3) + '%';
-    b.setAttribute('aria-label', U('tender_tap'));
-    b.addEventListener('click', () => {
-      if (prefersStill()) return;
-      figures[i].classList.add('acting');
-      clearTimeout(timers[i]);
-      timers[i] = setTimeout(() => figures[i].classList.remove('acting'), 10000);
-    });
+    b.style.left = ((p.x0 - x0) / span * 100).toFixed(3) + '%';
+    b.style.width = ((p.x1 - p.x0) / span * 100).toFixed(3) + '%';
+    b.setAttribute('aria-label', U(p.label));
+    b.addEventListener('click', () => perform(p.id, 10000));
     taps.appendChild(b);
   });
   box.appendChild(taps);
+  if (paint && !prefersStill()) paintIn(box, svg, x0, span);
 }
 
 /* a turned phone or a resized window gets the bar redrawn to its new width */
-function fitCrew() {
-  const box = $('#crew');
-  if (box.clientWidth && box.clientWidth !== crewWidth) renderCrew();
-}
-
-/* an order lands and they work faster for a few seconds */
-let busyTimer;
-function stirTheBar() {
-  const box = $('#crew');
-  box.classList.add('busy');
-  clearTimeout(busyTimer);
-  busyTimer = setTimeout(() => box.classList.remove('busy'), 4000);
+function fitScene() {
+  const box = $('#scene');
+  if (box.clientWidth && box.clientWidth !== sceneWidth) renderScene();
 }
 
 /* ---------- js/06-marks.js ---------- */
@@ -4496,37 +4473,6 @@ function warnSeal() {
   svg.appendChild(S('rect', { x: 2, y: 2, width: 22, height: 22, rx: 2, fill: SEAL_RED }));
   svg.appendChild(S('path', { d: 'M13 7v8', stroke: PAPER_WASH, 'stroke-width': 2.4, 'stroke-linecap': 'round' }));
   svg.appendChild(S('circle', { cx: 13, cy: 19, r: 1.5, fill: PAPER_WASH }));
-  return svg;
-}
-
-/* ---------- the brushed circle, for the arrival ---------- */
-
-function arrivalMark() {
-  const rand = seeded('enso');
-  const svg = S('svg', { viewBox: '0 0 200 200', focusable: 'false' });
-  const radius = wave(rand, 6);
-  const a0 = -Math.PI * .62;
-  const sweep = Math.PI * 1.86;
-  const centre = trace((t) => {
-    const a = a0 + sweep * t;
-    const r = 70 + radius(t) * 2.4;
-    return [100 + Math.cos(a) * r, 100 + Math.sin(a) * r];
-  }, 72);
-  const mid = inkId('enso');
-  const reveal = S('path', { d: smooth(centre), fill: 'none', stroke: '#fff', 'stroke-width': 26, 'stroke-linecap': 'round', pathLength: 1, class: 'enso-reveal' });
-  svg.appendChild(S('defs', {}, [S('mask', { id: mid, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: 200, height: 200 }, [reveal])]));
-  const ink = S('g', { mask: 'url(#' + mid + ')' });
-  /* loaded at the start, running dry at the end */
-  ink.appendChild(brush(centre, (t) => 12 * (1 - t * .62) + (t < .08 ? 3 : 0), { rand, taper: .05, taperEnd: .3, vary: .22, alpha: .92 }));
-  [-2.6, 1.8, 3.6].forEach((off, i) => {
-    const tail = centre.slice(46).map(([x, y]) => {
-      const dx = x - 100, dy = y - 100, d = Math.hypot(dx, dy);
-      return [x + (dx / d) * off, y + (dy / d) * off];
-    });
-    ink.appendChild(brush(tail, .9 - i * .2, { rand, taper: .1, taperEnd: .6, alpha: .5 }));
-  });
-  svg.appendChild(ink);
-  svg.appendChild(houseSeal(48, 100, 100));
   return svg;
 }
 
@@ -5252,7 +5198,7 @@ function renderNotes() {
 
 /* ---------- js/10-app.js ---------- */
 /* ================================================================
-   THE BAR — paper, arrival, tabs, language, the drink that isn't on
+   THE BAR — paper, tabs, language, the drink that isn't on
    the list, and switching it all on
    ================================================================ */
 
@@ -5299,29 +5245,6 @@ function makeWashi() {
   for (let i = 0; i < 64; i++) fibre('rgba(255,253,247,' + (.1 + rand() * .14) + ')', .35 + rand() * .5);
   for (let i = 0; i < 16; i++) fibre('rgba(120,98,66,' + (.04 + rand() * .05) + ')', .3 + rand() * .4);
   document.documentElement.style.setProperty('--washi', 'url(' + c.toDataURL('image/png') + ')');
-}
-
-/* ---------- arriving ---------- */
-
-/* Every arrival gets the brush and the seal, however many times you come
-   back through the door. A tap skips it; it never outstays three seconds. */
-function arrive() {
-  const veil = $('#arrival');
-  if (!veil) return;
-  if (prefersStill()) { veil.remove(); return; }
-  veil.appendChild(arrivalMark());
-  let gone = false;
-  const open = () => {
-    if (gone) return;
-    gone = true;
-    veil.remove();
-    window.removeEventListener('keydown', open);
-  };
-  veil.addEventListener('click', open);
-  veil.addEventListener('touchstart', open, { passive: true });
-  window.addEventListener('keydown', open);
-  veil.addEventListener('animationend', (e) => { if (e.target === veil) open(); });
-  setTimeout(open, 3000);
 }
 
 /* ---------- small things that happen ---------- */
@@ -5396,7 +5319,7 @@ function showTab(which) {
   $('#view-menu').hidden = !menu;
   $('#view-orders').hidden = menu;
   /* the window may have changed width while the bar was out of sight */
-  if (menu) fitCrew();
+  if (menu) fitScene();
   if (!menu) $$('.count').forEach((n) => n.classList.remove('pulse'));
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
@@ -5445,7 +5368,7 @@ function wireChrome() {
   let fitTimer;
   window.addEventListener('resize', () => {
     clearTimeout(fitTimer);
-    fitTimer = setTimeout(() => { if (!$('#view-menu').hidden) fitCrew(); }, 150);
+    fitTimer = setTimeout(() => { if (!$('#view-menu').hidden) fitScene(); }, 150);
   });
 
   /* the bar gets a hairline once the menu slides under it */
@@ -5470,7 +5393,6 @@ function paintStatic() {
   choice.appendChild(icon('die'));
   choice.appendChild(el('span', null, U('surprise')));
 
-  $$('.tender-tap').forEach((b) => b.setAttribute('aria-label', U('tender_tap')));
   $('#notes-summary').textContent = U('bar_notes');
   const summary = $('#notes-summary').parentNode;
   if (!summary.querySelector('svg')) summary.appendChild(icon('chevron'));
@@ -5487,13 +5409,13 @@ function paintStatic() {
 /* ---------- switch it on ---------- */
 
 makeWashi();
-arrive();
 
 applyPhase();
 setInterval(applyPhase, 60000);
 
 paintStatic();
-renderCrew();
+/* every arrival paints the bar in, however many times you come back */
+renderScene(true);
 wireChrome();
 wireTee();
 paintSecret();
@@ -5505,6 +5427,7 @@ paintSync();
 
 onLang(() => {
   paintStatic();
+  renderScene();
   renderFilters();
   renderMenu();
   renderOrders();

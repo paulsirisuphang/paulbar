@@ -18,7 +18,8 @@ const T_EN = {
   name_ph_err: 'The bar needs a name for this one',
   note_ph: 'Optional — light on the vermouth, no garnish, make it two…',
 
-  tender_tap: 'Get their attention',
+  piece_juggle: 'Juggle the wine bottles', piece_stir: 'Stir the mixing glass',
+  piece_shake: 'Shake the shaker', piece_chip: 'Chip the golf ball into the glass',
   tee_label: 'A golf tee',
   filters_label: 'Show one kind of drink',
   stamp_poured: 'Poured',

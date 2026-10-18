@@ -1,5 +1,5 @@
 /* ================================================================
-   THE BAR — paper, arrival, tabs, language, the drink that isn't on
+   THE BAR — paper, tabs, language, the drink that isn't on
    the list, and switching it all on
    ================================================================ */
 
@@ -46,29 +46,6 @@ function makeWashi() {
   for (let i = 0; i < 64; i++) fibre('rgba(255,253,247,' + (.1 + rand() * .14) + ')', .35 + rand() * .5);
   for (let i = 0; i < 16; i++) fibre('rgba(120,98,66,' + (.04 + rand() * .05) + ')', .3 + rand() * .4);
   document.documentElement.style.setProperty('--washi', 'url(' + c.toDataURL('image/png') + ')');
-}
-
-/* ---------- arriving ---------- */
-
-/* Every arrival gets the brush and the seal, however many times you come
-   back through the door. A tap skips it; it never outstays three seconds. */
-function arrive() {
-  const veil = $('#arrival');
-  if (!veil) return;
-  if (prefersStill()) { veil.remove(); return; }
-  veil.appendChild(arrivalMark());
-  let gone = false;
-  const open = () => {
-    if (gone) return;
-    gone = true;
-    veil.remove();
-    window.removeEventListener('keydown', open);
-  };
-  veil.addEventListener('click', open);
-  veil.addEventListener('touchstart', open, { passive: true });
-  window.addEventListener('keydown', open);
-  veil.addEventListener('animationend', (e) => { if (e.target === veil) open(); });
-  setTimeout(open, 3000);
 }
 
 /* ---------- small things that happen ---------- */
@@ -143,7 +120,7 @@ function showTab(which) {
   $('#view-menu').hidden = !menu;
   $('#view-orders').hidden = menu;
   /* the window may have changed width while the bar was out of sight */
-  if (menu) fitCrew();
+  if (menu) fitScene();
   if (!menu) $$('.count').forEach((n) => n.classList.remove('pulse'));
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
@@ -192,7 +169,7 @@ function wireChrome() {
   let fitTimer;
   window.addEventListener('resize', () => {
     clearTimeout(fitTimer);
-    fitTimer = setTimeout(() => { if (!$('#view-menu').hidden) fitCrew(); }, 150);
+    fitTimer = setTimeout(() => { if (!$('#view-menu').hidden) fitScene(); }, 150);
   });
 
   /* the bar gets a hairline once the menu slides under it */
@@ -217,7 +194,6 @@ function paintStatic() {
   choice.appendChild(icon('die'));
   choice.appendChild(el('span', null, U('surprise')));
 
-  $$('.tender-tap').forEach((b) => b.setAttribute('aria-label', U('tender_tap')));
   $('#notes-summary').textContent = U('bar_notes');
   const summary = $('#notes-summary').parentNode;
   if (!summary.querySelector('svg')) summary.appendChild(icon('chevron'));
@@ -234,13 +210,13 @@ function paintStatic() {
 /* ---------- switch it on ---------- */
 
 makeWashi();
-arrive();
 
 applyPhase();
 setInterval(applyPhase, 60000);
 
 paintStatic();
-renderCrew();
+/* every arrival paints the bar in, however many times you come back */
+renderScene(true);
 wireChrome();
 wireTee();
 paintSecret();
@@ -252,6 +228,7 @@ paintSync();
 
 onLang(() => {
   paintStatic();
+  renderScene();
   renderFilters();
   renderMenu();
   renderOrders();
