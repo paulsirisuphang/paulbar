@@ -1,2 +1,4 @@
 .DS_Store
 paulsbar-local.html
+# screenshots, the test build and the art lab; python3 src/build.py makes them
+build/

@@ -1,0 +1,261 @@
+/* ================================================================
+   THE CARD — one drink, opened: its story, what's in it, how it
+   tastes, the choices, and the guest's name
+   ================================================================ */
+
+/* the method, in the order it's done — smoking the glass comes first,
+   egg white swaps in the dry shake, zero sugar swaps the syrup */
+function stepsFor(drink, opts = {}) {
+  const zero = opts.zero && drink.zero;
+  let base = drink.steps;
+  if (opts.egg && drink.eggSteps) base = drink.eggSteps;
+  else if (zero && drink.zero.steps) base = drink.zero.steps;
+  let list = base.slice();
+  if (zero) list = list.map((st) => st.split(drink.zero.from).join(drink.zero.to));
+  if (opts.smoke) {
+    const wood = opts.wood || drink.woods[0];
+    /* the blend gets its own sentence — "the oak + a pinch of cinnamon chip" doesn't read */
+    const blended = wood.includes('+');
+    let chipName = blended ? woodLabel('Oak') : woodLabel(wood);
+    if (lang === 'en') chipName = chipName.toLowerCase();
+    list.unshift(U('smoke_step')(chipName, blended));
+  }
+  return list;
+}
+
+function stepsList(drink, opts) {
+  const ol = el('ol', 'steps');
+  stepsFor(drink, opts).forEach((step) => ol.appendChild(el('li', null, step)));
+  return ol;
+}
+
+/* zero sugar changes exactly one ingredient, so swap that line rather
+   than keeping a second copy of every recipe */
+function buildList(drink, opts = {}) {
+  const ul = el('ul', 'build');
+  drink.build.forEach(([qty, ing]) => {
+    const swapped = opts.zero && drink.zero && ing === drink.zero.from;
+    const li = el('li', (swapped ? 'swapped' : '') + (qty ? '' : ' unmeasured'));
+    li.appendChild(el('span', 'ing', swapped ? drink.zero.to : ing));
+    li.appendChild(el('span', 'qty', swapped ? (drink.zero.qty || qty) : qty));
+    ul.appendChild(li);
+  });
+  return ul;
+}
+
+/* five rows of ink dots */
+function tastingCard(drink) {
+  const card = el('div', 'tasting');
+  AXES.forEach((axis) => {
+    const v = drink.flavor[axis] || 0;
+    const row = el('div', 'taste');
+    row.appendChild(el('span', 'caps', U('axis_' + axis)));
+    const dots = el('span', 'dots');
+    dots.setAttribute('role', 'img');
+    dots.setAttribute('aria-label', U('axis_' + axis) + ' ' + v + ' / 5');
+    for (let i = 1; i <= 5; i++) dots.appendChild(el('i', i <= v ? 'on' : null));
+    row.appendChild(dots);
+    card.appendChild(row);
+  });
+  return card;
+}
+
+function field(label, ...kids) {
+  const f = el('div', 'field');
+  f.appendChild(el('div', 'caps', label));
+  kids.forEach((k) => f.appendChild(k));
+  return f;
+}
+
+function optionRow(cls, title, why) {
+  const label = el('label', 'option ' + cls);
+  const input = el('input');
+  input.type = 'checkbox';
+  label.appendChild(input);
+  const box = el('span', 'box');
+  box.appendChild(icon('tick'));
+  label.appendChild(box);
+  const text = el('span', 'option-text');
+  text.appendChild(el('span', 'option-title', title));
+  text.appendChild(el('span', 'option-why', why));
+  label.appendChild(text);
+  return { label, input };
+}
+
+const sheet = $('#sheet');
+
+/* the card fills the dialog, so a click on the dialog itself is the backdrop */
+sheet.addEventListener('click', (e) => { if (e.target === sheet) sheet.close(); });
+
+function openSheet(drink) {
+  sheet.innerHTML = '';
+  const state = { smoke: !!drink.defaultSmoke, egg: false, zero: false, wood: drink.woods ? drink.woods[0] : null };
+
+  const form = el('form', 'sheet');
+  form.method = 'dialog';
+
+  /* ---------- head: the drink, drawn and named ---------- */
+  const head = el('div', 'sheet-head');
+  const close = el('button', 'sheet-close');
+  close.type = 'button';
+  close.setAttribute('aria-label', U('close'));
+  close.appendChild(icon('close'));
+  close.addEventListener('click', () => sheet.close());
+  head.appendChild(close);
+
+  const preview = artBox('preview', drink, state, 'pour');
+  head.appendChild(preview);
+  const redraw = () => {
+    preview.innerHTML = '';
+    preview.appendChild(drawDrink(drink, state, 'pour'));
+  };
+
+  /* no profile words up here: the tasting card below says it better */
+  const h2 = el('h2', 'sheet-title', drink.name);
+  h2.id = 'sheet-title';
+  head.appendChild(h2);
+  head.appendChild(el('p', 'sheet-hook', drink.hook));
+  form.appendChild(head);
+
+  /* ---------- body ---------- */
+  const body = el('div', 'sheet-body');
+
+  if (drink.story) body.appendChild(field(U('the_story'), el('p', 'story', drink.story)));
+
+  if (drink.warning) {
+    const warn = el('div', 'warn-box');
+    warn.appendChild(warnSeal());
+    const text = el('p');
+    text.appendChild(el('b', null, U('heads_up')));
+    text.appendChild(txt(drink.warning));
+    warn.appendChild(text);
+    body.appendChild(warn);
+  }
+
+  let build = buildList(drink, state);
+  const whatField = field(U('whats_in_it'), build);
+  body.appendChild(whatField);
+  const repaintBuild = () => {
+    const next = buildList(drink, state);
+    whatField.replaceChild(next, build);
+    build = next;
+  };
+
+  body.appendChild(field(U('tastes_like'), tastingCard(drink)));
+
+  if (drink.smoke) {
+    const block = el('div');
+    const smoke = optionRow('smoke', U('smoke_it'), drink.smokeNote);
+    smoke.input.checked = state.smoke;
+    block.appendChild(smoke.label);
+
+    const woods = el('div', 'woods');
+    woods.hidden = !state.smoke;
+    woods.appendChild(el('div', 'caps', U('wood')));
+    const row = el('div', 'wood-row');
+    const note = el('p', 'wood-note', woodNote(state.wood));
+    drink.woods.forEach((w) => {
+      const b = el('button', 'wood');
+      b.type = 'button';
+      b.dataset.wood = w;
+      b.appendChild(el('span', null, woodLabel(w)));
+      b.setAttribute('aria-pressed', String(w === state.wood));
+      b.addEventListener('click', () => {
+        state.wood = w;
+        $$('.wood', row).forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.wood === w)));
+        note.replaceChildren(txt(woodNote(w)));
+      });
+      row.appendChild(b);
+    });
+    woods.appendChild(row);
+    woods.appendChild(note);
+    block.appendChild(woods);
+
+    smoke.input.addEventListener('change', () => {
+      state.smoke = smoke.input.checked;
+      woods.hidden = !state.smoke;
+      redraw();
+    });
+    body.appendChild(block);
+  } else {
+    const no = el('p', 'no-smoke');
+    no.appendChild(el('b', null, U('no_smoke_here')));
+    no.appendChild(txt(drink.noSmoke));
+    body.appendChild(no);
+  }
+
+  if (drink.egg) {
+    const egg = optionRow('egg', U('egg_white'), U('egg_why'));
+    egg.input.addEventListener('change', () => { state.egg = egg.input.checked; redraw(); });
+    body.appendChild(egg.label);
+  }
+
+  if (drink.zero) {
+    const zero = optionRow('zero', U('zero_sugar'), drink.zero.note);
+    zero.input.addEventListener('change', () => { state.zero = zero.input.checked; repaintBuild(); });
+    body.appendChild(zero.label);
+  }
+
+  const nameInput = el('input', 'write');
+  nameInput.type = 'text';
+  nameInput.placeholder = U('name_ph');
+  nameInput.value = guestName();
+  nameInput.maxLength = 40;
+  nameInput.autocomplete = 'given-name';
+  body.appendChild(field(U('your_name'), nameInput));
+
+  const noteInput = el('textarea', 'write');
+  noteInput.placeholder = U('note_ph');
+  noteInput.maxLength = 200;
+  noteInput.rows = 2;
+  body.appendChild(field(U('anything_else'), noteInput));
+
+  form.appendChild(body);
+
+  /* ---------- foot ---------- */
+  const foot = el('div', 'sheet-foot');
+  const send = el('button', 'btn', U('send'));
+  send.type = 'submit';
+  foot.appendChild(send);
+  form.appendChild(foot);
+
+  nameInput.addEventListener('input', () => nameInput.classList.remove('wanting'));
+  form.addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    const who = nameInput.value.trim();
+    if (!who) {
+      nameInput.classList.add('wanting');
+      nameInput.placeholder = U('name_ph_err');
+      nameInput.focus();
+      return;
+    }
+    rememberGuest(who);
+    Book.add({
+      id: 'o' + Date.now() + Math.random().toString(36).slice(2, 6),
+      drink: drink.id,
+      guest: who,
+      smoke: state.smoke,
+      wood: state.smoke ? state.wood : null,
+      egg: state.egg,
+      zero: state.zero,
+      note: noteInput.value.trim(),
+      at: Date.now(),
+      done: false
+    });
+    sheet.close();
+    toast(U('toast_ordered') + drink.name + U('toast_for') + who, drink, state);
+    stirTheBar();
+    if (state.smoke) releaseSmoke();
+  });
+
+  sheet.appendChild(form);
+  sheet.showModal();
+  /* showModal focuses the close button, which would open the card with a
+     ring around it. A phone focuses the card itself, so no ring and no
+     keyboard over the drawing; a computer goes straight to the name, or
+     to Send if the name is already there. Neither scrolls the body. */
+  if (window.matchMedia('(hover: none)').matches) sheet.focus({ preventScroll: true });
+  else (nameInput.value ? send : nameInput).focus({ preventScroll: true });
+  body.scrollTop = 0;
+  requestAnimationFrame(() => { body.scrollTop = 0; });
+}

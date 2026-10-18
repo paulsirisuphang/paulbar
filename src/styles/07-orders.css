@@ -1,0 +1,257 @@
+/* ================================================================
+   ORDERS — tickets on the rail, stamped when they're poured
+   ================================================================ */
+
+.orders { max-width: 860px; margin: 0 auto; }
+
+.orders-head {
+  display: grid;
+  gap: 10px;
+  margin: 26px 0 34px;
+  text-align: center;
+}
+.orders-title {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(2.25rem, 7vw, 3rem);
+  font-weight: 500;
+  line-height: 1;
+}
+.orders-lede {
+  margin: 0 auto;
+  max-width: 44ch;
+  font-style: italic;
+  color: var(--ink-2);
+}
+.orders-lede b { font-style: normal; font-weight: 500; }
+.orders-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 28px;
+  margin-top: 6px;
+}
+.tally { display: flex; gap: 24px; }
+.tally > span { display: inline-flex; align-items: baseline; gap: 8px; }
+.tally b {
+  font-family: var(--display);
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.sync { display: inline-flex; align-items: center; gap: 8px; }
+.sync::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--matcha); }
+.sync.off::before { background: var(--shu); }
+
+.rail-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 40px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--rule-2);
+}
+.rail-head:first-child { margin-top: 0; }
+.rail-title { margin: 0; font-family: var(--display); font-size: 1.625rem; font-weight: 600; line-height: 1; }
+.link-btn {
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  font-family: var(--sans);
+  font-size: .75rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  cursor: pointer;
+}
+.link-btn:hover { color: var(--shu); }
+:lang(th) .link-btn { font-size: .875rem; letter-spacing: 0; }
+
+.tickets { display: grid; gap: 14px; }
+
+/* a slip of card on the rail */
+.ticket {
+  position: relative;
+  background: var(--paper-hi);
+  box-shadow: 0 0 0 1px rgba(38, 34, 30, .07), 0 14px 26px -22px rgba(52, 38, 24, .55);
+}
+/* a perforated top edge, torn from the pad */
+.ticket::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: radial-gradient(circle at 4px 3px, var(--paper) 2.2px, transparent 2.6px) 0 0 / 9px 6px repeat-x;
+}
+
+.ticket-main {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 14px;
+  align-items: start;
+  padding: 20px 20px 16px 16px;
+}
+.pour {
+  width: 24px;
+  height: 24px;
+  margin-top: 5px;
+  padding: 0;
+  border: 1px solid var(--ink-3);
+  background: var(--paper-hi);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: border-color .2s;
+}
+.pour svg { width: 18px; height: 18px; opacity: 0; transition: opacity .2s; }
+.pour:hover { border-color: var(--ink); }
+.ticket.done .pour svg { opacity: 1; }
+.ticket-art { width: 52px; aspect-ratio: 120 / 170; transition: opacity .3s; }
+.ticket-art svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+.ticket-text { display: grid; gap: 4px; min-width: 0; }
+.ticket-drink { font-family: var(--display); font-size: 1.625rem; font-weight: 600; line-height: 1.05; text-wrap: balance; }
+.ticket-who { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
+.ticket-guest { font-style: italic; font-size: 1.0625rem; color: var(--ink-2); }
+.ticket-when::before { content: '·'; margin-right: 10px; color: var(--ink-4); }
+.ticket-when {
+  font-family: var(--sans);
+  font-size: .75rem;
+  letter-spacing: .04em;
+  color: var(--ink-3);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.ticket-note {
+  margin: 2px 0 0;
+  padding-left: 12px;
+  border-left: 1px solid var(--rule-2);
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+.ticket.done .ticket-art,
+.ticket.done .ticket-text { opacity: .52; }
+.ticket.done .ticket-drink { text-decoration: line-through; text-decoration-thickness: 1px; }
+
+/* the seal, pressed when it's poured */
+.stamp {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  width: 78px;
+  height: 78px;
+  pointer-events: none;
+  transform: rotate(-12deg);
+  opacity: .9;
+  mix-blend-mode: multiply;
+}
+.stamp.fresh { animation: stamp .42s cubic-bezier(.3, 1.6, .5, 1) both; }
+@keyframes stamp {
+  0%   { opacity: 0; transform: rotate(-12deg) scale(1.6); }
+  60%  { opacity: .95; transform: rotate(-12deg) scale(.94); }
+  100% { opacity: .9; transform: rotate(-12deg) scale(1); }
+}
+
+.build-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 20px 14px 56px;
+  border: 0;
+  border-top: 1px dashed var(--rule-2);
+  background: none;
+  font-family: var(--sans);
+  font-size: .6875rem;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  text-align: left;
+  cursor: pointer;
+  transition: color .2s;
+}
+:lang(th) .build-toggle { font-size: .875rem; letter-spacing: 0; }
+.build-toggle:hover { color: var(--ink); }
+.build-toggle svg { width: 10px; height: 10px; transition: transform .3s var(--ease); }
+.build-toggle[aria-expanded='true'] svg { transform: rotate(90deg); }
+
+.build-panel { display: grid; gap: 20px; padding: 4px 22px 24px 56px; }
+.build-panel .build { max-width: 34rem; }
+
+/* the method, numbered in the order you do it */
+.steps { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; counter-reset: step; max-width: var(--measure); }
+.steps li {
+  display: grid;
+  grid-template-columns: 1.6rem 1fr;
+  gap: 10px;
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.steps li::before {
+  counter-increment: step;
+  content: counter(step);
+  font-family: var(--display);
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.05;
+  color: var(--shu);
+  font-variant-numeric: lining-nums;
+}
+
+.aside {
+  display: grid;
+  gap: 4px;
+  max-width: var(--measure);
+  padding: 2px 0 2px 14px;
+  border-left: 1px solid var(--rule-2);
+  font-size: .9375rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.aside.smoke { border-color: var(--smoke); }
+.aside.zero  { border-color: var(--matcha); }
+.aside.tip   { border-color: var(--kincha); }
+.aside.warn  { border-color: var(--shu); }
+
+.empty { padding: 64px 24px 40px; text-align: center; }
+.empty svg { width: 120px; height: 120px; margin: 0 auto 12px; display: block; }
+.empty-title { font-family: var(--display); font-size: 1.75rem; font-weight: 600; }
+.empty p { margin: 4px 0 0; font-style: italic; color: var(--ink-3); }
+
+/* bar notes, folded away at the foot of the orders */
+details.notes { margin-top: 64px; border-top: 1px solid var(--rule-2); }
+details.notes summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px 0;
+  cursor: pointer;
+}
+details.notes summary::-webkit-details-marker { display: none; }
+details.notes summary svg { width: 10px; height: 10px; transition: transform .3s var(--ease); }
+details.notes[open] summary svg { transform: rotate(90deg); }
+.notes-grid {
+  display: grid;
+  gap: 24px 40px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  margin-top: 6px;
+}
+.notes-grid h3 { margin: 0 0 4px; font-family: var(--display); font-size: 1.375rem; font-weight: 600; line-height: 1.15; }
+.notes-grid p { margin: 0; color: var(--ink-2); line-height: 1.55; }
+
+.table-wrap { overflow-x: auto; margin-top: 36px; }
+.wood-table { width: 100%; min-width: 420px; border-collapse: collapse; font-size: 1rem; }
+.wood-table th { padding: 0 16px 8px 0; border-bottom: 1px solid var(--rule-2); text-align: left; }
+.wood-table td { padding: 10px 16px 10px 0; border-bottom: 1px solid var(--rule); vertical-align: top; color: var(--ink-2); }
+.wood-table td:first-child { font-family: var(--display); font-size: 1.1875rem; font-weight: 600; color: var(--ink); white-space: nowrap; }

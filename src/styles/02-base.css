@@ -1,0 +1,85 @@
+/* ================================================================
+   BASE
+   The page is a sheet of washi. The fibres are drawn once at boot
+   (scenes.js) and laid in as --washi; the light sits on top of it.
+   ================================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { background: var(--paper); }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: var(--paper);
+  background-image: var(--washi, none);
+  background-size: 420px 420px;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  transition: background-color 2s ease;
+}
+
+/* daylight from the upper left, the lantern from above — both on the paper,
+   neither on the type */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(90% 60% at 8% -6%, var(--sun), transparent 70%),
+    radial-gradient(60% 42% at 50% 4%, var(--lamp), transparent 72%),
+    radial-gradient(120% 90% at 50% 120%, rgba(120, 96, 64, .10), transparent 60%);
+  transition: background 2s ease;
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  min-height: 100dvh;
+  /* clip, not hidden: hidden makes this a scroll container and the sticky
+     header inside it stops sticking */
+  overflow-x: clip;
+}
+
+button, input, textarea, select { font: inherit; color: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+img, svg { max-width: 100%; }
+
+:focus-visible {
+  outline: 1.5px solid var(--shu);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::selection { background: rgba(176, 57, 42, .18); }
+
+/* one Thai word, kept whole on its line (txt in core.js) */
+.tw { white-space: nowrap; }
+
+/* Small capitals for every label on the page. Thai has no capitals, and
+   letter-spacing breaks its vowel marks apart, so it gets neither. */
+.caps {
+  font-family: var(--sans);
+  font-size: .6875rem;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+:lang(th) .caps {
+  font-size: .8125rem;
+  letter-spacing: .01em;
+  text-transform: none;
+}
+
+[hidden] { display: none !important; }

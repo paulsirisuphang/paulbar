@@ -1,0 +1,71 @@
+/* ================================================================
+   TOKENS
+   Washi, sumi and one red. Everything else on the page is ink at a
+   different strength — colour is kept for the drinks themselves and
+   for the seal.
+   ================================================================ */
+
+:root {
+  color-scheme: light;
+
+  /* paper */
+  --paper:      #ECE6DA;   /* the menu itself */
+  --paper-hi:   #F6F2EA;   /* a fresh card laid on top of it */
+  --paper-lo:   #E2DACB;   /* pressed into it */
+  --paper-edge: #D3C8B5;
+
+  /* ink */
+  --ink:   #26221E;
+  --ink-2: #4C453E;
+  --ink-3: #7D7468;
+  --ink-4: #A79E90;
+  --rule:   rgba(38, 34, 30, .13);
+  --rule-2: rgba(38, 34, 30, .24);
+
+  /* the few colours allowed onto the page */
+  --shu:    #B0392A;   /* vermilion — the seal, and nothing else that matters less */
+  --shu-2:  #93301F;
+  --matcha: #66753F;   /* zero sugar */
+  --kincha: #9C7134;   /* egg white, low ABV */
+  --smoke:  #687579;
+  --hinoki: #CDAA7E;
+
+  /* how the room is lit; the hours below move these */
+  --sun:     rgba(255, 252, 244, .55);  /* daylight through the screen, top left */
+  --lamp:    rgba(214, 146, 72, .16);   /* the paper lantern over the bar */
+  --lantern: 1;                         /* how lit the lantern is, 0–1 */
+  --tempo:   1;                         /* how fast the crew works */
+
+  /* type — Garamond for reading, Cormorant for names, Jost for small print.
+     Thai falls through to Trirong and Anuphan glyph by glyph. */
+  --display: 'Cormorant Garamond', 'Trirong', 'Iowan Old Style', Georgia, serif;
+  --serif:   'EB Garamond', 'Trirong', 'Iowan Old Style', Georgia, serif;
+  --sans:    'Jost', 'Anuphan', 'Avenir Next', 'Helvetica Neue', system-ui, sans-serif;
+
+  --gutter: clamp(20px, 5vw, 48px);
+  --measure: 62ch;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+}
+
+/* Afternoon is bright and the lantern is off. Evening is the room as it
+   should be. After eleven the paper warms; in the small hours it dims. */
+:root[data-phase='day'] {
+  --paper: #EEEAE2;
+  --sun: rgba(255, 255, 250, .7);
+  --lamp: rgba(214, 146, 72, .05);
+  --lantern: .15;
+  --tempo: 1.8;
+}
+:root[data-phase='late'] {
+  --paper: #E9E1D2;
+  --sun: rgba(255, 248, 232, .3);
+  --lamp: rgba(214, 140, 64, .22);
+  --tempo: 1.25;
+}
+:root[data-phase='lastcall'] {
+  --paper: #E3D9C8;
+  --sun: rgba(255, 244, 226, .18);
+  --lamp: rgba(196, 122, 56, .18);
+  --lantern: .7;
+  --tempo: 2.4;
+}

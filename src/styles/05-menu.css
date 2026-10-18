@@ -1,0 +1,168 @@
+/* ================================================================
+   THE MENU — sections of drinks set like a printed card
+   ================================================================ */
+
+/* Filters: four words, the live one underlined. Nothing chosen means
+   everything; tapping the live one lets it go. */
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 4px clamp(10px, 3vw, 28px);
+  margin: 34px 0 6px;
+  padding: 0 0 14px;
+  border-bottom: 1px solid var(--rule);
+  /* full names on one line, down to a 360px phone; anything narrower swipes */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.filters::-webkit-scrollbar { display: none; }
+.filters.more {
+  justify-content: flex-start;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+}
+.filter {
+  flex: none;
+  padding: 6px 0;
+  border: 0;
+  background: none;
+  font-family: var(--sans);
+  font-size: clamp(.72rem, 3.3vw, .78rem);
+  font-weight: 400;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: color .2s;
+}
+.filter > span { padding-bottom: 4px; border-bottom: 1px solid transparent; transition: border-color .2s; }
+.filter:hover { color: var(--ink); }
+.filter[aria-pressed='true'] { color: var(--ink); }
+.filter[aria-pressed='true'] > span { border-color: var(--ink); }
+:lang(th) .filter { font-size: .9375rem; letter-spacing: 0; }
+
+/* a section of the card */
+.section { margin-top: clamp(40px, 7vw, 64px); }
+.section-head {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 6px;
+  text-align: center;
+}
+.section-title {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(2rem, 6vw, 2.75rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -.01em;
+}
+.section-head .caps { color: var(--ink-3); }
+/* a short brush stroke under the title instead of a full rule */
+.section-head svg { justify-self: center; width: 56px; height: 8px; margin-top: 6px; }
+
+.entries {
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: clamp(32px, 5vw, 64px);
+}
+@media (min-width: 820px) { .entries { grid-template-columns: 1fr 1fr; } }
+
+/* One drink. The whole row opens it. */
+.entry {
+  display: grid;
+  grid-template-columns: clamp(76px, 22vw, 104px) 1fr;
+  gap: 4px clamp(12px, 3.6vw, 22px);
+  align-items: start;
+  width: 100%;
+  padding: 22px 0 24px;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  animation: entry-in .6s var(--ease) backwards;
+  animation-delay: calc(var(--i, 0) * 32ms);
+}
+@keyframes entry-in { from { opacity: 0; transform: translateY(8px); } }
+.entry-art { aspect-ratio: 120 / 170; transition: transform .5s var(--ease); }
+.entry-art svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.entry:hover .entry-art { transform: translateY(-3px); }
+
+.entry-text { display: grid; gap: 5px; min-width: 0; padding-top: 6px; }
+.entry-name {
+  font-family: var(--display);
+  font-size: clamp(1.625rem, 5.4vw, 1.875rem);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -.005em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.entry-name > span {
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: background-size .5s var(--ease);
+}
+.entry:hover .entry-name > span { background-size: 100% 1px; }
+.entry-hook {
+  margin: 2px 0 0;
+  max-width: 34ch;
+  font-style: italic;
+  font-size: 1.0625rem;
+  line-height: 1.42;
+  color: var(--ink-2);
+}
+:lang(th) .entry-hook { font-size: 1rem; line-height: 1.6; }
+
+/* what's special about it, in a line of small print */
+.notes-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  margin-top: 6px;
+  font-family: var(--sans);
+  font-size: .75rem;
+  letter-spacing: .03em;
+  color: var(--ink-3);
+}
+:lang(th) .notes-line { font-size: .8125rem; letter-spacing: 0; }
+.note { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.note svg { width: 12px; height: 12px; flex: none; }
+.note.smoke { color: var(--smoke); }
+.note.warn { color: var(--shu); }
+.note.zero { color: var(--matcha); }
+.note.egg, .note.low { color: var(--kincha); }
+
+.no-match {
+  padding: 56px 24px;
+  text-align: center;
+  font-style: italic;
+  color: var(--ink-3);
+}
+
+/* found, not advertised — the eighteenth green at the foot of the card.
+   The button covers the pin and its flag (x 211–288, y 9–108 of 320 × 150). */
+.secret { margin: 72px auto 0; max-width: 380px; text-align: center; }
+.green { position: relative; animation: entry-in 1.4s var(--ease) both; }
+.green svg { display: block; width: 100%; height: auto; overflow: visible; }
+.green text { font-family: var(--sans); font-weight: 500; }
+.pennant { transform-box: fill-box; transform-origin: 0 50%; animation: pennant 3.8s ease-in-out infinite; }
+@keyframes pennant {
+  0%, 100% { transform: scaleX(1) skewY(0deg); }
+  34%      { transform: scaleX(.92) skewY(-4deg); }
+  68%      { transform: scaleX(1.03) skewY(2deg); }
+}
+.flag-hit {
+  position: absolute;
+  left: 66%;
+  top: 6%;
+  width: 24%;
+  height: 66%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.green:has(.flag-hit:hover) .pennant path { fill: var(--shu-2); }
+.flag-hit:focus-visible { outline: 1.5px solid var(--shu); outline-offset: 2px; }

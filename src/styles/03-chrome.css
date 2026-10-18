@@ -1,0 +1,190 @@
+/* ================================================================
+   CHROME — the name, the language, the way to the orders
+   ================================================================ */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px var(--gutter) 12px;
+  padding-top: max(14px, env(safe-area-inset-top));
+  box-shadow: 0 1px 0 transparent;
+  transition: box-shadow .3s ease;
+}
+/* at the top of the page the bar is just the page; once the menu slides
+   under it, it becomes a sheet of the same paper with a hairline edge */
+.topbar.scrolled {
+  background: var(--washi, none) 0 0 / 420px 420px, color-mix(in srgb, var(--paper) 93%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  backdrop-filter: blur(14px) saturate(1.1);
+  box-shadow: 0 1px 0 var(--rule);
+}
+
+.wordmark {
+  margin: 0;
+  white-space: nowrap;
+  font-family: var(--display);
+  font-size: clamp(1.75rem, 4vw, 2.125rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -.005em;
+}
+.home {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: color .3s ease;
+}
+.home:hover { color: var(--ink-2); }
+.wordmark .amp { color: var(--shu); }
+
+/* the golf tee is the exclamation mark in Paul's Bar! — on the baseline,
+   hard against the r, and the same height as the capitals */
+.tee {
+  display: inline-block;
+  padding: 10px 6px;
+  margin: -10px -6px -10px -7px;
+  border: 0;
+  background: none;
+  font: inherit;
+  line-height: 1;
+  vertical-align: baseline;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tee svg {
+  display: inline-block;
+  vertical-align: -.04em;
+  width: auto;
+  height: .7em;
+  overflow: visible;
+  transform-box: fill-box;
+  transform-origin: 50% 96%;
+  animation: tee-shiver 3.6s ease-in-out infinite;
+}
+.tee:hover svg { animation-duration: 1.2s; }
+/* still most of the time, then a small shiver that catches the eye */
+@keyframes tee-shiver {
+  0%, 74%, 100% { transform: rotate(0); }
+  77% { transform: rotate(-9deg); }
+  81% { transform: rotate(8deg); }
+  85% { transform: rotate(-6deg); }
+  89% { transform: rotate(4deg); }
+  93% { transform: rotate(-2deg); }
+}
+
+.topbar-right {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+/* EN · ไทย — two words, the live one underlined */
+.langs { display: flex; align-items: center; }
+.lang {
+  padding: 8px 7px;
+  border: 0;
+  background: none;
+  color: var(--ink-3);
+  font-family: var(--sans);
+  font-size: .8125rem;
+  font-weight: 500;
+  letter-spacing: .08em;
+  cursor: pointer;
+  transition: color .2s;
+}
+.lang > span { padding-bottom: 2px; border-bottom: 1px solid transparent; transition: border-color .2s; }
+.lang:hover { color: var(--ink); }
+.lang[aria-pressed='true'] { color: var(--ink); }
+.lang[aria-pressed='true'] > span { border-color: var(--ink); }
+.langs .sep { width: 1px; height: 12px; background: var(--rule-2); }
+
+/* two strokes, not three — it is a menu card, not an app */
+.burger {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin-right: -8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+.burger svg { width: 24px; height: 24px; }
+.burger svg path { transition: transform .3s var(--ease); transform-box: fill-box; transform-origin: center; }
+.burger[aria-expanded='true'] .l1 { transform: translateY(3px) rotate(45deg); }
+.burger[aria-expanded='true'] .l2 { transform: translateY(-3px) rotate(-45deg); }
+.burger .count { position: absolute; top: 3px; right: 2px; }
+
+.nav-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: -8px;
+  z-index: 40;
+  display: grid;
+  min-width: 200px;
+  padding: 8px;
+  background: var(--paper-hi);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .7) inset, 0 0 0 1px var(--rule), 0 24px 40px -24px rgba(60, 44, 28, .45);
+  animation: menu-in .22s var(--ease);
+}
+@keyframes menu-in { from { opacity: 0; transform: translateY(-6px); } }
+.nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 0;
+  background: none;
+  font-family: var(--display);
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.1;
+  text-align: left;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: color .2s, background-color .2s;
+}
+.nav-item + .nav-item { border-top: 1px solid var(--rule); }
+.nav-item:hover { color: var(--ink); }
+.nav-item[aria-selected='true'] { color: var(--ink); }
+
+/* the one number on the page that should get your attention */
+.count {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--shu);
+  color: #FBF5EC;
+  font-family: var(--sans);
+  font-size: .6875rem;
+  font-weight: 500;
+  line-height: 18px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.count.pulse { animation: pulse .9s ease-out 2; }
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(176, 57, 42, 0); }
+  35%      { box-shadow: 0 0 0 6px rgba(176, 57, 42, .2); }
+}
+
+main {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 8px var(--gutter) 120px;
+}

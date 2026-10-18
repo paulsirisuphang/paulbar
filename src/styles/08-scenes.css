@@ -1,0 +1,122 @@
+/* ================================================================
+   SCENES — the arrival, smoke that leaves the glass, the slip that
+   confirms an order, and the motion inside the drawings
+   ================================================================ */
+
+/* Every arrival: a blank sheet, one brushed circle, the seal pressed
+   inside it, then the room. Any tap skips it. */
+.arrival {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background-color: var(--paper);
+  background-image: var(--washi, none);
+  background-size: 420px 420px;
+  animation: arrive 2.5s ease-in forwards;
+}
+.arrival svg { width: min(220px, 56vw); height: auto; overflow: visible; }
+.enso-reveal { stroke-dasharray: 1; stroke-dashoffset: 1; animation: enso 1.15s cubic-bezier(.45, .1, .25, 1) .15s forwards; }
+@keyframes enso { to { stroke-dashoffset: 0; } }
+.arrival .seal { transform-box: fill-box; transform-origin: center; opacity: 0; animation: seal 0.5s cubic-bezier(.3, 1.5, .5, 1) 1.05s forwards; }
+@keyframes seal {
+  0%   { opacity: 0; transform: scale(1.7) rotate(-6deg); }
+  60%  { opacity: 1; transform: scale(.94) rotate(-6deg); }
+  100% { opacity: 1; transform: scale(1) rotate(-6deg); }
+}
+@keyframes arrive {
+  0%, 74% { opacity: 1; }
+  100%    { opacity: 0; visibility: hidden; }
+}
+
+/* smoke does not stay in the glass */
+.page-smoke {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  pointer-events: none;
+  overflow: hidden;
+}
+.page-smoke svg {
+  position: absolute;
+  bottom: -30vh;
+  width: 34vw;
+  min-width: 160px;
+  max-width: 340px;
+  height: auto;
+  overflow: visible;
+  animation: page-smoke 6s cubic-bezier(.3, .2, .3, 1) forwards;
+}
+@keyframes page-smoke {
+  0%   { opacity: 0; transform: translate(0, 0) scale(.7); }
+  16%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--drift, 2vw), -120vh) scale(1.5); }
+}
+
+/* the slip that says it went through */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100vw - 32px);
+  padding: 10px 22px 10px 14px;
+  background: var(--paper-hi);
+  box-shadow: 0 0 0 1px rgba(38, 34, 30, .08), 0 20px 34px -22px rgba(52, 38, 24, .6);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--ink);
+  transform: translate(-50%, 24px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease, transform .4s var(--ease);
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast-art { width: 30px; aspect-ratio: 120 / 170; flex: none; }
+.toast-art:empty { display: none; }
+.toast-art svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* ---------- inside the drawings ---------- */
+
+.bubble { animation: bubble linear infinite; }
+@keyframes bubble {
+  0%   { transform: translateY(0); opacity: 0; }
+  14%  { opacity: .9; }
+  80%  { opacity: .55; }
+  100% { transform: translateY(var(--rise, -40px)); opacity: 0; }
+}
+
+.wisp { transform-box: fill-box; transform-origin: 50% 100%; animation: wisp 6.4s ease-in-out infinite; }
+@keyframes wisp {
+  0%   { opacity: 0; transform: translate(0, 6px) scale(.7, .6); }
+  24%  { opacity: .85; }
+  70%  { opacity: .4; }
+  100% { opacity: 0; transform: translate(6px, -34px) scale(1.15, 1.4); }
+}
+
+/* the ice gives up while you make up your mind */
+/* each cube is drawn about its own centre, so it shrinks in place */
+.melt {
+  transform-box: view-box;
+  transform-origin: 0 0;
+  will-change: transform;
+  animation: melt 150s linear forwards;
+}
+@keyframes melt { to { transform: scale(.62); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .arrival, .page-smoke { display: none; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  .melt { animation: none !important; }
+  .wisp { opacity: .45; }
+}
