@@ -18,6 +18,7 @@ const AXES = ['bitter', 'sweet', 'citrus', 'herbal', 'strength'];
 const DRINKS = [
   {
     id: 'negroni', name: 'Negroni', method: 'Stirred', section: 'stirred',
+    umami: { qty: '1 dash', step: 'Add 1 dash of umami bitters.', at: 2 },
     hook: "The count it was named after turned out to be a fencing teacher.",
     story: "He turns up in an 1892 ship manifest and a New York directory, and the cowboy and gambler versions are padding. Better still, the handsome mustachioed portrait everyone prints of him is a different man entirely.",
     flavor: { bitter: 5, sweet: 2, citrus: 2, herbal: 4, strength: 4 },
@@ -52,6 +53,7 @@ const DRINKS = [
   },
   {
     id: 'old-fashioned', name: 'Old Fashioned', method: 'Stirred', section: 'stirred',
+    umami: { qty: '2 dashes', step: 'Add 2 dashes of umami bitters.', at: 2 },
     hook: "Drinkers began asking for it the old-fashioned way, and the name stuck.",
     story: "By the 1880s bartenders were loading everything with absinthe, maraschino and curaçao. Asking for it the old way meant spirit, sugar, water and bitters, which is what the word cocktail had meant since 1806. In Wisconsin they ignore all of it, use brandy, and top it with 7-Up.",
     flavor: { bitter: 2, sweet: 3, citrus: 1, herbal: 1, strength: 5 },
@@ -96,6 +98,7 @@ const DRINKS = [
   },
   {
     id: 'rye-manhattan', name: 'Rye Manhattan', method: 'Stirred', section: 'stirred',
+    umami: { qty: '2 dashes', step: 'Add 2 dashes of umami bitters.', at: 3 },
     hook: "It was not invented for Winston Churchill's mother, whatever the bar tells you.",
     story: "Lady Randolph Churchill was in England at the time, heavily pregnant with Winston. What is true is what Prohibition did to rye: distilleries shut for good, and cheap subsidised corn kept bourbon on top for the next fifty years.",
     flavor: { bitter: 2, sweet: 3, citrus: 1, herbal: 3, strength: 5 },
@@ -178,7 +181,25 @@ const DRINKS = [
     glass: 'coupe', color: '#93502A', ice: 'none', garnish: 'cherry'
   },
   {
+    id: 'umami-martini', name: 'Umami Martini', method: 'Stirred', section: 'stirred', fish: true,
+    hook: "Three dashes of kelp, shiitake and bonito turn a gin martini savoury.",
+    story: "Kelp and dried bonito are the base of dashi, the stock under most Japanese cooking, and shiitake often goes in too. Here all three come out of a bottle of bitters. Junmai sake stands in for the vermouth: softer, rounder, and made from nothing but rice, water, yeast and koji.",
+    flavor: { bitter: 1, sweet: 1, citrus: 1, herbal: 3, strength: 5 },
+    build: [['2 oz', 'gin'], ['0.5 oz', 'junmai sake'], ['3 dashes', 'umami bitters']],
+    steps: [
+      "Fill a mixing glass with good ice.",
+      "Add the gin, sake and umami bitters.",
+      "Stir 30 seconds.",
+      "Strain up into a chilled coupe."
+    ],
+    tip: 'Start at three dashes. The bitters are strong, and a fourth tips it from savoury to soup.',
+    smoke: false,
+    noSmoke: 'Sake is too delicate for it, and the bonito in the bitters is smoked already.',
+    glass: 'coupe', color: '#ECE6CC', ice: 'none', garnish: 'none'
+  },
+  {
     id: 'white-negroni', name: 'White Negroni', method: 'Stirred', section: 'stirred',
+    yuzu: { qty: '3 dashes', step: 'Add 3 dashes of yuzu bitters.', at: 2 },
     hook: "Two men invented it because they could not be bothered going out.",
     story: "Bordeaux, 2001: Wayne Collins and Plymouth Gin's Nick Blacknell stayed in during a wine fair and mixed with whatever French bottles were to hand — Suze where the Campari goes, Lillet where the vermouth was. Nobody cared at the time. It caught on years later in New York.",
     flavor: { bitter: 4, sweet: 2, citrus: 2, herbal: 4, strength: 4 },
@@ -245,6 +266,7 @@ const DRINKS = [
   },
   {
     id: 'bees-knees', name: "Bee's Knees", method: 'Shaken', section: 'shaken',
+    yuzu: { qty: '3 dashes', step: 'Add 3 dashes of yuzu bitters to the shaker.', at: 2 },
     hook: "The bartender who first wrote it down was under Gestapo surveillance.",
     story: "Frank Meier ran the bar at the Paris Ritz through the occupation — Austrian-born of Jewish descent, watched by the Gestapo living upstairs, and documented supplying forged papers to guests dodging round-ups. After the war he was sacked for funnelling customers' bar tabs into a London account, and disappeared.",
     flavor: { bitter: 0, sweet: 4, citrus: 4, herbal: 2, strength: 3 },
@@ -280,6 +302,7 @@ const DRINKS = [
   },
   {
     id: 'margarita', name: 'Margarita', method: 'Shaken', section: 'shaken',
+    yuzu: { qty: '3 dashes', step: 'Add 3 dashes of yuzu bitters to the shaker.', at: 2 },
     hook: "Margarita is Spanish for daisy, and a daisy is exactly what this is.",
     story: "The Daisy was a whole family of sours sweetened with a liqueur instead of syrup, and this is simply the tequila one — which is why at least eight people have credibly claimed to have invented it and none can prove it. Salt only half the rim, so nobody is stuck with a decision they didn't make.",
     flavor: { bitter: 1, sweet: 3, citrus: 5, herbal: 2, strength: 4 },
@@ -350,7 +373,25 @@ const DRINKS = [
     glass: 'coupe', color: '#D2DCA0', ice: 'none', garnish: 'lime-twist'
   },
   {
+    id: 'ponzu-gimlet', name: 'Ponzu Gimlet', method: 'Shaken', section: 'shaken', fish: true,
+    hook: "Ponzu is a Dutch word for punch that Japan kept and made its own.",
+    story: "The Dutch traded at Nagasaki when no other Europeans could, and their pons, punch, became ponzu: citrus juice steeped with kelp and dried bonito. Yuzu bitters bring the citrus and umami bitters bring the kelp and bonito, so a plain Gimlet comes out tasting of it.",
+    flavor: { bitter: 1, sweet: 2, citrus: 5, herbal: 2, strength: 4 },
+    build: [['2 oz', 'gin'], ['0.75 oz', 'lime'], ['0.75 oz', 'simple syrup'], ['3 dashes', 'yuzu bitters'], ['1 dash', 'umami bitters']],
+    steps: [
+      "Add the gin, lime, simple syrup, both bitters and ice to a shaker.",
+      "Shake hard for 12 seconds.",
+      "Double-strain up into a chilled coupe.",
+      "Garnish with a lime peel."
+    ],
+    tip: 'Taste it next to a plain Gimlet once. The bitters are the only difference.',
+    smoke: false,
+    noSmoke: 'Shaken with fresh citrus — never smoke this.',
+    glass: 'coupe', color: '#D6D79C', ice: 'none', garnish: 'lime-twist'
+  },
+  {
     id: 'gin-tonic', name: 'Gin & Tonic', method: 'Built', section: 'long', low: true,
+    yuzu: { qty: '3 dashes', step: 'Finish with 3 dashes of yuzu bitters on top.' },
     hook: "Cheap gin once had London in such a state that Hogarth painted it.",
     story: "The tidy version — officers in India cutting their quinine ration — was invented in the 1970s, and no tonic ever carried a medicinal dose. What actually happened was the Gin Craze: the Crown pushed cheap gin to spite French brandy, and London filled with gin shops.",
     flavor: { bitter: 2, sweet: 2, citrus: 3, herbal: 3, strength: 2 },
@@ -447,6 +488,7 @@ const DRINKS = [
   },
   {
     id: 'whiskey-highball', name: 'Whiskey Highball', method: 'Built', section: 'long', low: true,
+    yuzu: { qty: '3 dashes', step: 'Finish with 3 dashes of yuzu bitters on top.' },
     hook: "Suntory talked an entire country back into drinking whisky with this.",
     story: "Japanese whisky had declined for twenty-six straight years when Suntory launched a deliberate highball revival in 2008 — taps in izakaya, cans in convenience stores, an actress in the ads. Bars serving highballs went from about 5,000 to over 40,000 in a year.",
     flavor: { bitter: 1, sweet: 1, citrus: 2, herbal: 1, strength: 2 },

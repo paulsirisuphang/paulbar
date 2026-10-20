@@ -167,7 +167,7 @@ const checks = [
 
   ['the menu lists every drink but the secret one', {}, async (page) => {
     await enter(page);
-    eq(await count(page, '.entry'), 27, 'drinks on the menu');
+    eq(await count(page, '.entry'), 29, 'drinks on the menu');
     eq(await count(page, '.entry[data-drink="vieux-carre"]'), 0, 'the secret drink on the menu');
     eq(await count(page, '.section'), 4, 'sections');
   }],
@@ -202,6 +202,36 @@ const checks = [
       await closeCard(page);
     }
     eq(offered.sort().join(', '), ZERO_SUGAR.slice().sort().join(', '), 'drinks offering zero sugar');
+  }],
+
+  ['the Japanese bitters go in by default, and come out for the classic', {}, async (page) => {
+    await enter(page);
+    const ids = await page.$$eval('.entry', (n) => n.map((b) => b.dataset.drink));
+    const yuzu = [], umami = [];
+    for (const id of ids) {
+      await openDrink(page, id);
+      if (await page.$('#sheet .option.yuzu input:checked')) yuzu.push(id);
+      if (await page.$('#sheet .option.umami input:checked')) umami.push(id);
+      await closeCard(page);
+    }
+    eq(yuzu.sort().join(', '), 'bees-knees, gin-tonic, margarita, whiskey-highball, white-negroni', 'drinks with yuzu bitters in');
+    eq(umami.sort().join(', '), 'negroni, old-fashioned, rye-manhattan', 'drinks with umami bitters in');
+    /* the menu line says so, and umami says fish, as do the two drinks built on it */
+    const fish = await page.$$eval('.entry', (n) => n.filter((e) => e.querySelector('.note.fish')).map((e) => e.dataset.drink).sort().join(', '));
+    eq(fish, 'negroni, old-fashioned, ponzu-gimlet, rye-manhattan, umami-martini', 'drinks marked as containing fish');
+    /* in by default: in the build and the method; out: the classic */
+    await openDrink(page, 'rye-manhattan');
+    ok((await text(page, '#sheet .build')).includes('umami bitters'), 'umami bitters missing from the build');
+    await page.click('#sheet .option.umami');
+    ok(!(await text(page, '#sheet .build')).includes('umami'), 'umami bitters still in the classic');
+    await closeCard(page);
+    /* the order carries it, and the ticket and its build say so */
+    await order(page, 'margarita', 'Kai');
+    await page.click('#burger');
+    await page.click('#tab-orders');
+    ok((await text(page, '.ticket .notes-line')).includes('Yuzu bitters'), 'the ticket does not say yuzu bitters');
+    await page.click('.build-toggle');
+    ok((await text(page, '.build-panel .steps')).includes('yuzu bitters to the shaker'), 'the method has no yuzu step');
   }],
 
   ['a drink that takes smoke opens smoked, on its best wood, and can be unsmoked', {}, async (page) => {

@@ -50,21 +50,25 @@ const Book = (() => {
     });
   }
 
-  /* The book's columns were fixed before the zero-sugar option existed,
-     so that flag travels on the front of the note and is peeled off again. */
-  const ZERO_MARK = '~z ';
+  /* The book's columns were fixed before zero sugar and the bitters
+     existed, so those flags travel on the front of the note, a mark each,
+     and are peeled off again. */
+  const MARKS = { zero: '~z ', yuzu: '~y ', umami: '~u ' };
 
   const toRow = (o) => ({
     id: o.id, drink: o.drink, guest: o.guest, smoke: !!o.smoke, wood: o.wood || null,
-    egg: !!o.egg, note: (o.zero ? ZERO_MARK : '') + (o.note || ''),
+    egg: !!o.egg, note: Object.keys(MARKS).filter((k) => o[k]).map((k) => MARKS[k]).join('') + (o.note || ''),
     at: o.at, done: !!o.done, done_at: o.doneAt || null
   });
   const fromRow = (r) => {
-    const note = r.note || '';
-    const zero = note.startsWith(ZERO_MARK);
+    let note = r.note || '';
+    const flags = {};
+    for (const k of Object.keys(MARKS)) {
+      if (note.startsWith(MARKS[k])) { flags[k] = true; note = note.slice(MARKS[k].length); }
+    }
     return {
       id: r.id, drink: r.drink, guest: r.guest, smoke: !!r.smoke, wood: r.wood,
-      egg: !!r.egg, zero, note: zero ? note.slice(ZERO_MARK.length) : note,
+      egg: !!r.egg, zero: !!flags.zero, yuzu: !!flags.yuzu, umami: !!flags.umami, note,
       at: Number(r.at), done: !!r.done, doneAt: r.done_at
     };
   };

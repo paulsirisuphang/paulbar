@@ -222,6 +222,7 @@ dialog[open] { animation: card-in .4s var(--ease); }
   white-space: nowrap;
 }
 .build li.swapped .ing { color: var(--matcha); }
+.build li.added .ing { color: var(--yuzu); }
 .build li.unmeasured::after { display: none; }
 
 /* tasting card: five rows of ink dots */
@@ -275,6 +276,8 @@ dialog[open] { animation: card-in .4s var(--ease); }
 .option-why { font-size: .9375rem; line-height: 1.5; color: var(--ink-3); }
 .option.smoke:has(input:checked) .box { border-color: var(--smoke); }
 .option.zero:has(input:checked) .option-title { color: var(--matcha); }
+.option.yuzu:has(input:checked) .option-title { color: var(--yuzu); }
+.option.umami:has(input:checked) .option-title { color: var(--shu); }
 
 .woods {
   display: grid;

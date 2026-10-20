@@ -166,6 +166,7 @@ const ICONS = {
   tick: '<svg viewBox="0 0 20 20"><path d="M3.6 10.4c1.6.9 3 2.4 4.1 4.3.3.5.9.5 1.2 0C10.9 10.6 13.3 7 16.6 3.6c.3-.3-.1-.8-.5-.5-3.4 2.6-5.9 5.8-7.6 9.2-.9-1.4-2.1-2.5-3.6-3.2-.5-.2-.9.5-1.3 1.3z" fill="currentColor"/></svg>',
   /* the small marks in a menu line */
   smoke: '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M5 11c-1.8-1.6 1.5-3.1 0-5S5.6 2.8 7 1"/><path d="M8.2 11c-1.1-1 .9-2 0-3.2" opacity=".6"/></svg>',
+  drop: '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round"><path d="M6 1.6C4.7 3.7 3.1 5.5 3.1 7.4a2.9 2.9 0 0 0 5.8 0C8.9 5.5 7.3 3.7 6 1.6z"/></svg>',
   leaf: '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M2.2 9.8C2 5.4 4.8 2.4 9.8 2.2 9.6 7 6.6 9.8 2.2 9.8zM2.2 9.8L6.6 5.4"/></svg>',
   egg: '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1"><path d="M6 1.4c2.1 0 3.8 3 3.8 5.4S8.1 10.6 6 10.6 2.2 9.2 2.2 6.8 3.9 1.4 6 1.4z"/></svg>',
   low: '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1"><circle cx="6" cy="6" r="4.4"/><path d="M1.6 7.2h8.8" /></svg>',

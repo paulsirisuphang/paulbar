@@ -65,6 +65,9 @@ function notesFor(drink) {
   if (drink.warning) out.push({ cls: 'warn', icon: 'warn', text: U('chip_warn') });
   if (drink.egg) out.push({ cls: 'egg', icon: 'egg', text: U('chip_egg_opt') });
   if (drink.zero) out.push({ cls: 'zero', icon: 'leaf', text: U('chip_zero_opt') });
+  if (drink.yuzu) out.push({ cls: 'yuzu', icon: 'drop', text: U('chip_yuzu') });
+  if (drink.umami) out.push({ cls: 'fish', icon: 'drop', text: U('chip_umami') });
+  if (drink.fish) out.push({ cls: 'fish', icon: 'warn', text: U('chip_fish') });
   return out;
 }
 

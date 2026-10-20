@@ -132,6 +132,8 @@
 .note.warn { color: var(--shu); }
 .note.zero { color: var(--matcha); }
 .note.egg, .note.low { color: var(--kincha); }
+.note.yuzu { color: var(--yuzu); }
+.note.fish { color: var(--shu); }
 
 .no-match {
   padding: 56px 24px;

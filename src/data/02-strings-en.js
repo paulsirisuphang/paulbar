@@ -48,6 +48,14 @@ const T_EN = {
   chip_smoked: 'Smoked — ', chip_low: 'Low ABV', chip_na: 'No alcohol',
   chip_warn: 'Not alcohol-free', chip_egg_opt: 'Egg white optional', chip_egg: 'Egg white',
   chip_zero_opt: 'Zero-sugar option', chip_zero: 'Zero sugar',
+  chip_yuzu: 'Yuzu bitters', chip_umami: 'Umami bitters · fish', chip_fish: 'Contains fish',
+
+  yuzu_bitters: 'Yuzu bitters', yuzu_ing: 'yuzu bitters',
+  yuzu_why: 'Tart and floral, between grapefruit and lime. Untick for the classic.',
+  umami_bitters: 'Umami bitters', umami_ing: 'umami bitters',
+  umami_why: 'Kelp, shiitake and smoked bonito: savoury depth, the way a pinch of salt works. Contains fish. Untick for the classic.',
+  fish_warn: 'Contains fish. The umami bitters are made with dried bonito.',
+  fish_why: 'The umami bitters are made with dried bonito.',
 
   toast_ordered: 'Ordered — ', toast_poured: 'Poured — ', toast_back: 'Back on the rail',
   toast_for: ' for ',

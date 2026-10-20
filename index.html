@@ -48,6 +48,7 @@
   --shu-2:  #93301F;
   --matcha: #66753F;   /* zero sugar */
   --kincha: #9C7134;   /* egg white, low ABV */
+  --yuzu:   #8E7A1E;   /* yuzu bitters */
   --smoke:  #687579;
   --hinoki: #CDAA7E;
 
@@ -703,6 +704,8 @@ main {
 .note.warn { color: var(--shu); }
 .note.zero { color: var(--matcha); }
 .note.egg, .note.low { color: var(--kincha); }
+.note.yuzu { color: var(--yuzu); }
+.note.fish { color: var(--shu); }
 
 .no-match {
   padding: 56px 24px;
@@ -935,6 +938,7 @@ dialog[open] { animation: card-in .4s var(--ease); }
   white-space: nowrap;
 }
 .build li.swapped .ing { color: var(--matcha); }
+.build li.added .ing { color: var(--yuzu); }
 .build li.unmeasured::after { display: none; }
 
 /* tasting card: five rows of ink dots */
@@ -988,6 +992,8 @@ dialog[open] { animation: card-in .4s var(--ease); }
 .option-why { font-size: .9375rem; line-height: 1.5; color: var(--ink-3); }
 .option.smoke:has(input:checked) .box { border-color: var(--smoke); }
 .option.zero:has(input:checked) .option-title { color: var(--matcha); }
+.option.yuzu:has(input:checked) .option-title { color: var(--yuzu); }
+.option.umami:has(input:checked) .option-title { color: var(--shu); }
 
 .woods {
   display: grid;
@@ -1543,6 +1549,7 @@ const AXES = ['bitter', 'sweet', 'citrus', 'herbal', 'strength'];
 const DRINKS = [
   {
     id: 'negroni', name: 'Negroni', method: 'Stirred', section: 'stirred',
+    umami: { qty: '1 dash', step: 'Add 1 dash of umami bitters.', at: 2 },
     hook: "The count it was named after turned out to be a fencing teacher.",
     story: "He turns up in an 1892 ship manifest and a New York directory, and the cowboy and gambler versions are padding. Better still, the handsome mustachioed portrait everyone prints of him is a different man entirely.",
     flavor: { bitter: 5, sweet: 2, citrus: 2, herbal: 4, strength: 4 },
@@ -1577,6 +1584,7 @@ const DRINKS = [
   },
   {
     id: 'old-fashioned', name: 'Old Fashioned', method: 'Stirred', section: 'stirred',
+    umami: { qty: '2 dashes', step: 'Add 2 dashes of umami bitters.', at: 2 },
     hook: "Drinkers began asking for it the old-fashioned way, and the name stuck.",
     story: "By the 1880s bartenders were loading everything with absinthe, maraschino and curaçao. Asking for it the old way meant spirit, sugar, water and bitters, which is what the word cocktail had meant since 1806. In Wisconsin they ignore all of it, use brandy, and top it with 7-Up.",
     flavor: { bitter: 2, sweet: 3, citrus: 1, herbal: 1, strength: 5 },
@@ -1621,6 +1629,7 @@ const DRINKS = [
   },
   {
     id: 'rye-manhattan', name: 'Rye Manhattan', method: 'Stirred', section: 'stirred',
+    umami: { qty: '2 dashes', step: 'Add 2 dashes of umami bitters.', at: 3 },
     hook: "It was not invented for Winston Churchill's mother, whatever the bar tells you.",
     story: "Lady Randolph Churchill was in England at the time, heavily pregnant with Winston. What is true is what Prohibition did to rye: distilleries shut for good, and cheap subsidised corn kept bourbon on top for the next fifty years.",
     flavor: { bitter: 2, sweet: 3, citrus: 1, herbal: 3, strength: 5 },
@@ -1703,7 +1712,25 @@ const DRINKS = [
     glass: 'coupe', color: '#93502A', ice: 'none', garnish: 'cherry'
   },
   {
+    id: 'umami-martini', name: 'Umami Martini', method: 'Stirred', section: 'stirred', fish: true,
+    hook: "Three dashes of kelp, shiitake and bonito turn a gin martini savoury.",
+    story: "Kelp and dried bonito are the base of dashi, the stock under most Japanese cooking, and shiitake often goes in too. Here all three come out of a bottle of bitters. Junmai sake stands in for the vermouth: softer, rounder, and made from nothing but rice, water, yeast and koji.",
+    flavor: { bitter: 1, sweet: 1, citrus: 1, herbal: 3, strength: 5 },
+    build: [['2 oz', 'gin'], ['0.5 oz', 'junmai sake'], ['3 dashes', 'umami bitters']],
+    steps: [
+      "Fill a mixing glass with good ice.",
+      "Add the gin, sake and umami bitters.",
+      "Stir 30 seconds.",
+      "Strain up into a chilled coupe."
+    ],
+    tip: 'Start at three dashes. The bitters are strong, and a fourth tips it from savoury to soup.',
+    smoke: false,
+    noSmoke: 'Sake is too delicate for it, and the bonito in the bitters is smoked already.',
+    glass: 'coupe', color: '#ECE6CC', ice: 'none', garnish: 'none'
+  },
+  {
     id: 'white-negroni', name: 'White Negroni', method: 'Stirred', section: 'stirred',
+    yuzu: { qty: '3 dashes', step: 'Add 3 dashes of yuzu bitters.', at: 2 },
     hook: "Two men invented it because they could not be bothered going out.",
     story: "Bordeaux, 2001: Wayne Collins and Plymouth Gin's Nick Blacknell stayed in during a wine fair and mixed with whatever French bottles were to hand — Suze where the Campari goes, Lillet where the vermouth was. Nobody cared at the time. It caught on years later in New York.",
     flavor: { bitter: 4, sweet: 2, citrus: 2, herbal: 4, strength: 4 },
@@ -1770,6 +1797,7 @@ const DRINKS = [
   },
   {
     id: 'bees-knees', name: "Bee's Knees", method: 'Shaken', section: 'shaken',
+    yuzu: { qty: '3 dashes', step: 'Add 3 dashes of yuzu bitters to the shaker.', at: 2 },
     hook: "The bartender who first wrote it down was under Gestapo surveillance.",
     story: "Frank Meier ran the bar at the Paris Ritz through the occupation — Austrian-born of Jewish descent, watched by the Gestapo living upstairs, and documented supplying forged papers to guests dodging round-ups. After the war he was sacked for funnelling customers' bar tabs into a London account, and disappeared.",
     flavor: { bitter: 0, sweet: 4, citrus: 4, herbal: 2, strength: 3 },
@@ -1805,6 +1833,7 @@ const DRINKS = [
   },
   {
     id: 'margarita', name: 'Margarita', method: 'Shaken', section: 'shaken',
+    yuzu: { qty: '3 dashes', step: 'Add 3 dashes of yuzu bitters to the shaker.', at: 2 },
     hook: "Margarita is Spanish for daisy, and a daisy is exactly what this is.",
     story: "The Daisy was a whole family of sours sweetened with a liqueur instead of syrup, and this is simply the tequila one — which is why at least eight people have credibly claimed to have invented it and none can prove it. Salt only half the rim, so nobody is stuck with a decision they didn't make.",
     flavor: { bitter: 1, sweet: 3, citrus: 5, herbal: 2, strength: 4 },
@@ -1875,7 +1904,25 @@ const DRINKS = [
     glass: 'coupe', color: '#D2DCA0', ice: 'none', garnish: 'lime-twist'
   },
   {
+    id: 'ponzu-gimlet', name: 'Ponzu Gimlet', method: 'Shaken', section: 'shaken', fish: true,
+    hook: "Ponzu is a Dutch word for punch that Japan kept and made its own.",
+    story: "The Dutch traded at Nagasaki when no other Europeans could, and their pons, punch, became ponzu: citrus juice steeped with kelp and dried bonito. Yuzu bitters bring the citrus and umami bitters bring the kelp and bonito, so a plain Gimlet comes out tasting of it.",
+    flavor: { bitter: 1, sweet: 2, citrus: 5, herbal: 2, strength: 4 },
+    build: [['2 oz', 'gin'], ['0.75 oz', 'lime'], ['0.75 oz', 'simple syrup'], ['3 dashes', 'yuzu bitters'], ['1 dash', 'umami bitters']],
+    steps: [
+      "Add the gin, lime, simple syrup, both bitters and ice to a shaker.",
+      "Shake hard for 12 seconds.",
+      "Double-strain up into a chilled coupe.",
+      "Garnish with a lime peel."
+    ],
+    tip: 'Taste it next to a plain Gimlet once. The bitters are the only difference.',
+    smoke: false,
+    noSmoke: 'Shaken with fresh citrus — never smoke this.',
+    glass: 'coupe', color: '#D6D79C', ice: 'none', garnish: 'lime-twist'
+  },
+  {
     id: 'gin-tonic', name: 'Gin & Tonic', method: 'Built', section: 'long', low: true,
+    yuzu: { qty: '3 dashes', step: 'Finish with 3 dashes of yuzu bitters on top.' },
     hook: "Cheap gin once had London in such a state that Hogarth painted it.",
     story: "The tidy version — officers in India cutting their quinine ration — was invented in the 1970s, and no tonic ever carried a medicinal dose. What actually happened was the Gin Craze: the Crown pushed cheap gin to spite French brandy, and London filled with gin shops.",
     flavor: { bitter: 2, sweet: 2, citrus: 3, herbal: 3, strength: 2 },
@@ -1972,6 +2019,7 @@ const DRINKS = [
   },
   {
     id: 'whiskey-highball', name: 'Whiskey Highball', method: 'Built', section: 'long', low: true,
+    yuzu: { qty: '3 dashes', step: 'Finish with 3 dashes of yuzu bitters on top.' },
     hook: "Suntory talked an entire country back into drinking whisky with this.",
     story: "Japanese whisky had declined for twenty-six straight years when Suntory launched a deliberate highball revival in 2008 — taps in izakaya, cans in convenience stores, an actress in the ads. Bars serving highballs went from about 5,000 to over 40,000 in a year.",
     flavor: { bitter: 1, sweet: 1, citrus: 2, herbal: 1, strength: 2 },
@@ -2107,6 +2155,14 @@ const T_EN = {
   chip_smoked: 'Smoked — ', chip_low: 'Low ABV', chip_na: 'No alcohol',
   chip_warn: 'Not alcohol-free', chip_egg_opt: 'Egg white optional', chip_egg: 'Egg white',
   chip_zero_opt: 'Zero-sugar option', chip_zero: 'Zero sugar',
+  chip_yuzu: 'Yuzu bitters', chip_umami: 'Umami bitters · fish', chip_fish: 'Contains fish',
+
+  yuzu_bitters: 'Yuzu bitters', yuzu_ing: 'yuzu bitters',
+  yuzu_why: 'Tart and floral, between grapefruit and lime. Untick for the classic.',
+  umami_bitters: 'Umami bitters', umami_ing: 'umami bitters',
+  umami_why: 'Kelp, shiitake and smoked bonito: savoury depth, the way a pinch of salt works. Contains fish. Untick for the classic.',
+  fish_warn: 'Contains fish. The umami bitters are made with dried bonito.',
+  fish_why: 'The umami bitters are made with dried bonito.',
 
   toast_ordered: 'Ordered — ', toast_poured: 'Poured — ', toast_back: 'Back on the rail',
   toast_for: ' for ',
@@ -2192,7 +2248,7 @@ const TH_KEEP = [
   'ทรงสูง', 'ปานกลาง', 'คั้นสด', 'หยิบมือ', 'เล็กน้อย', 'ส่วนใหญ่', 'นายทหาร', 'ราคาถูก', 'หลักฐาน',
   'ฝานแว่น', 'หั่นเสี้ยว', 'เข้มข้น', 'เปรี้ยวสด', 'ส่วนผสม', 'คอเหล้า', 'เคล็ดลับ', 'เครื่องมือ',
   'เครื่องเทศ', 'โรงกลั่น', 'ยึดครอง', 'ราชสำนัก', 'ม้าหมุน', 'หัวจ่าย', 'เด็ดขาด', 'ผู้โดยสาร', 'รายชื่อ',
-  'อักษรย่อ', 'ตลอดกาล', 'สายเข้ม', 'สายเปรี้ยว', 'สายซ่า', 'สายไม่เมา', 'เสี่ยงดวง', 'สัดส่วน', 'เชื้อสาย', 'เนื้อสัมผัส', 'นิดหนึ่ง', 'นิดเดียว', 'นิดหน่อย', 'หนานุ่ม', 'ครูสอนฟันดาบ', 'ขณะที่', 'ต่อมา', 'กลายเป็น'
+  'อักษรย่อ', 'ตลอดกาล', 'สายเข้ม', 'สายเปรี้ยว', 'สายซ่า', 'สายไม่เมา', 'เสี่ยงดวง', 'สัดส่วน', 'ยูซุ', 'อูมามิ', 'คอมบุ', 'พอนสึ', 'ดาชิ', 'จุนไม', 'โคจิ', 'สาเก', 'นางาซากิ', 'ดัตช์', 'เกรปฟรุต', 'ปลาโอแห้ง', 'ปลาโอ', 'เห็ดหอม', 'พันช์', 'น้ำซุป', 'เชื้อสาย', 'เนื้อสัมผัส', 'นิดหนึ่ง', 'นิดเดียว', 'นิดหน่อย', 'หนานุ่ม', 'ครูสอนฟันดาบ', 'ขณะที่', 'ต่อมา', 'กลายเป็น'
 ];
 
 const T_TH = {
@@ -2235,6 +2291,13 @@ const T_TH = {
   ago_hr: (h) => h + ' ชั่วโมงที่แล้ว',
   zero_sugar: 'ไซรัปน้ำตาล 0%',
   chip_zero_opt: 'เลือกน้ำตาล 0% ได้', chip_zero: 'น้ำตาล 0%',
+  chip_yuzu: 'บิตเตอร์ยูซุ', chip_umami: 'บิตเตอร์อูมามิ · มีปลา', chip_fish: 'มีส่วนผสมของปลา',
+  yuzu_bitters: 'บิตเตอร์ยูซุ', yuzu_ing: 'บิตเตอร์ยูซุ',
+  yuzu_why: 'เปรี้ยวหอมแบบดอกไม้ อยู่ระหว่างเกรปฟรุตกับมะนาว เอาออกถ้าอยากได้สูตรดั้งเดิม',
+  umami_bitters: 'บิตเตอร์อูมามิ', umami_ing: 'บิตเตอร์อูมามิ',
+  umami_why: 'คอมบุ เห็ดหอม และปลาโอแห้งรมควัน ให้รสกลมลึกแบบเดียวกับเกลือหยิบมือ มีส่วนผสมของปลา เอาออกถ้าอยากได้สูตรดั้งเดิม',
+  fish_warn: 'มีส่วนผสมของปลา บิตเตอร์อูมามิทำจากปลาโอแห้ง',
+  fish_why: 'บิตเตอร์อูมามิทำจากปลาโอแห้ง',
   aside_zero: 'ไซรัปน้ำตาล 0%',
   smoke_it: 'รมควัน',
   wood: 'ไม้',
@@ -2327,6 +2390,7 @@ const NO_SMOKE_LIME = 'เพราะเขย่ากับน้ำมะน
    syrup is followed by a space, so "0%" never runs into the next word. */
 const TH = {
   'negroni': {
+    umami: { qty: '1 แดช', step: 'ใส่บิตเตอร์อูมามิ 1 แดช', at: 2 },
     method: 'คนกับน้ำแข็ง',
     hook: 'ท่านเคานต์เจ้าของชื่อแก้วนี้ ที่แท้เป็นครูสอนฟันดาบ',
     story: 'ชื่อเขาโผล่ในรายชื่อผู้โดยสารเรือปี 1892 และในสมุดรายชื่อของนิวยอร์ก ส่วนเรื่องที่ว่าเขาเคยเป็นคาวบอยหรือนักพนันนั้นแต่งเติมกันทีหลัง ที่ขำกว่านั้นคือภาพชายหนวดงามที่ใคร ๆ ก็เอามาลงคู่กับเรื่องนี้ เป็นคนละคนกันเลย',
@@ -2355,6 +2419,7 @@ const TH = {
     smokeNote: 'แก้วที่รมควันแล้วดีที่สุดในเมนู เบอร์เบินมีกลิ่นคาราเมลกับโอ๊กให้ควันได้เกาะ ไม่มีกลิ่นสมุนไพรมาตีกัน'
   },
   'old-fashioned': {
+    umami: { qty: '2 แดช', step: 'ใส่บิตเตอร์อูมามิ 2 แดช', at: 2 },
     zero: { from: 'น้ำตาลก้อน (หรือไซรัปน้ำตาล 0.25 ออนซ์)', qty: '0.25 ออนซ์', to: 'ไซรัปน้ำตาล 0%',
       note: 'ไม่ต้องบดน้ำตาล จึงทำได้เร็วกว่า ที่หายไปมีแค่เกล็ดน้ำตาลที่ไม่เคยละลายหมดอยู่แล้ว',
       steps: [
@@ -2393,6 +2458,7 @@ const TH = {
     smokeNote: 'กลิ่นน้ำผึ้งของ Bénédictine กับควันเข้ากันดีกว่าที่คิด แก้วนี้ใช้ไม้อ่อน ๆ'
   },
   'rye-manhattan': {
+    umami: { qty: '2 แดช', step: 'ใส่บิตเตอร์อูมามิ 2 แดช', at: 3 },
     method: 'คนกับน้ำแข็ง',
     hook: 'บาร์ไหนจะเล่ายังไงก็ตาม แก้วนี้ไม่ได้คิดขึ้นเพื่อแม่ของวินสตัน เชอร์ชิล',
     story: 'ตอนนั้น Lady Randolph Churchill อยู่ที่อังกฤษ กำลังท้องแก่ใกล้คลอดวินสตัน เรื่องที่จริงคือสิ่งที่ยุคห้ามเหล้าทำกับไรย์วิสกี้ โรงกลั่นปิดตัวไปตลอดกาล ส่วนข้าวโพดราคาถูกที่รัฐอุดหนุนก็ทำให้เบอร์เบินครองตลาดต่อไปอีกห้าสิบปี',
@@ -2430,7 +2496,22 @@ const TH = {
     ],
     smokeNote: 'เราไม่มีแอบซินธ์ไว้กลั้วแก้ว ควันจึงมาทำหน้าที่แทน กลิ่นต่างกันแต่ทำงานเดียวกัน'
   },
+  'umami-martini': {
+    method: 'คนกับน้ำแข็ง',
+    hook: 'บิตเตอร์สามแดชจากคอมบุ เห็ดหอม และปลาโอ เปลี่ยนมาร์ตินี่จินให้เป็นรสอูมามิ',
+    story: 'คอมบุกับปลาโอแห้งคือหัวใจของดาชิ น้ำซุปที่อยู่เบื้องหลังอาหารญี่ปุ่นแทบทุกจาน และหลายสูตรก็ใส่เห็ดหอมด้วย แก้วนี้ได้ทั้งสามอย่างมาจากขวดบิตเตอร์ ส่วนสาเกจุนไมทำหน้าที่แทนเวอร์มุท นุ่มกว่า กลมกว่า และทำจากข้าว น้ำ ยีสต์ และโคจิเท่านั้น',
+    build: [['2 ออนซ์', 'จิน'], ['0.5 ออนซ์', 'สาเกจุนไม'], ['3 แดช', 'บิตเตอร์อูมามิ']],
+    steps: [
+      FILL_MIXING,
+      'เทจิน สาเก และบิตเตอร์อูมามิลงไป',
+      STIR,
+      'กรองลงแก้วคูเป้แช่เย็น'
+    ],
+    tip: 'เริ่มที่สามแดช บิตเตอร์ตัวนี้แรง แดชที่สี่จะพาจากรสกลมลึกกลายเป็นน้ำซุป',
+    noSmoke: 'สาเกบอบบางเกินไป และปลาโอแห้งในบิตเตอร์ก็รมควันมาแล้ว'
+  },
   'white-negroni': {
+    yuzu: { qty: '3 แดช', step: 'ใส่บิตเตอร์ยูซุ 3 แดช', at: 2 },
     method: 'คนกับน้ำแข็ง',
     hook: 'สองหนุ่มคิดแก้วนี้ขึ้นมา เพราะขี้เกียจออกไปข้างนอก',
     story: 'บอร์โด ปี 2001 ระหว่างงานแสดงไวน์ Wayne Collins กับ Nick Blacknell จาก Plymouth Gin เลือกอยู่ในห้อง แล้วผสมจากขวดฝรั่งเศสเท่าที่มีอยู่ตรงหน้า ใช้ Suze แทน Campari และ Lillet แทนเวอร์มุท ตอนนั้นไม่มีใครสนใจ กว่าจะดังก็อีกหลายปีต่อมาที่นิวยอร์ก',
@@ -2487,6 +2568,7 @@ const TH = {
     noSmoke: 'ควันกับน้ำเลมอนสดรสจะตีกัน และฟองก็กลบกลิ่นควันอยู่ดี'
   },
   'bees-knees': {
+    yuzu: { qty: '3 แดช', step: 'ใส่บิตเตอร์ยูซุ 3 แดชลงในเชคเกอร์', at: 2 },
     method: 'เขย่ากับน้ำแข็ง',
     hook: 'บาร์เทนเดอร์คนแรกที่จดสูตรนี้ไว้ ถูกเกสตาโปจับตามองอยู่',
     story: 'Frank Meier คุมบาร์ของโรงแรมริตซ์ในปารีสตลอดช่วงที่นาซียึดครอง เขาเกิดที่ออสเตรีย มีเชื้อสายยิว ถูกเกสตาโปที่พักอยู่ชั้นบนจับตา และมีหลักฐานว่าเขาทำเอกสารปลอมให้แขกที่หนีการกวาดล้าง หลังสงครามเขาถูกไล่ออก เพราะแอบโอนค่าเครื่องดื่มของลูกค้าเข้าบัญชีตัวเองที่ลอนดอน แล้วก็หายตัวไป',
@@ -2516,6 +2598,7 @@ const TH = {
     noSmoke: NO_SMOKE_LEMON
   },
   'margarita': {
+    yuzu: { qty: '3 แดช', step: 'ใส่บิตเตอร์ยูซุ 3 แดชลงในเชคเกอร์', at: 2 },
     method: 'เขย่ากับน้ำแข็ง',
     hook: 'Margarita ภาษาสเปนแปลว่าดอกเดซี่ และแก้วนี้ก็คือค็อกเทลตระกูล Daisy จริง ๆ',
     story: 'Daisy คือค็อกเทลรสเปรี้ยวตระกูลหนึ่งที่ใช้ลิเคียวให้ความหวานแทนไซรัป และแก้วนี้ก็แค่เป็นเวอร์ชันเตกีลา จึงมีคนอ้างว่าเป็นคนคิดอย่างน้อยแปดคน ฟังขึ้นทุกคน แต่ไม่มีใครพิสูจน์ได้สักคน ป้ายเกลือแค่ครึ่งขอบแก้ว คนดื่มจะได้เลือกเอง',
@@ -2589,6 +2672,20 @@ const TH = {
     ],
     noSmoke: NO_SMOKE_LIME
   },
+  'ponzu-gimlet': {
+    method: 'เขย่ากับน้ำแข็ง',
+    hook: 'พอนสึเป็นคำดัตช์ที่แปลว่าพันช์ ญี่ปุ่นยืมมาแล้วทำเป็นของตัวเอง',
+    story: 'ชาวดัตช์ค้าขายที่นางาซากิในยุคที่ชาวยุโรปชาติอื่นเข้าไม่ได้ คำว่า pons ของพวกเขากลายเป็นพอนสึ น้ำผลไม้ตระกูลส้มที่แช่คอมบุกับปลาโอแห้ง บิตเตอร์ยูซุให้ความเปรี้ยวหอม บิตเตอร์อูมามิให้คอมบุกับปลาโอ Gimlet ธรรมดาเลยออกมามีรสพอนสึ',
+    build: [['2 ออนซ์', 'จิน'], ['0.75 ออนซ์', 'น้ำมะนาว'], ['0.75 ออนซ์', 'ไซรัปน้ำตาล'], ['3 แดช', 'บิตเตอร์ยูซุ'], ['1 แดช', 'บิตเตอร์อูมามิ']],
+    steps: [
+      'ใส่จิน น้ำมะนาว ไซรัปน้ำตาล บิตเตอร์ทั้งสองตัว และน้ำแข็งลงในเชคเกอร์',
+      SHAKE,
+      INTO_COUPE,
+      'ตกแต่งด้วยเปลือกมะนาว'
+    ],
+    tip: 'ลองชิมเทียบกับ Gimlet ธรรมดาสักครั้ง บิตเตอร์คือความต่างอย่างเดียว',
+    noSmoke: NO_SMOKE_LIME
+  },
   'de-la-louisiane': {
     method: 'คนกับน้ำแข็ง',
     hook: 'แก้วประจำร้านอาหารในนิวออร์ลีนส์ที่เปิดมาตั้งแต่ปี 1881',
@@ -2605,6 +2702,7 @@ const TH = {
     smokeNote: 'ควันมาแทนการกลั้วแอบซินธ์ ทำหน้าที่เดียวกับใน Sazerac'
   },
   'gin-tonic': {
+    yuzu: { qty: '3 แดช', step: 'ปิดท้ายด้วยบิตเตอร์ยูซุ 3 แดชด้านบน' },
     method: 'ผสมในแก้ว',
     hook: 'จินราคาถูกเคยทำให้ลอนดอนวุ่นวายจน Hogarth ต้องวาดภาพเก็บไว้',
     story: 'เรื่องเล่าสวย ๆ ที่ว่านายทหารในอินเดียผสมจินกับยาควินินนั้นเพิ่งถูกแต่งขึ้นในยุค 1970 และโทนิกก็ไม่เคยมีควินินมากพอจะเป็นยาได้ ที่เกิดขึ้นจริงคือยุค Gin Craze ราชสำนักอังกฤษหนุนจินราคาถูกเพื่อสกัดบรั่นดีฝรั่งเศส จนลอนดอนเต็มไปด้วยร้านขายจิน',
@@ -2689,6 +2787,7 @@ const TH = {
     noSmoke: NO_SMOKE_LEMON
   },
   'whiskey-highball': {
+    yuzu: { qty: '3 แดช', step: 'ปิดท้ายด้วยบิตเตอร์ยูซุ 3 แดชด้านบน' },
     method: 'ผสมในแก้ว',
     hook: 'ซันโทรี่ใช้แก้วนี้ชวนคนทั้งประเทศกลับมาดื่มวิสกี้',
     story: 'วิสกี้ญี่ปุ่นยอดขายตกติดต่อกันยี่สิบหกปี จนปี 2008 ซันโทรี่ตั้งใจปลุกกระแสไฮบอลขึ้นมาใหม่ ติดหัวจ่ายไฮบอลในร้านอิซากายะ วางขายแบบกระป๋องในร้านสะดวกซื้อ และให้ดาราสาวเล่นโฆษณา ภายในปีเดียว ร้านที่ขายไฮบอลเพิ่มจากราวห้าพันร้านเป็นมากกว่าสี่หมื่นร้าน',
@@ -2972,21 +3071,25 @@ const Book = (() => {
     });
   }
 
-  /* The book's columns were fixed before the zero-sugar option existed,
-     so that flag travels on the front of the note and is peeled off again. */
-  const ZERO_MARK = '~z ';
+  /* The book's columns were fixed before zero sugar and the bitters
+     existed, so those flags travel on the front of the note, a mark each,
+     and are peeled off again. */
+  const MARKS = { zero: '~z ', yuzu: '~y ', umami: '~u ' };
 
   const toRow = (o) => ({
     id: o.id, drink: o.drink, guest: o.guest, smoke: !!o.smoke, wood: o.wood || null,
-    egg: !!o.egg, note: (o.zero ? ZERO_MARK : '') + (o.note || ''),
+    egg: !!o.egg, note: Object.keys(MARKS).filter((k) => o[k]).map((k) => MARKS[k]).join('') + (o.note || ''),
     at: o.at, done: !!o.done, done_at: o.doneAt || null
   });
   const fromRow = (r) => {
-    const note = r.note || '';
-    const zero = note.startsWith(ZERO_MARK);
+    let note = r.note || '';
+    const flags = {};
+    for (const k of Object.keys(MARKS)) {
+      if (note.startsWith(MARKS[k])) { flags[k] = true; note = note.slice(MARKS[k].length); }
+    }
     return {
       id: r.id, drink: r.drink, guest: r.guest, smoke: !!r.smoke, wood: r.wood,
-      egg: !!r.egg, zero, note: zero ? note.slice(ZERO_MARK.length) : note,
+      egg: !!r.egg, zero: !!flags.zero, yuzu: !!flags.yuzu, umami: !!flags.umami, note,
       at: Number(r.at), done: !!r.done, doneAt: r.done_at
     };
   };
@@ -5006,6 +5109,7 @@ const ICONS = {
   tick: '<svg viewBox="0 0 20 20"><path d="M3.6 10.4c1.6.9 3 2.4 4.1 4.3.3.5.9.5 1.2 0C10.9 10.6 13.3 7 16.6 3.6c.3-.3-.1-.8-.5-.5-3.4 2.6-5.9 5.8-7.6 9.2-.9-1.4-2.1-2.5-3.6-3.2-.5-.2-.9.5-1.3 1.3z" fill="currentColor"/></svg>',
   /* the small marks in a menu line */
   smoke: '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M5 11c-1.8-1.6 1.5-3.1 0-5S5.6 2.8 7 1"/><path d="M8.2 11c-1.1-1 .9-2 0-3.2" opacity=".6"/></svg>',
+  drop: '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round"><path d="M6 1.6C4.7 3.7 3.1 5.5 3.1 7.4a2.9 2.9 0 0 0 5.8 0C8.9 5.5 7.3 3.7 6 1.6z"/></svg>',
   leaf: '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M2.2 9.8C2 5.4 4.8 2.4 9.8 2.2 9.6 7 6.6 9.8 2.2 9.8zM2.2 9.8L6.6 5.4"/></svg>',
   egg: '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1"><path d="M6 1.4c2.1 0 3.8 3 3.8 5.4S8.1 10.6 6 10.6 2.2 9.2 2.2 6.8 3.9 1.4 6 1.4z"/></svg>',
   low: '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1"><circle cx="6" cy="6" r="4.4"/><path d="M1.6 7.2h8.8" /></svg>',
@@ -5116,6 +5220,9 @@ function notesFor(drink) {
   if (drink.warning) out.push({ cls: 'warn', icon: 'warn', text: U('chip_warn') });
   if (drink.egg) out.push({ cls: 'egg', icon: 'egg', text: U('chip_egg_opt') });
   if (drink.zero) out.push({ cls: 'zero', icon: 'leaf', text: U('chip_zero_opt') });
+  if (drink.yuzu) out.push({ cls: 'yuzu', icon: 'drop', text: U('chip_yuzu') });
+  if (drink.umami) out.push({ cls: 'fish', icon: 'drop', text: U('chip_umami') });
+  if (drink.fish) out.push({ cls: 'fish', icon: 'warn', text: U('chip_fish') });
   return out;
 }
 
@@ -5185,7 +5292,10 @@ function renderMenu() {
    ================================================================ */
 
 /* the method, in the order it's done — smoking the glass comes first,
-   egg white swaps in the dry shake, zero sugar swaps the syrup */
+   egg white swaps in the dry shake, zero sugar swaps the syrup, and the
+   bitters go in at the step their drink names */
+const BITTERS = ['yuzu', 'umami'];
+
 function stepsFor(drink, opts = {}) {
   const zero = opts.zero && drink.zero;
   let base = drink.steps;
@@ -5193,6 +5303,10 @@ function stepsFor(drink, opts = {}) {
   else if (zero && drink.zero.steps) base = drink.zero.steps;
   let list = base.slice();
   if (zero) list = list.map((st) => st.split(drink.zero.from).join(drink.zero.to));
+  BITTERS.forEach((b) => {
+    const add = opts[b] && drink[b];
+    if (add) list.splice(add.at == null ? list.length : Math.min(add.at, list.length), 0, add.step);
+  });
   if (opts.smoke) {
     const wood = opts.wood || drink.woods[0];
     /* the blend gets its own sentence — "the oak + a pinch of cinnamon chip" doesn't read */
@@ -5219,6 +5333,14 @@ function buildList(drink, opts = {}) {
     const li = el('li', (swapped ? 'swapped' : '') + (qty ? '' : ' unmeasured'));
     li.appendChild(el('span', 'ing', swapped ? drink.zero.to : ing));
     li.appendChild(el('span', 'qty', swapped ? (drink.zero.qty || qty) : qty));
+    ul.appendChild(li);
+  });
+  /* the bitters a drink takes by default, on the end of the list */
+  BITTERS.forEach((b) => {
+    if (!opts[b] || !drink[b]) return;
+    const li = el('li', 'added');
+    li.appendChild(el('span', 'ing', U(b + '_ing')));
+    li.appendChild(el('span', 'qty', drink[b].qty));
     ul.appendChild(li);
   });
   return ul;
@@ -5288,8 +5410,12 @@ function openSheet(drink) {
   sheet.innerHTML = '';
   sheet.appendChild(paperSheet());
   /* a drink that takes smoke opens with it on, on the wood that suits it
-     best (each drink lists that one first); the guest can take it off */
-  const state = { smoke: !!drink.smoke, egg: false, zero: false, wood: drink.woods ? drink.woods[0] : null };
+     best (each drink lists that one first), and one that takes a Japanese
+     bitters opens with it in; the guest can take either off for the classic */
+  const state = {
+    smoke: !!drink.smoke, egg: false, zero: false, wood: drink.woods ? drink.woods[0] : null,
+    yuzu: !!drink.yuzu, umami: !!drink.umami
+  };
 
   const form = el('form', 'sheet');
   form.method = 'dialog';
@@ -5322,15 +5448,15 @@ function openSheet(drink) {
 
   if (drink.story) body.appendChild(field(U('the_story'), el('p', 'story', drink.story)));
 
-  if (drink.warning) {
+  [drink.warning, drink.fish && U('fish_warn')].filter(Boolean).forEach((line) => {
     const warn = el('div', 'warn-box');
     warn.appendChild(warnSeal());
     const text = el('p');
     text.appendChild(el('b', null, U('heads_up')));
-    text.appendChild(txt(drink.warning));
+    text.appendChild(txt(line));
     warn.appendChild(text);
     body.appendChild(warn);
-  }
+  });
 
   let build = buildList(drink, state);
   const whatField = field(U('whats_in_it'), build);
@@ -5396,6 +5522,14 @@ function openSheet(drink) {
     body.appendChild(zero.label);
   }
 
+  BITTERS.forEach((b) => {
+    if (!drink[b]) return;
+    const row = optionRow(b, U(b + '_bitters'), U(b + '_why'));
+    row.input.checked = state[b];
+    row.input.addEventListener('change', () => { state[b] = row.input.checked; repaintBuild(); });
+    body.appendChild(row.label);
+  });
+
   const nameInput = el('input', 'write');
   nameInput.type = 'text';
   nameInput.placeholder = U('name_ph');
@@ -5438,6 +5572,8 @@ function openSheet(drink) {
       wood: state.smoke ? state.wood : null,
       egg: state.egg,
       zero: state.zero,
+      yuzu: !!drink.yuzu && state.yuzu,
+      umami: !!drink.umami && state.umami,
       note: noteInput.value.trim(),
       at: Date.now(),
       done: false
@@ -5529,6 +5665,8 @@ function ticketEl(order) {
   if (order.smoke) notes.push({ cls: 'smoke', icon: 'smoke', text: U('chip_smoked') + woodLabel(order.wood || drink.woods[0]).toLowerCase() });
   if (order.egg) notes.push({ cls: 'egg', icon: 'egg', text: U('chip_egg') });
   if (order.zero) notes.push({ cls: 'zero', icon: 'leaf', text: U('chip_zero') });
+  if (order.yuzu) notes.push({ cls: 'yuzu', icon: 'drop', text: U('chip_yuzu') });
+  if (order.umami) notes.push({ cls: 'fish', icon: 'drop', text: U('chip_umami') });
   text.appendChild(notesLine(notes));
   if (order.note) text.appendChild(el('p', 'ticket-note', order.note));
   main.appendChild(text);
@@ -5560,6 +5698,7 @@ function ticketEl(order) {
     panel.appendChild(aside('smoke', U('aside_smoke') + woodLabel(wood), woodNote(wood)));
   }
   if (drink.warning) panel.appendChild(aside('warn', U('aside_warn'), drink.warning));
+  if (drink.fish || order.umami) panel.appendChild(aside('warn', U('chip_fish'), U('fish_why')));
   if (drink.tip) panel.appendChild(aside('tip', U('aside_tip'), drink.tip));
 
   toggle.addEventListener('click', () => {

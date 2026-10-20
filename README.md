@@ -1,7 +1,7 @@
 # Paul's Bar
 
 A cocktail menu that friends order from on their phones, in English or Thai.
-It's set like a printed card on washi paper: 27 drinks in four sections, each
+It's set like a printed card on washi paper: 29 drinks in four sections, each
 one drawn in ink and wash from its own recipe, plus one that isn't on the
 list.
 
@@ -18,9 +18,13 @@ list.
   one section at a time; with none chosen, the whole card shows.
 - A **drink's card** has its story, what's in it, how it tastes, and the
   options it takes: smoke and a choice of wood on 9 drinks, egg white on 2,
-  zero-sugar syrup on 6. A drink that takes smoke opens with it on, on the
-  wood that suits it best, and shows its smoke on the menu; the guest can
-  take it off.
+  zero-sugar syrup on 6, yuzu bitters on 5 and umami bitters on 3. A drink
+  that takes smoke opens with it on, on the wood that suits it best, and
+  shows its smoke on the menu; the guest can take it off. The Japanese
+  bitters work the same way: in by default, out for the classic. The umami
+  bitters are made with dried bonito, so every drink with them in says
+  "fish" on the menu, and the Ponzu Gimlet and Umami Martini, which are
+  built on them, carry a warning on the card.
 - **Orders** land on a rail as tickets, each with the full build behind it.
   Ticking a ticket stamps it poured.
 - The **lantern** is the way to the drink that isn't on the list: tap it.

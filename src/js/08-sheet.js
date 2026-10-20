@@ -4,7 +4,10 @@
    ================================================================ */
 
 /* the method, in the order it's done — smoking the glass comes first,
-   egg white swaps in the dry shake, zero sugar swaps the syrup */
+   egg white swaps in the dry shake, zero sugar swaps the syrup, and the
+   bitters go in at the step their drink names */
+const BITTERS = ['yuzu', 'umami'];
+
 function stepsFor(drink, opts = {}) {
   const zero = opts.zero && drink.zero;
   let base = drink.steps;
@@ -12,6 +15,10 @@ function stepsFor(drink, opts = {}) {
   else if (zero && drink.zero.steps) base = drink.zero.steps;
   let list = base.slice();
   if (zero) list = list.map((st) => st.split(drink.zero.from).join(drink.zero.to));
+  BITTERS.forEach((b) => {
+    const add = opts[b] && drink[b];
+    if (add) list.splice(add.at == null ? list.length : Math.min(add.at, list.length), 0, add.step);
+  });
   if (opts.smoke) {
     const wood = opts.wood || drink.woods[0];
     /* the blend gets its own sentence — "the oak + a pinch of cinnamon chip" doesn't read */
@@ -38,6 +45,14 @@ function buildList(drink, opts = {}) {
     const li = el('li', (swapped ? 'swapped' : '') + (qty ? '' : ' unmeasured'));
     li.appendChild(el('span', 'ing', swapped ? drink.zero.to : ing));
     li.appendChild(el('span', 'qty', swapped ? (drink.zero.qty || qty) : qty));
+    ul.appendChild(li);
+  });
+  /* the bitters a drink takes by default, on the end of the list */
+  BITTERS.forEach((b) => {
+    if (!opts[b] || !drink[b]) return;
+    const li = el('li', 'added');
+    li.appendChild(el('span', 'ing', U(b + '_ing')));
+    li.appendChild(el('span', 'qty', drink[b].qty));
     ul.appendChild(li);
   });
   return ul;
@@ -107,8 +122,12 @@ function openSheet(drink) {
   sheet.innerHTML = '';
   sheet.appendChild(paperSheet());
   /* a drink that takes smoke opens with it on, on the wood that suits it
-     best (each drink lists that one first); the guest can take it off */
-  const state = { smoke: !!drink.smoke, egg: false, zero: false, wood: drink.woods ? drink.woods[0] : null };
+     best (each drink lists that one first), and one that takes a Japanese
+     bitters opens with it in; the guest can take either off for the classic */
+  const state = {
+    smoke: !!drink.smoke, egg: false, zero: false, wood: drink.woods ? drink.woods[0] : null,
+    yuzu: !!drink.yuzu, umami: !!drink.umami
+  };
 
   const form = el('form', 'sheet');
   form.method = 'dialog';
@@ -141,15 +160,15 @@ function openSheet(drink) {
 
   if (drink.story) body.appendChild(field(U('the_story'), el('p', 'story', drink.story)));
 
-  if (drink.warning) {
+  [drink.warning, drink.fish && U('fish_warn')].filter(Boolean).forEach((line) => {
     const warn = el('div', 'warn-box');
     warn.appendChild(warnSeal());
     const text = el('p');
     text.appendChild(el('b', null, U('heads_up')));
-    text.appendChild(txt(drink.warning));
+    text.appendChild(txt(line));
     warn.appendChild(text);
     body.appendChild(warn);
-  }
+  });
 
   let build = buildList(drink, state);
   const whatField = field(U('whats_in_it'), build);
@@ -215,6 +234,14 @@ function openSheet(drink) {
     body.appendChild(zero.label);
   }
 
+  BITTERS.forEach((b) => {
+    if (!drink[b]) return;
+    const row = optionRow(b, U(b + '_bitters'), U(b + '_why'));
+    row.input.checked = state[b];
+    row.input.addEventListener('change', () => { state[b] = row.input.checked; repaintBuild(); });
+    body.appendChild(row.label);
+  });
+
   const nameInput = el('input', 'write');
   nameInput.type = 'text';
   nameInput.placeholder = U('name_ph');
@@ -257,6 +284,8 @@ function openSheet(drink) {
       wood: state.smoke ? state.wood : null,
       egg: state.egg,
       zero: state.zero,
+      yuzu: !!drink.yuzu && state.yuzu,
+      umami: !!drink.umami && state.umami,
       note: noteInput.value.trim(),
       at: Date.now(),
       done: false
