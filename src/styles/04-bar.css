@@ -22,11 +22,16 @@
    SVG transform attribute on the same element. */
 .scene .moves { transform-box: view-box; transform-origin: 0 0; }
 
-/* the paper lantern sways slowly on its long cord and is lit by the hour */
-.lantern { animation: lantern 5s ease-in-out infinite alternate; }
+/* the paper lantern hangs still, and every ten seconds or so a draught
+   catches it: a few slow swings that settle back to rest. It is lit by
+   the hour. */
+.lantern { animation: lantern 10s ease-in-out infinite; }
 @keyframes lantern {
-  from { transform: rotate(-1.6deg); }
-  to   { transform: rotate(1.6deg); }
+  0%, 52%, 100% { transform: rotate(0); }
+  64% { transform: rotate(1.6deg); }
+  76% { transform: rotate(-1.2deg); }
+  86% { transform: rotate(.6deg); }
+  94% { transform: rotate(-.2deg); }
 }
 .lantern-glow { opacity: var(--lantern); transition: opacity 2s ease; }
 /* the strip of light behind each shelf, never quite off */
