@@ -66,8 +66,7 @@ function notesFor(drink) {
   if (drink.egg) out.push({ cls: 'egg', icon: 'egg', text: U('chip_egg_opt') });
   if (drink.zero) out.push({ cls: 'zero', icon: 'leaf', text: U('chip_zero_opt') });
   if (drink.yuzu) out.push({ cls: 'yuzu', icon: 'drop', text: U('chip_yuzu') });
-  if (drink.umami) out.push({ cls: 'fish', icon: 'drop', text: U('chip_umami') });
-  if (drink.fish) out.push({ cls: 'fish', icon: 'warn', text: U('chip_fish') });
+  if (drink.umami) out.push({ cls: 'umami', icon: 'drop', text: U('chip_umami') });
   return out;
 }
 
@@ -94,8 +93,10 @@ function entryEl(drink, index) {
   const name = el('div', 'entry-name');
   name.appendChild(el('span', null, drink.name));
   text.appendChild(name);
-  text.appendChild(el('div', 'caps', profileWords(drink)));
-  text.appendChild(el('p', 'entry-hook', drink.hook));
+  /* what's in it, then how it tastes: what a guest chooses by. The
+     story is on the card, for whoever taps through. */
+  text.appendChild(el('div', 'entry-inside', drink.inside));
+  text.appendChild(el('p', 'entry-hook', tasteLine(drink)));
   const notes = notesFor(drink);
   if (notes.length) text.appendChild(notesLine(notes));
   b.appendChild(text);

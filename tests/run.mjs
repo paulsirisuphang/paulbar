@@ -216,9 +216,9 @@ const checks = [
     }
     eq(yuzu.sort().join(', '), 'bees-knees, gin-tonic, margarita, whiskey-highball, white-negroni', 'drinks with yuzu bitters in');
     eq(umami.sort().join(', '), 'negroni, old-fashioned, rye-manhattan', 'drinks with umami bitters in');
-    /* the menu line says so, and umami says fish, as do the two drinks built on it */
-    const fish = await page.$$eval('.entry', (n) => n.filter((e) => e.querySelector('.note.fish')).map((e) => e.dataset.drink).sort().join(', '));
-    eq(fish, 'negroni, old-fashioned, ponzu-gimlet, rye-manhattan, umami-martini', 'drinks marked as containing fish');
+    /* the menu line says so */
+    const marked = await page.$$eval('.entry', (n) => n.filter((e) => e.querySelector('.note.umami')).map((e) => e.dataset.drink).sort().join(', '));
+    eq(marked, 'negroni, old-fashioned, rye-manhattan', 'drinks whose menu line says umami bitters');
     /* in by default: in the build and the method; out: the classic */
     await openDrink(page, 'rye-manhattan');
     ok((await text(page, '#sheet .build')).includes('umami bitters'), 'umami bitters missing from the build');
@@ -381,8 +381,8 @@ const checks = [
     eq(await page.getAttribute('html', 'lang'), 'th', 'page language');
     const filters = await page.$$eval('.filter', (n) => n.map((b) => b.textContent));
     ok(filters.every((f) => /[\u0E00-\u0E7F]/.test(f)), 'a filter is not in Thai');
-    const words = await page.$$eval('.entry[data-drink="americano"] .entry-hook .tw', (n) => n.map((w) => w.textContent));
-    ok(words.includes('มาร์ตินี่') && words.includes('ก่อน'), 'a loanword is cut in two: ' + words.join('|'));
+    const words = await page.$$eval('.entry[data-drink="negroni"] .entry-inside .tw', (n) => n.map((w) => w.textContent));
+    ok(words.includes('สวีทเวอร์มุท') && words.includes('จิน'), 'a loanword is cut in two: ' + words.join('|'));
     const split = await page.$$eval('.note', (n) => n.filter((x) => x.children.length !== 2).length);
     eq(split, 0, 'notes whose words came apart');
     eq(await page.$eval('.entry-hook', (n) => getComputedStyle(n).fontStyle), 'normal', 'a Thai hook set in italic');

@@ -104,8 +104,18 @@
   transition: background-size .5s var(--ease);
 }
 .entry:hover .entry-name > span { background-size: 100% 1px; }
+.entry-inside {
+  margin: 3px 0 0;
+  max-width: 40ch;
+  font-family: var(--sans);
+  font-size: .875rem;
+  line-height: 1.45;
+  letter-spacing: .01em;
+  color: var(--ink-2);
+}
+:lang(th) .entry-inside { font-size: .9375rem; letter-spacing: 0; }
 .entry-hook {
-  margin: 2px 0 0;
+  margin: 4px 0 0;
   max-width: 34ch;
   font-style: italic;
   font-size: 1.0625rem;
@@ -133,7 +143,7 @@
 .note.zero { color: var(--matcha); }
 .note.egg, .note.low { color: var(--kincha); }
 .note.yuzu { color: var(--yuzu); }
-.note.fish { color: var(--shu); }
+.note.umami { color: var(--ink-2); }
 
 .no-match {
   padding: 56px 24px;

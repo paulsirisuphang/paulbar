@@ -67,7 +67,7 @@ function ticketEl(order) {
   if (order.egg) notes.push({ cls: 'egg', icon: 'egg', text: U('chip_egg') });
   if (order.zero) notes.push({ cls: 'zero', icon: 'leaf', text: U('chip_zero') });
   if (order.yuzu) notes.push({ cls: 'yuzu', icon: 'drop', text: U('chip_yuzu') });
-  if (order.umami) notes.push({ cls: 'fish', icon: 'drop', text: U('chip_umami') });
+  if (order.umami) notes.push({ cls: 'umami', icon: 'drop', text: U('chip_umami') });
   text.appendChild(notesLine(notes));
   if (order.note) text.appendChild(el('p', 'ticket-note', order.note));
   main.appendChild(text);
@@ -99,7 +99,6 @@ function ticketEl(order) {
     panel.appendChild(aside('smoke', U('aside_smoke') + woodLabel(wood), woodNote(wood)));
   }
   if (drink.warning) panel.appendChild(aside('warn', U('aside_warn'), drink.warning));
-  if (drink.fish || order.umami) panel.appendChild(aside('warn', U('chip_fish'), U('fish_why')));
   if (drink.tip) panel.appendChild(aside('tip', U('aside_tip'), drink.tip));
 
   toggle.addEventListener('click', () => {

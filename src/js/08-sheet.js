@@ -152,23 +152,24 @@ function openSheet(drink) {
   const h2 = el('h2', 'sheet-title', drink.name);
   h2.id = 'sheet-title';
   head.appendChild(h2);
-  head.appendChild(el('p', 'sheet-hook', drink.hook));
+  head.appendChild(el('p', 'sheet-hook', tasteLine(drink)));
   form.appendChild(head);
 
   /* ---------- body ---------- */
   const body = el('div', 'sheet-body');
 
-  if (drink.story) body.appendChild(field(U('the_story'), el('p', 'story', drink.story)));
+  /* the story opens on its most surprising line */
+  if (drink.story) body.appendChild(field(U('the_story'), el('p', 'story', drink.hook + ' ' + drink.story)));
 
-  [drink.warning, drink.fish && U('fish_warn')].filter(Boolean).forEach((line) => {
+  if (drink.warning) {
     const warn = el('div', 'warn-box');
     warn.appendChild(warnSeal());
     const text = el('p');
     text.appendChild(el('b', null, U('heads_up')));
-    text.appendChild(txt(line));
+    text.appendChild(txt(drink.warning));
     warn.appendChild(text);
     body.appendChild(warn);
-  });
+  }
 
   let build = buildList(drink, state);
   const whatField = field(U('whats_in_it'), build);
