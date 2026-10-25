@@ -83,7 +83,10 @@ const Book = (() => {
     return Promise.all([import(SDK + 'firebase-app.js'), import(SDK + 'firebase-firestore.js')])
       .then(([app, firestore]) => {
         fs = firestore;
-        db = fs.getFirestore(app.initializeApp(BOOK));
+        /* Long polling rather than a streamed connection: Safari, and every
+           iPhone browser with it, can sit on a stream without passing the
+           changes along, and polling reaches every phone the same way. */
+        db = fs.initializeFirestore(app.initializeApp(BOOK), { experimentalForceLongPolling: true });
         listen();
         /* anything placed before the book was reached goes now */
         orders.filter((o) => o.pending).forEach(push);
