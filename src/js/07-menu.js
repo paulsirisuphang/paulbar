@@ -58,7 +58,7 @@ function paintFilterFade() {
 function notesFor(drink) {
   const out = [];
   if (drink.smoke) {
-    out.push({ cls: 'smoke', icon: 'smoke', text: drink.best ? U('chip_smoke_best') : U('chip_smoke') + woodLabel(drink.woods[0]).toLowerCase() });
+    out.push({ cls: 'smoke', icon: 'smoke', text: drink.best ? U('chip_smoke_best') : U('chip_smoke')(woodLabel(drink.woods[0]).toLowerCase()) });
   }
   if (drink.low) out.push({ cls: 'low', icon: 'low', text: U('chip_low') });
   if (drink.na && !drink.warning) out.push({ cls: 'na', icon: 'none', text: U('chip_na') });

@@ -7,9 +7,11 @@
      node tests/run.mjs chromium tee                       checks whose name has "tee" in it
 
    Every check starts from a fresh browser with nothing remembered. */
+import fs from 'node:fs';
+import vm from 'node:vm';
 import { launch, openPage, TEST_PAGE } from '../tools/browser.mjs';
 
-const FILTERS_EN = ['Spirit-forward', 'Sour & bright', 'Long & refreshing', 'Mocktails'];
+const FILTERS_EN = ['Strong & stirred', 'Sour & bright', 'Tall & fizzy', 'Mocktails'];
 
 class Failed extends Error {}
 const ok = (cond, msg) => { if (!cond) throw new Failed(msg); };
@@ -162,6 +164,23 @@ const checks = [
     const box = await page.$eval('#scene', (n) => { const r = n.getBoundingClientRect(); return [r.left + 6, r.top + r.height * .3]; });
     await page.mouse.click(...box);
     ok(!(await page.$('.painting, .painting-page')), 'the painting carried on after a tap');
+  }],
+
+  ['no em dash in anything a guest or the bar reads, in either language', {}, async () => {
+    /* the copy itself, read the way tools/thai_check.mjs reads it */
+    const dir = new URL('../src/data/', import.meta.url).pathname;
+    const src = fs.readdirSync(dir).sort().map((f) => fs.readFileSync(dir + f, 'utf8')).join('\n');
+    const ctx = {};
+    vm.createContext(ctx);
+    vm.runInContext(src + '\n;globalThis.__ = { DRINKS, T_EN, T_TH, TH, WOODS, WOODS_TH };', ctx);
+    const dashed = [];
+    const walk = (v, where) => {
+      if (typeof v === 'string' || typeof v === 'function') { if (String(v).includes('\u2014')) dashed.push(where); }
+      else if (Array.isArray(v)) v.forEach((x, i) => walk(x, where + '[' + i + ']'));
+      else if (v && typeof v === 'object') Object.entries(v).forEach(([k, x]) => walk(x, where + '.' + k));
+    };
+    walk(ctx.__, 'copy');
+    eq(dashed.join(', '), '', 'em dashes');
   }],
 
   ['the menu lists every drink but the secret one', {}, async (page) => {
@@ -370,7 +389,7 @@ const checks = [
     const filters = await page.$$eval('.filter', (n) => n.map((b) => b.textContent));
     ok(filters.every((f) => /[\u0E00-\u0E7F]/.test(f)), 'a filter is not in Thai');
     const words = await page.$$eval('.entry[data-drink="boulevardier"] .entry-hook .tw', (n) => n.map((w) => w.textContent));
-    ok(words.includes('คาราเมล') && words.includes('เวอร์ชัน'), 'a loanword is cut in two: ' + words.join('|'));
+    ok(words.includes('คาราเมล') && words.includes('เบอร์เบิน'), 'a loanword is cut in two: ' + words.join('|'));
     const split = await page.$$eval('.note', (n) => n.filter((x) => x.children.length !== 2).length);
     eq(split, 0, 'notes whose words came apart');
     eq(await page.$eval('.entry-hook', (n) => getComputedStyle(n).fontStyle), 'normal', 'a Thai hook set in italic');
@@ -432,7 +451,7 @@ const checks = [
 
   ['spirit-forward comes first, in the filters and on the card', {}, async (page) => {
     await enter(page);
-    eq(await text(page, '.filter'), 'Spirit-forward', 'the first filter');
+    eq(await text(page, '.filter'), 'Strong & stirred', 'the first filter');
     eq(await page.$eval('.section', (s) => s.id), 'sec-stirred', 'the first section');
   }],
 

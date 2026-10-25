@@ -4,9 +4,9 @@ const T_EN = {
   heavy_none: 'No alcohol',
   level_light: 'Light', level_medium: 'Medium', level_strong: 'Strong',
 
-  sec_stirred: 'Spirit-forward', sec_stirred_sub: 'strong and slow',
+  sec_stirred: 'Strong & stirred', sec_stirred_sub: 'for sipping slowly',
   sec_shaken: 'Sour & bright', sec_shaken_sub: 'fresh citrus · shaken',
-  sec_long: 'Long & refreshing', sec_long_sub: 'built in the glass · low ABV',
+  sec_long: 'Tall & fizzy', sec_long_sub: 'soda or tonic · low alcohol',
   sec_mocktail: 'Mocktails', sec_mocktail_sub: 'no alcohol',
 
   secret_line: 'There is one more.',
@@ -16,7 +16,7 @@ const T_EN = {
   close: 'Close', send: 'Send to the bar',
   name_ph: 'So the bar knows whose drink this is',
   name_ph_err: 'The bar needs a name for this one',
-  note_ph: 'Optional — light on the vermouth, no garnish, make it two…',
+  note_ph: 'Optional. Light on the vermouth, no garnish, make it two…',
 
   piece_juggle: 'Juggle the wine bottles', piece_stir: 'Stir the mixing glass',
   piece_shake: 'Shake the shaker', piece_chip: 'Chip the golf ball into the glass',
@@ -27,61 +27,63 @@ const T_EN = {
   ago_min: (m) => (m === 1 ? '1 min ago' : m + ' min ago'),
   ago_hr: (h) => (h === 1 ? '1 hr ago' : h + ' hrs ago'),
   smoke_it: 'Smoke it', wood: 'Wood', egg_white: 'Egg white',
-  egg_why: 'Dry-shaken first, served up with a thick white foam. Skip it for a leaner, tarter drink over ice.',
-  no_smoke_here: 'No smoke on this one. ', heads_up: 'Heads up. ',
+  egg_why: 'Shaken into a thick white foam and served without ice. Leave it out for a lighter, tarter drink on ice.',
+  no_smoke_here: 'No smoke on this one. ', heads_up: 'Good to know. ',
 
   axis_bitter: 'bitter', axis_sweet: 'sweet', axis_citrus: 'citrus',
   axis_herbal: 'herbal', axis_strength: 'strength',
 
-  orders_lede_a: 'Tickets land here as they come in. Open ',
-  orders_lede_b: 'the build',
-  orders_lede_c: " for the recipe, tick the box when it's poured.",
-  working: 'working', poured: 'poured',
-  sync_on: 'Shared with every phone', sync_off: 'Offline — saved on this device',
-  on_the_rail: 'On the rail', poured_title: 'Poured', clear: 'Clear',
-  the_build: 'The build',
+  orders_lede_a: 'Orders show up here as guests send them. Open ',
+  orders_lede_b: 'the recipe',
+  orders_lede_c: ", then tick the box once it's poured.",
+  working: 'to make', poured: 'poured',
+  sync_on: 'Shared with every phone', sync_off: 'Offline, saved on this device only',
+  on_the_rail: 'To make', poured_title: 'Poured', clear: 'Clear',
+  the_build: 'Recipe',
   bar_quiet: 'The bar is quiet', bar_quiet_sub: 'Orders from the menu show up here.',
   bar_notes: 'Bar notes',
 
-  chip_smoke: 'Smoke — ', chip_smoke_best: 'Smoke — the best of them',
-  chip_smoked: 'Smoked — ', chip_low: 'Low ABV', chip_na: 'No alcohol',
+  /* "Cherry smoke" on the menu, "Smoked with cherry" on a ticket */
+  chip_smoke: (wood) => wood.charAt(0).toUpperCase() + wood.slice(1) + ' smoke',
+  chip_smoke_best: 'Best with smoke',
+  chip_smoked: 'Smoked with ', chip_low: 'Low alcohol', chip_na: 'No alcohol',
   chip_warn: 'Not alcohol-free', chip_egg_opt: 'Egg white optional', chip_egg: 'Egg white',
   chip_yuzu: 'Yuzu bitters', chip_umami: 'Umami bitters',
 
   egg_ing: 'egg white', egg_qty: '1',
   yuzu_bitters: 'Yuzu bitters', yuzu_ing: 'yuzu bitters',
-  yuzu_why: 'Tart and floral, between grapefruit and lime. Untick for the classic.',
+  yuzu_why: 'Tart and floral, somewhere between grapefruit and lime. Leave it out for the classic recipe.',
   umami_bitters: 'Umami bitters', umami_ing: 'umami bitters',
-  umami_why: 'Kelp, shiitake and smoked bonito: savoury depth, the way a pinch of salt works. Untick for the classic.',
+  umami_why: 'Made from kelp, shiitake and smoked bonito. Like a pinch of salt, it makes the other flavors taste fuller. Leave it out for the classic recipe.',
 
-  toast_ordered: 'Ordered — ', toast_poured: 'Poured — ', toast_back: 'Back on the rail',
+  toast_ordered: 'Ordered: ', toast_poured: 'Poured: ', toast_back: 'Back on the list',
   toast_for: ' for ',
 
-  aside_smoke: 'Smoke — ', aside_tip: 'Worth knowing', aside_warn: 'Not alcohol-free',
+  aside_smoke: 'Smoke: ', aside_tip: 'Worth knowing', aside_warn: 'Not alcohol-free',
 
   smoke_step: function (chip, blended) {
     return 'Smoke the empty glass: invert it over the ' + chip +
       ' chip for 10–20 seconds, then build in it. Never smoke the finished drink.' +
-      (blended ? ' Blend the pinch of cinnamon into the oak — never burn it on its own.' : '');
+      (blended ? ' Blend the pinch of cinnamon into the oak. Never burn it on its own.' : '');
   },
 
 
   notes: [
     { h: 'Simple syrup', p: 'Equal parts sugar and hot water, stirred until clear. Keeps a month in the fridge.' },
-    { h: 'Honey syrup', p: "Two parts honey to one part warm water. Raw honey is too thick to mix cold, so this step isn't optional. Keeps a month." },
-    { h: 'Stir or shake', p: "Stir anything that's all spirits — about 30 seconds in a mixing glass with good ice. Shake anything with citrus, egg, or syrup — 12 hard seconds, until the tin hurts to hold." },
-    { h: 'The long ones', p: 'Fill the glass completely with ice. A half-full glass dilutes faster, not slower.' },
-    { h: 'Every mocktail gets salt', p: 'A pinch, free, and it does more to stop a drink tasting like flat juice than any expensive non-alcoholic spirit.' },
-    { h: 'Push the acid higher', p: 'Without booze most people underdo the lemon by half. And use the smoker — it is the one flavor tool that needs no alcohol, and it makes a mocktail taste intentional rather than apologetic.' },
-    { h: 'Smoking a glass', p: 'Smoke the empty glass, never the finished drink. Invert it over the chip for 10–20 seconds, then build or pour in. Never smoke anything shaken with fresh citrus — smoke plus fresh lemon reads muddy, and foam kills the aroma anyway.' }
+    { h: 'Honey syrup', p: "Two parts honey to one part warm water. Raw honey is too thick to mix cold, so don't skip this. Keeps a month in the fridge." },
+    { h: 'Stir or shake', p: "Stir drinks that are all spirits: about 30 seconds in a mixing glass with good ice. Shake anything with citrus or egg: 12 hard seconds, until the shaker is almost too cold to hold." },
+    { h: 'Tall drinks', p: 'Fill the glass to the top with ice. Less ice melts faster, not slower.' },
+    { h: 'Every mocktail gets salt', p: 'A pinch costs nothing, and it does more to stop a mocktail tasting like plain juice than any expensive alcohol-free spirit.' },
+    { h: 'More lemon than you think', p: 'Without alcohol, most people use half the lemon they need. Use the smoke too: it adds flavor without alcohol, and it makes a mocktail feel like a real drink.' },
+    { h: 'Smoking a glass', p: "Smoke the empty glass, never the finished drink. Turn it upside down over the lit chip for 10–20 seconds, then make the drink in it. Don't smoke anything shaken with fresh citrus: smoke and fresh lemon clash, and foam hides the smell anyway." }
   ],
   wood_table_head: ['Wood', 'Use on'],
   wood_table: [
-    ['Apple, pear, peach', "The gentlest. Monte Carlo, anything you don't want to bury"],
+    ['Apple, pear, peach', "The lightest. Monte Carlo, and any drink you don't want to cover up"],
     ['Cherry', 'Negroni, Boulevardier. Best match for Campari'],
-    ['Oak', 'The neutral whiskey wood. Old Fashioned, Sazerac, Manhattan'],
-    ['Pecan', 'Middle gear, nutty. Sazerac, Manhattan'],
-    ['Cinnamon', 'A pinch blended into oak, never solo. Old Fashioned only'],
-    ['Walnut', 'Go light — tannic and assertive. Bourbon drinks only, never the Negroni']
+    ['Oak', 'The standard for whiskey. Old Fashioned, Sazerac, Manhattan'],
+    ['Pecan', 'Medium and nutty. Sazerac, Manhattan'],
+    ['Cinnamon', 'A pinch blended into oak, never on its own. Old Fashioned only'],
+    ['Walnut', 'Strong and bitter, so use a little. Bourbon drinks only, never the Negroni']
   ]
 };
