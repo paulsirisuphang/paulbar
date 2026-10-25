@@ -47,7 +47,13 @@ function buildList(drink, opts = {}) {
     li.appendChild(el('span', 'qty', swapped ? (drink.zero.qty || qty) : qty));
     ul.appendChild(li);
   });
-  /* the bitters a drink takes by default, on the end of the list */
+  /* egg white and the bitters, when they're in, on the end of the list */
+  if (opts.egg && drink.egg) {
+    const li = el('li', 'added');
+    li.appendChild(el('span', 'ing', U('egg_ing')));
+    li.appendChild(el('span', 'qty', U('egg_qty')));
+    ul.appendChild(li);
+  }
   BITTERS.forEach((b) => {
     if (!opts[b] || !drink[b]) return;
     const li = el('li', 'added');
@@ -125,7 +131,7 @@ function openSheet(drink) {
      best (each drink lists that one first), and one that takes a Japanese
      bitters opens with it in; the guest can take either off for the classic */
   const state = {
-    smoke: !!drink.smoke, egg: false, zero: false, wood: drink.woods ? drink.woods[0] : null,
+    smoke: !!drink.smoke, egg: !!drink.eggDefault, zero: false, wood: drink.woods ? drink.woods[0] : null,
     yuzu: !!drink.yuzu, umami: !!drink.umami
   };
 
@@ -225,7 +231,8 @@ function openSheet(drink) {
 
   if (drink.egg) {
     const egg = optionRow('egg', U('egg_white'), U('egg_why'));
-    egg.input.addEventListener('change', () => { state.egg = egg.input.checked; redraw(); });
+    egg.input.checked = state.egg;
+    egg.input.addEventListener('change', () => { state.egg = egg.input.checked; redraw(); repaintBuild(); });
     body.appendChild(egg.label);
   }
 

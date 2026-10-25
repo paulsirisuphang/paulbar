@@ -9,7 +9,7 @@
    Every check starts from a fresh browser with nothing remembered. */
 import { launch, openPage, TEST_PAGE } from '../tools/browser.mjs';
 
-const ZERO_SUGAR = ['old-fashioned', 'sazerac', 'whiskey-sour', 'gin-sour', 'gimlet', 'tom-collins'];
+const ZERO_SUGAR = ['old-fashioned', 'sazerac', 'gin-sour', 'gimlet', 'tom-collins'];
 const FILTERS_EN = ['Spirit-forward', 'Sour & bright', 'Long & refreshing', 'Mocktails'];
 
 class Failed extends Error {}
@@ -192,7 +192,7 @@ const checks = [
     eq(await count(page, '.section'), 4, 'sections after letting the filter go');
   }],
 
-  ['zero sugar is offered on exactly the six drinks it suits', {}, async (page) => {
+  ['zero sugar is offered on exactly the five drinks it suits, and the whiskey sour comes with egg white', {}, async (page) => {
     await enter(page);
     const ids = await page.$$eval('.entry', (n) => n.map((b) => b.dataset.drink));
     const offered = [];
@@ -202,6 +202,10 @@ const checks = [
       await closeCard(page);
     }
     eq(offered.sort().join(', '), ZERO_SUGAR.slice().sort().join(', '), 'drinks offering zero sugar');
+    await openDrink(page, 'whiskey-sour');
+    ok(await page.$('#sheet .option.egg input:checked'), 'the whiskey sour opens without egg white');
+    ok((await text(page, '#sheet .build')).includes('egg white'), 'egg white missing from what is in it');
+    await closeCard(page);
   }],
 
   ['the Japanese bitters go in by default, and come out for the classic', {}, async (page) => {

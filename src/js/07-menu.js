@@ -63,7 +63,7 @@ function notesFor(drink) {
   if (drink.low) out.push({ cls: 'low', icon: 'low', text: U('chip_low') });
   if (drink.na && !drink.warning) out.push({ cls: 'na', icon: 'none', text: U('chip_na') });
   if (drink.warning) out.push({ cls: 'warn', icon: 'warn', text: U('chip_warn') });
-  if (drink.egg) out.push({ cls: 'egg', icon: 'egg', text: U('chip_egg_opt') });
+  if (drink.egg) out.push({ cls: 'egg', icon: 'egg', text: U(drink.eggDefault ? 'chip_egg' : 'chip_egg_opt') });
   if (drink.zero) out.push({ cls: 'zero', icon: 'leaf', text: U('chip_zero_opt') });
   if (drink.yuzu) out.push({ cls: 'yuzu', icon: 'drop', text: U('chip_yuzu') });
   if (drink.umami) out.push({ cls: 'umami', icon: 'drop', text: U('chip_umami') });
@@ -87,7 +87,7 @@ function entryEl(drink, index) {
   b.dataset.drink = drink.id;
   b.style.setProperty('--i', String(index));
   /* a drink that's smoked by default shows its smoke on the menu too */
-  b.appendChild(artBox('entry-art', drink, { smoke: !!drink.smoke }, 'live'));
+  b.appendChild(artBox('entry-art', drink, { smoke: !!drink.smoke, egg: !!drink.eggDefault }, 'live'));
 
   const text = el('div', 'entry-text');
   const name = el('div', 'entry-name');

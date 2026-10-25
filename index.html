@@ -1782,8 +1782,9 @@ const DRINKS = [
 
   {
     id: 'whiskey-sour', name: 'Whiskey Sour', method: 'Shaken', section: 'shaken',
-    inside: "Bourbon, lemon, sugar, egg white if you like",
+    inside: "Bourbon, lemon, sugar, egg white",
     taste: "Sweet-sour and smooth.",
+    eggDefault: true,
     hook: "The egg white adds no flavor at all — it is there for the texture.",
     story: "Shaking without ice first throws all the energy into unfolding the egg proteins so they trap air, instead of wasting it on chilling. The second shake, with ice, is what sets the foam.",
     flavor: { bitter: 1, sweet: 3, citrus: 4, herbal: 0, strength: 3 },
@@ -1802,8 +1803,6 @@ const DRINKS = [
     ],
     egg: true, smoke: false,
     noSmoke: 'Smoke over fresh citrus reads muddy, and foam kills the aroma anyway.',
-    zero: { from: 'simple syrup', to: 'zero-sugar syrup',
-      note: 'One for one. Sugar carries weight as well as sweetness, so it pours thinner — take the egg white and you will not notice.' },
     glass: 'rocks', color: '#BE8330', ice: 'cubes', garnish: 'none'
   },
   {
@@ -2184,7 +2183,7 @@ const T_EN = {
   heavy_none: 'No alcohol',
   level_light: 'Light', level_medium: 'Medium', level_strong: 'Strong',
 
-  sec_stirred: 'Spirit-forward', sec_stirred_sub: 'strong and slow · smoke works here',
+  sec_stirred: 'Spirit-forward', sec_stirred_sub: 'strong and slow',
   sec_shaken: 'Sour & bright', sec_shaken_sub: 'fresh citrus · shaken',
   sec_long: 'Long & refreshing', sec_long_sub: 'built in the glass · low ABV',
   sec_mocktail: 'Mocktails', sec_mocktail_sub: 'no alcohol',
@@ -2230,6 +2229,7 @@ const T_EN = {
   chip_zero_opt: 'Zero-sugar option', chip_zero: 'Zero sugar',
   chip_yuzu: 'Yuzu bitters', chip_umami: 'Umami bitters',
 
+  egg_ing: 'egg white', egg_qty: '1',
   yuzu_bitters: 'Yuzu bitters', yuzu_ing: 'yuzu bitters',
   yuzu_why: 'Tart and floral, between grapefruit and lime. Untick for the classic.',
   umami_bitters: 'Umami bitters', umami_ing: 'umami bitters',
@@ -2332,7 +2332,7 @@ const T_TH = {
   level_strong: 'แรง',
 
   sec_stirred: 'สายเข้ม',
-  sec_stirred_sub: 'แรง จิบช้า ๆ · รมควันได้',
+  sec_stirred_sub: 'แรง จิบช้า ๆ',
   sec_shaken: 'สายเปรี้ยว',
   sec_shaken_sub: 'คั้นสด · เขย่า',
   sec_long: 'สายซ่า',
@@ -2363,6 +2363,7 @@ const T_TH = {
   zero_sugar: 'ไซรัปน้ำตาล 0%',
   chip_zero_opt: 'เลือกน้ำตาล 0% ได้', chip_zero: 'น้ำตาล 0%',
   chip_yuzu: 'บิตเตอร์ยูซุ', chip_umami: 'บิตเตอร์อูมามิ',
+  egg_ing: 'ไข่ขาว', egg_qty: '1 ฟอง',
   yuzu_bitters: 'บิตเตอร์ยูซุ', yuzu_ing: 'บิตเตอร์ยูซุ',
   yuzu_why: 'เปรี้ยวหอมแบบดอกไม้ อยู่ระหว่างเกรปฟรุตกับมะนาว เอาออกถ้าอยากได้สูตรดั้งเดิม',
   umami_bitters: 'บิตเตอร์อูมามิ', umami_ing: 'บิตเตอร์อูมามิ',
@@ -2611,10 +2612,8 @@ const TH = {
     noSmoke: 'จะอยากรมควันแก้วนี้มาก แต่กลิ่นรากเจนเชียนของ Suze กับกลิ่นดอกไม้ของ Lillet คือสิ่งที่ควันทำลายได้พอดี'
   },
   'whiskey-sour': {
-    inside: "เบอร์เบิน · เลมอน · น้ำตาล · ไข่ขาวถ้าชอบ",
+    inside: "เบอร์เบิน · เลมอน · น้ำตาล · ไข่ขาว",
     taste: "เปรี้ยวอมหวาน นุ่มลื่น",
-    zero: { from: 'ไซรัปน้ำตาล', to: 'ไซรัปน้ำตาล 0%',
-      note: 'ใช้แทนกันได้ในปริมาณเท่ากัน น้ำตาลให้ทั้งความหวานและความหนืด แก้วนี้จึงบางลงนิดหนึ่ง ถ้าใส่ไข่ขาวด้วยจะแทบไม่รู้สึก' },
     method: 'เขย่ากับน้ำแข็ง',
     hook: 'ไข่ขาวไม่ได้ให้รสอะไรเลย ใส่ไว้เพื่อเนื้อสัมผัสล้วน ๆ',
     story: 'การเขย่าโดยยังไม่ใส่น้ำแข็ง ทำให้แรงทั้งหมดไปคลายโปรตีนในไข่ให้เก็บอากาศไว้ แทนที่จะเสียแรงไปกับการทำให้เย็น ส่วนรอบที่สองที่ใส่น้ำแข็ง คือตัวที่ทำให้ฟองอยู่ตัว',
@@ -5315,7 +5314,7 @@ function notesFor(drink) {
   if (drink.low) out.push({ cls: 'low', icon: 'low', text: U('chip_low') });
   if (drink.na && !drink.warning) out.push({ cls: 'na', icon: 'none', text: U('chip_na') });
   if (drink.warning) out.push({ cls: 'warn', icon: 'warn', text: U('chip_warn') });
-  if (drink.egg) out.push({ cls: 'egg', icon: 'egg', text: U('chip_egg_opt') });
+  if (drink.egg) out.push({ cls: 'egg', icon: 'egg', text: U(drink.eggDefault ? 'chip_egg' : 'chip_egg_opt') });
   if (drink.zero) out.push({ cls: 'zero', icon: 'leaf', text: U('chip_zero_opt') });
   if (drink.yuzu) out.push({ cls: 'yuzu', icon: 'drop', text: U('chip_yuzu') });
   if (drink.umami) out.push({ cls: 'umami', icon: 'drop', text: U('chip_umami') });
@@ -5339,7 +5338,7 @@ function entryEl(drink, index) {
   b.dataset.drink = drink.id;
   b.style.setProperty('--i', String(index));
   /* a drink that's smoked by default shows its smoke on the menu too */
-  b.appendChild(artBox('entry-art', drink, { smoke: !!drink.smoke }, 'live'));
+  b.appendChild(artBox('entry-art', drink, { smoke: !!drink.smoke, egg: !!drink.eggDefault }, 'live'));
 
   const text = el('div', 'entry-text');
   const name = el('div', 'entry-name');
@@ -5433,7 +5432,13 @@ function buildList(drink, opts = {}) {
     li.appendChild(el('span', 'qty', swapped ? (drink.zero.qty || qty) : qty));
     ul.appendChild(li);
   });
-  /* the bitters a drink takes by default, on the end of the list */
+  /* egg white and the bitters, when they're in, on the end of the list */
+  if (opts.egg && drink.egg) {
+    const li = el('li', 'added');
+    li.appendChild(el('span', 'ing', U('egg_ing')));
+    li.appendChild(el('span', 'qty', U('egg_qty')));
+    ul.appendChild(li);
+  }
   BITTERS.forEach((b) => {
     if (!opts[b] || !drink[b]) return;
     const li = el('li', 'added');
@@ -5511,7 +5516,7 @@ function openSheet(drink) {
      best (each drink lists that one first), and one that takes a Japanese
      bitters opens with it in; the guest can take either off for the classic */
   const state = {
-    smoke: !!drink.smoke, egg: false, zero: false, wood: drink.woods ? drink.woods[0] : null,
+    smoke: !!drink.smoke, egg: !!drink.eggDefault, zero: false, wood: drink.woods ? drink.woods[0] : null,
     yuzu: !!drink.yuzu, umami: !!drink.umami
   };
 
@@ -5611,7 +5616,8 @@ function openSheet(drink) {
 
   if (drink.egg) {
     const egg = optionRow('egg', U('egg_white'), U('egg_why'));
-    egg.input.addEventListener('change', () => { state.egg = egg.input.checked; redraw(); });
+    egg.input.checked = state.egg;
+    egg.input.addEventListener('change', () => { state.egg = egg.input.checked; redraw(); repaintBuild(); });
     body.appendChild(egg.label);
   }
 

@@ -18,7 +18,7 @@ list.
   one section at a time; with none chosen, the whole card shows.
 - A **drink's card** has its story, what's in it, how it tastes, and the
   options it takes: smoke and a choice of wood on 9 drinks, egg white on 2,
-  zero-sugar syrup on 6, yuzu bitters on 5 and umami bitters on 3. A drink
+  zero-sugar syrup on 5, yuzu bitters on 5 and umami bitters on 3. A drink
   that takes smoke opens with it on, on the wood that suits it best, and
   shows its smoke on the menu; the guest can take it off. The Japanese
   bitters work the same way: in by default, out for the classic.

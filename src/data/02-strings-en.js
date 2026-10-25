@@ -4,7 +4,7 @@ const T_EN = {
   heavy_none: 'No alcohol',
   level_light: 'Light', level_medium: 'Medium', level_strong: 'Strong',
 
-  sec_stirred: 'Spirit-forward', sec_stirred_sub: 'strong and slow · smoke works here',
+  sec_stirred: 'Spirit-forward', sec_stirred_sub: 'strong and slow',
   sec_shaken: 'Sour & bright', sec_shaken_sub: 'fresh citrus · shaken',
   sec_long: 'Long & refreshing', sec_long_sub: 'built in the glass · low ABV',
   sec_mocktail: 'Mocktails', sec_mocktail_sub: 'no alcohol',
@@ -50,6 +50,7 @@ const T_EN = {
   chip_zero_opt: 'Zero-sugar option', chip_zero: 'Zero sugar',
   chip_yuzu: 'Yuzu bitters', chip_umami: 'Umami bitters',
 
+  egg_ing: 'egg white', egg_qty: '1',
   yuzu_bitters: 'Yuzu bitters', yuzu_ing: 'yuzu bitters',
   yuzu_why: 'Tart and floral, between grapefruit and lime. Untick for the classic.',
   umami_bitters: 'Umami bitters', umami_ing: 'umami bitters',

@@ -238,8 +238,9 @@ const DRINKS = [
 
   {
     id: 'whiskey-sour', name: 'Whiskey Sour', method: 'Shaken', section: 'shaken',
-    inside: "Bourbon, lemon, sugar, egg white if you like",
+    inside: "Bourbon, lemon, sugar, egg white",
     taste: "Sweet-sour and smooth.",
+    eggDefault: true,
     hook: "The egg white adds no flavor at all — it is there for the texture.",
     story: "Shaking without ice first throws all the energy into unfolding the egg proteins so they trap air, instead of wasting it on chilling. The second shake, with ice, is what sets the foam.",
     flavor: { bitter: 1, sweet: 3, citrus: 4, herbal: 0, strength: 3 },
@@ -258,8 +259,6 @@ const DRINKS = [
     ],
     egg: true, smoke: false,
     noSmoke: 'Smoke over fresh citrus reads muddy, and foam kills the aroma anyway.',
-    zero: { from: 'simple syrup', to: 'zero-sugar syrup',
-      note: 'One for one. Sugar carries weight as well as sweetness, so it pours thinner — take the egg white and you will not notice.' },
     glass: 'rocks', color: '#BE8330', ice: 'cubes', garnish: 'none'
   },
   {
