@@ -4,17 +4,12 @@
    ================================================================ */
 
 /* the method, in the order it's done — smoking the glass comes first,
-   egg white swaps in the dry shake, zero sugar swaps the syrup, and the
-   bitters go in at the step their drink names */
+   egg white swaps in the dry shake, and the bitters go in at the step
+   their drink names */
 const BITTERS = ['yuzu', 'umami'];
 
 function stepsFor(drink, opts = {}) {
-  const zero = opts.zero && drink.zero;
-  let base = drink.steps;
-  if (opts.egg && drink.eggSteps) base = drink.eggSteps;
-  else if (zero && drink.zero.steps) base = drink.zero.steps;
-  let list = base.slice();
-  if (zero) list = list.map((st) => st.split(drink.zero.from).join(drink.zero.to));
+  const list = (opts.egg && drink.eggSteps ? drink.eggSteps : drink.steps).slice();
   BITTERS.forEach((b) => {
     const add = opts[b] && drink[b];
     if (add) list.splice(add.at == null ? list.length : Math.min(add.at, list.length), 0, add.step);
@@ -36,15 +31,13 @@ function stepsList(drink, opts) {
   return ol;
 }
 
-/* zero sugar changes exactly one ingredient, so swap that line rather
-   than keeping a second copy of every recipe */
+/* what goes in, with its measure, for whoever is behind the bar */
 function buildList(drink, opts = {}) {
   const ul = el('ul', 'build');
   drink.build.forEach(([qty, ing]) => {
-    const swapped = opts.zero && drink.zero && ing === drink.zero.from;
-    const li = el('li', (swapped ? 'swapped' : '') + (qty ? '' : ' unmeasured'));
-    li.appendChild(el('span', 'ing', swapped ? drink.zero.to : ing));
-    li.appendChild(el('span', 'qty', swapped ? (drink.zero.qty || qty) : qty));
+    const li = el('li', qty ? '' : 'unmeasured');
+    li.appendChild(el('span', 'ing', ing));
+    li.appendChild(el('span', 'qty', qty));
     ul.appendChild(li);
   });
   /* egg white and the bitters, when they're in, on the end of the list */
@@ -131,7 +124,7 @@ function openSheet(drink) {
      best (each drink lists that one first), and one that takes a Japanese
      bitters opens with it in; the guest can take either off for the classic */
   const state = {
-    smoke: !!drink.smoke, egg: !!drink.eggDefault, zero: false, wood: drink.woods ? drink.woods[0] : null,
+    smoke: !!drink.smoke, egg: !!drink.eggDefault, wood: drink.woods ? drink.woods[0] : null,
     yuzu: !!drink.yuzu, umami: !!drink.umami
   };
 
@@ -177,14 +170,9 @@ function openSheet(drink) {
     body.appendChild(warn);
   }
 
-  let build = buildList(drink, state);
-  const whatField = field(U('whats_in_it'), build);
-  body.appendChild(whatField);
-  const repaintBuild = () => {
-    const next = buildList(drink, state);
-    whatField.replaceChild(next, build);
-    build = next;
-  };
+  /* what's in it, as one line in a guest's words; the measures stay
+     behind the bar, in the build on the ticket */
+  body.appendChild(field(U('whats_in_it'), el('p', 'inside-line', drink.inside)));
 
   body.appendChild(field(U('tastes_like'), tastingCard(drink)));
 
@@ -232,21 +220,16 @@ function openSheet(drink) {
   if (drink.egg) {
     const egg = optionRow('egg', U('egg_white'), U('egg_why'));
     egg.input.checked = state.egg;
-    egg.input.addEventListener('change', () => { state.egg = egg.input.checked; redraw(); repaintBuild(); });
+    egg.input.addEventListener('change', () => { state.egg = egg.input.checked; redraw(); });
     body.appendChild(egg.label);
   }
 
-  if (drink.zero) {
-    const zero = optionRow('zero', U('zero_sugar'), drink.zero.note);
-    zero.input.addEventListener('change', () => { state.zero = zero.input.checked; repaintBuild(); });
-    body.appendChild(zero.label);
-  }
 
   BITTERS.forEach((b) => {
     if (!drink[b]) return;
     const row = optionRow(b, U(b + '_bitters'), U(b + '_why'));
     row.input.checked = state[b];
-    row.input.addEventListener('change', () => { state[b] = row.input.checked; repaintBuild(); });
+    row.input.addEventListener('change', () => { state[b] = row.input.checked; });
     body.appendChild(row.label);
   });
 
@@ -291,7 +274,6 @@ function openSheet(drink) {
       smoke: state.smoke,
       wood: state.smoke ? state.wood : null,
       egg: state.egg,
-      zero: state.zero,
       yuzu: !!drink.yuzu && state.yuzu,
       umami: !!drink.umami && state.umami,
       note: noteInput.value.trim(),

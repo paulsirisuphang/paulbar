@@ -64,7 +64,6 @@ function notesFor(drink) {
   if (drink.na && !drink.warning) out.push({ cls: 'na', icon: 'none', text: U('chip_na') });
   if (drink.warning) out.push({ cls: 'warn', icon: 'warn', text: U('chip_warn') });
   if (drink.egg) out.push({ cls: 'egg', icon: 'egg', text: U(drink.eggDefault ? 'chip_egg' : 'chip_egg_opt') });
-  if (drink.zero) out.push({ cls: 'zero', icon: 'leaf', text: U('chip_zero_opt') });
   if (drink.yuzu) out.push({ cls: 'yuzu', icon: 'drop', text: U('chip_yuzu') });
   if (drink.umami) out.push({ cls: 'umami', icon: 'drop', text: U('chip_umami') });
   return out;
@@ -93,9 +92,8 @@ function entryEl(drink, index) {
   const name = el('div', 'entry-name');
   name.appendChild(el('span', null, drink.name));
   text.appendChild(name);
-  /* what's in it, then how it tastes: what a guest chooses by. The
-     story is on the card, for whoever taps through. */
-  text.appendChild(el('div', 'entry-inside', drink.inside));
+  /* how it tastes, which is what a guest chooses by; what's in it and
+     the story are on the card, for whoever taps through */
   text.appendChild(el('p', 'entry-hook', tasteLine(drink)));
   const notes = notesFor(drink);
   if (notes.length) text.appendChild(notesLine(notes));

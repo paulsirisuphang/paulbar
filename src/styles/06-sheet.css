@@ -173,6 +173,10 @@ dialog[open] { animation: card-in .4s var(--ease); }
 }
 :lang(th) .story { font-size: 1rem; line-height: 1.75; }
 
+/* what's in it, as one line */
+.inside-line { margin: 0; max-width: var(--measure); font-size: 1.0625rem; line-height: 1.5; color: var(--ink); }
+:lang(th) .inside-line { font-size: 1rem; line-height: 1.7; }
+
 /* the one drink on the list that isn't what it looks like */
 .warn-box {
   display: grid;
@@ -221,7 +225,6 @@ dialog[open] { animation: card-in .4s var(--ease); }
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-.build li.swapped .ing { color: var(--matcha); }
 .build li.added .ing { color: var(--yuzu); }
 .build li.unmeasured::after { display: none; }
 
@@ -243,7 +246,7 @@ dialog[open] { animation: card-in .4s var(--ease); }
 }
 .dots i.on { background: var(--ink); border-color: var(--ink); }
 
-/* options — smoke, egg white, zero sugar — printed as lines of a form,
+/* options — smoke, egg white, the bitters — printed as lines of a form,
    each with a square to tick */
 .option {
   position: relative;
@@ -275,7 +278,6 @@ dialog[open] { animation: card-in .4s var(--ease); }
 .option-title { font-family: var(--display); font-size: 1.375rem; font-weight: 600; line-height: 1.1; font-variant-numeric: lining-nums; }
 .option-why { font-size: .9375rem; line-height: 1.5; color: var(--ink-3); }
 .option.smoke:has(input:checked) .box { border-color: var(--smoke); }
-.option.zero:has(input:checked) .option-title { color: var(--matcha); }
 .option.yuzu:has(input:checked) .option-title { color: var(--yuzu); }
 .option.umami:has(input:checked) .option-title { color: var(--shu); }
 

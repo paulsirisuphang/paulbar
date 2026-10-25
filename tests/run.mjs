@@ -9,7 +9,6 @@
    Every check starts from a fresh browser with nothing remembered. */
 import { launch, openPage, TEST_PAGE } from '../tools/browser.mjs';
 
-const ZERO_SUGAR = ['old-fashioned', 'sazerac', 'gin-sour', 'gimlet', 'tom-collins'];
 const FILTERS_EN = ['Spirit-forward', 'Sour & bright', 'Long & refreshing', 'Mocktails'];
 
 class Failed extends Error {}
@@ -192,19 +191,12 @@ const checks = [
     eq(await count(page, '.section'), 4, 'sections after letting the filter go');
   }],
 
-  ['zero sugar is offered on exactly the five drinks it suits, and the whiskey sour comes with egg white', {}, async (page) => {
+  ['the whiskey sour comes with egg white; the card names what is in it, without measures', {}, async (page) => {
     await enter(page);
-    const ids = await page.$$eval('.entry', (n) => n.map((b) => b.dataset.drink));
-    const offered = [];
-    for (const id of ids) {
-      await openDrink(page, id);
-      if (await page.$('#sheet .option.zero')) offered.push(id);
-      await closeCard(page);
-    }
-    eq(offered.sort().join(', '), ZERO_SUGAR.slice().sort().join(', '), 'drinks offering zero sugar');
     await openDrink(page, 'whiskey-sour');
     ok(await page.$('#sheet .option.egg input:checked'), 'the whiskey sour opens without egg white');
-    ok((await text(page, '#sheet .build')).includes('egg white'), 'egg white missing from what is in it');
+    eq(await text(page, '#sheet .inside-line'), 'Bourbon, lemon, sugar, egg white', 'what is in it');
+    eq(await count(page, '#sheet .build'), 0, 'measures on the guest\'s card');
     await closeCard(page);
   }],
 
@@ -223,17 +215,18 @@ const checks = [
     /* the menu line says so */
     const marked = await page.$$eval('.entry', (n) => n.filter((e) => e.querySelector('.note.umami')).map((e) => e.dataset.drink).sort().join(', '));
     eq(marked, 'negroni, old-fashioned, rye-manhattan', 'drinks whose menu line says umami bitters');
-    /* in by default: in the build and the method; out: the classic */
+    /* unticked, the order is the classic */
     await openDrink(page, 'rye-manhattan');
-    ok((await text(page, '#sheet .build')).includes('umami bitters'), 'umami bitters missing from the build');
     await page.click('#sheet .option.umami');
-    ok(!(await text(page, '#sheet .build')).includes('umami'), 'umami bitters still in the classic');
-    await closeCard(page);
+    await page.fill('#sheet input.write', 'Ana');
+    await page.click('#sheet .btn');
+    await page.waitForFunction(() => !document.getElementById('sheet').open);
     /* the order carries it, and the ticket and its build say so */
     await order(page, 'margarita', 'Kai');
     await page.click('#burger');
     await page.click('#tab-orders');
     ok((await text(page, '.ticket .notes-line')).includes('Yuzu bitters'), 'the ticket does not say yuzu bitters');
+    ok(!(await page.locator('.ticket', { hasText: 'Ana' }).textContent()).includes('Umami'), 'the classic Manhattan says umami');
     await page.click('.build-toggle');
     ok((await text(page, '.build-panel .steps')).includes('yuzu bitters to the shaker'), 'the method has no yuzu step');
   }],
@@ -262,15 +255,6 @@ const checks = [
     await page.click('#tab-menu');
     await openDrink(page, 'old-fashioned');
     eq(await text(page, '#sheet .wood[aria-pressed="true"]'), 'Oak', 'the wood chosen for an Old Fashioned');
-  }],
-
-  ['zero sugar swaps the syrup in the recipe', {}, async (page) => {
-    await enter(page);
-    await openDrink(page, 'old-fashioned');
-    eq(await count(page, '#sheet .build li.swapped'), 0, 'swapped lines before ticking it');
-    await page.click('#sheet .option.zero');
-    eq(await count(page, '#sheet .build li.swapped'), 1, 'swapped lines after ticking it');
-    ok((await text(page, '#sheet .build li.swapped')).includes('zero-sugar'), 'the swapped line is not the zero-sugar syrup');
   }],
 
   ['an order needs a name, then lands on the rail', {}, async (page) => {
@@ -385,8 +369,8 @@ const checks = [
     eq(await page.getAttribute('html', 'lang'), 'th', 'page language');
     const filters = await page.$$eval('.filter', (n) => n.map((b) => b.textContent));
     ok(filters.every((f) => /[\u0E00-\u0E7F]/.test(f)), 'a filter is not in Thai');
-    const words = await page.$$eval('.entry[data-drink="negroni"] .entry-inside .tw', (n) => n.map((w) => w.textContent));
-    ok(words.includes('สวีทเวอร์มุท') && words.includes('จิน'), 'a loanword is cut in two: ' + words.join('|'));
+    const words = await page.$$eval('.entry[data-drink="boulevardier"] .entry-hook .tw', (n) => n.map((w) => w.textContent));
+    ok(words.includes('คาราเมล') && words.includes('เวอร์ชัน'), 'a loanword is cut in two: ' + words.join('|'));
     const split = await page.$$eval('.note', (n) => n.filter((x) => x.children.length !== 2).length);
     eq(split, 0, 'notes whose words came apart');
     eq(await page.$eval('.entry-hook', (n) => getComputedStyle(n).fontStyle), 'normal', 'a Thai hook set in italic');

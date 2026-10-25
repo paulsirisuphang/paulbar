@@ -220,7 +220,6 @@
   color: var(--ink-2);
 }
 .aside.smoke { border-color: var(--smoke); }
-.aside.zero  { border-color: var(--matcha); }
 .aside.tip   { border-color: var(--kincha); }
 .aside.warn  { border-color: var(--shu); }
 

@@ -16,12 +16,15 @@ list.
   about 14 seconds, and a tap finishes it at once. Tap a piece on the
   counter and it does a party piece for ten seconds. The four filters show
   one section at a time; with none chosen, the whole card shows.
-- A **drink's card** has its story, what's in it, how it tastes, and the
+- Each line on the menu says how the drink tastes and how strong it is.
+  A **drink's card** adds its story, what's in it (one line, no measures:
+  those stay behind the bar, on the ticket), how it tastes, and the
   options it takes: smoke and a choice of wood on 9 drinks, egg white on 2,
-  zero-sugar syrup on 5, yuzu bitters on 5 and umami bitters on 3. A drink
-  that takes smoke opens with it on, on the wood that suits it best, and
-  shows its smoke on the menu; the guest can take it off. The Japanese
-  bitters work the same way: in by default, out for the classic.
+  yuzu bitters on 5 and umami bitters on 3. A drink that takes smoke opens
+  with it on, on the wood that suits it best, and shows its smoke on the
+  menu; the guest can take it off. The Japanese bitters work the same way,
+  and the Whiskey Sour comes with egg white: in by default, out for the
+  classic.
 - **Orders** land on a rail as tickets, each with the full build behind it.
   Ticking a ticket stamps it poured.
 - The **lantern** is the way to the drink that isn't on the list: tap it.
@@ -78,7 +81,7 @@ decide what anyone may do. Firebase's library is loaded from gstatic at a
 pinned version, and only when a book is configured.
 
 Each order is a document in `orders`, named by its id, with the fields
-`drink`, `guest`, `smoke`, `wood`, `egg`, `zero`, `yuzu`, `umami`, `note`,
+`drink`, `guest`, `smoke`, `wood`, `egg`, `yuzu`, `umami`, `note`,
 `at`, `done` and `doneAt`. The rules, set in the Firebase console:
 
 ```

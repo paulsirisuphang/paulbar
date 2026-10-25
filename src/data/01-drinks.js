@@ -74,14 +74,6 @@ const DRINKS = [
     tip: 'Worth making both ways — Rittenhouse at 100 proof is a noticeably different drink from bourbon.',
     smoke: true, woods: ['Oak', 'Oak + a pinch of cinnamon', 'Pecan', 'Walnut'],
     smokeNote: 'The archetype. Sugar and smoke are the entire point.',
-    zero: { from: 'sugar cube (or 0.25 oz simple syrup)', qty: '0.25 oz', to: 'zero-sugar syrup',
-      note: 'Nothing to muddle, so it comes together faster. What you lose is the grain of sugar that never quite dissolves.',
-      steps: [
-        'Put the zero-sugar syrup in the glass with the bitters.',
-        'Add the whiskey and one large cube.',
-        'Stir 30 seconds, adding a second cube partway through.',
-        'Express an orange peel and drop it in.'
-      ] },
     glass: 'rocks', color: '#A55E22', ice: 'cube', garnish: 'orange-twist'
   },
   {
@@ -143,14 +135,6 @@ const DRINKS = [
     ],
     smoke: true, woods: ['Oak', 'Pecan'],
     smokeNote: 'Smoke stands in for the absinthe rinse we do not have. Different flavor, same job.',
-    zero: { from: 'sugar cube', qty: '0.25 oz', to: 'zero-sugar syrup',
-      note: 'A straight swap for the cube. It lands drier, which the rye can carry.',
-      steps: [
-        "Put the zero-sugar syrup in a mixing glass with the Peychaud's.",
-        'Add the rye and ice, and stir 30 seconds.',
-        'Strain into a chilled rocks glass — no ice.',
-        'Express a lemon peel over the top, then throw the peel away. It does not go in.'
-      ] },
     glass: 'rocks', color: '#9E5324', ice: 'none', garnish: 'none'
   },
   {
@@ -283,8 +267,6 @@ const DRINKS = [
     egg: true, smoke: false,
     tip: 'Worth doing side by side with the whiskey sour once.',
     noSmoke: 'Smoke over fresh citrus reads muddy, and foam kills the aroma anyway.',
-    zero: { from: 'simple syrup', to: 'zero-sugar syrup',
-      note: 'One for one. Leaner without the sugar behind it, which gin minds less than bourbon does.' },
     glass: 'rocks', color: '#CBBD75', ice: 'cubes', garnish: 'none'
   },
   {
@@ -403,8 +385,6 @@ const DRINKS = [
     ],
     smoke: false,
     noSmoke: 'Shaken with fresh citrus — never smoke this.',
-    zero: { from: 'simple syrup', to: 'zero-sugar syrup',
-      note: 'One for one. Three things in the glass and nowhere to hide, so taste it before you strain.' },
     glass: 'coupe', color: '#D2DCA0', ice: 'none', garnish: 'lime-twist'
   },
   {
@@ -531,8 +511,6 @@ const DRINKS = [
     ],
     tip: 'Swap bourbon for a John Collins, or rye for more bite.',
     smoke: false, noSmoke: 'Shaken with fresh citrus — never smoke this.',
-    zero: { from: 'simple syrup', to: 'zero-sugar syrup',
-      note: 'One for one, and the soda covers the missing body better than anywhere else on the list.' },
     glass: 'tall', color: '#D0C384', ice: 'tall', garnish: 'none', bubbles: true
   },
   {

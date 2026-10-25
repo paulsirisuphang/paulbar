@@ -16,7 +16,7 @@ let lastWorking = 0;
 function ordersKey() {
   return lang + Book.orders.map((o) => [
     o.id, o.at, o.drink, o.guest, o.note || '', o.wood || '',
-    (o.done ? 'd' : '') + (o.smoke ? 's' : '') + (o.egg ? 'e' : '') + (o.zero ? 'z' : '') + (o.pending ? 'p' : '')
+    (o.done ? 'd' : '') + (o.smoke ? 's' : '') + (o.egg ? 'e' : '') + (o.pending ? 'p' : '')
   ].join('\u0001')).join('\u0002');
 }
 
@@ -65,7 +65,6 @@ function ticketEl(order) {
   const notes = [{ cls: '', icon: 'none', text: drink.method }];
   if (order.smoke) notes.push({ cls: 'smoke', icon: 'smoke', text: U('chip_smoked') + woodLabel(order.wood || drink.woods[0]).toLowerCase() });
   if (order.egg) notes.push({ cls: 'egg', icon: 'egg', text: U('chip_egg') });
-  if (order.zero) notes.push({ cls: 'zero', icon: 'leaf', text: U('chip_zero') });
   if (order.yuzu) notes.push({ cls: 'yuzu', icon: 'drop', text: U('chip_yuzu') });
   if (order.umami) notes.push({ cls: 'umami', icon: 'drop', text: U('chip_umami') });
   text.appendChild(notesLine(notes));
@@ -93,7 +92,6 @@ function ticketEl(order) {
   panel.hidden = !openBuilds.has(order.id);
   panel.appendChild(buildList(drink, order));
   panel.appendChild(stepsList(drink, order));
-  if (order.zero && drink.zero) panel.appendChild(aside('zero', U('aside_zero'), drink.zero.note));
   if (order.smoke) {
     const wood = order.wood || drink.woods[0];
     panel.appendChild(aside('smoke', U('aside_smoke') + woodLabel(wood), woodNote(wood)));

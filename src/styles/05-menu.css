@@ -104,16 +104,6 @@
   transition: background-size .5s var(--ease);
 }
 .entry:hover .entry-name > span { background-size: 100% 1px; }
-.entry-inside {
-  margin: 3px 0 0;
-  max-width: 40ch;
-  font-family: var(--sans);
-  font-size: .875rem;
-  line-height: 1.45;
-  letter-spacing: .01em;
-  color: var(--ink-2);
-}
-:lang(th) .entry-inside { font-size: .9375rem; letter-spacing: 0; }
 .entry-hook {
   margin: 4px 0 0;
   max-width: 34ch;
@@ -140,7 +130,6 @@
 .note svg { width: 12px; height: 12px; flex: none; }
 .note.smoke { color: var(--smoke); }
 .note.warn { color: var(--shu); }
-.note.zero { color: var(--matcha); }
 .note.egg, .note.low { color: var(--kincha); }
 .note.yuzu { color: var(--yuzu); }
 .note.umami { color: var(--ink-2); }

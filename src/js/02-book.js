@@ -39,12 +39,12 @@ const Book = (() => {
      every field the database's rules allow is always there. */
   const toDoc = (o) => ({
     drink: o.drink, guest: o.guest, smoke: !!o.smoke, wood: o.wood || null,
-    egg: !!o.egg, zero: !!o.zero, yuzu: !!o.yuzu, umami: !!o.umami,
+    egg: !!o.egg, yuzu: !!o.yuzu, umami: !!o.umami,
     note: o.note || '', at: o.at, done: !!o.done, doneAt: o.doneAt || null
   });
   const fromDoc = (id, d) => ({
     id, drink: d.drink, guest: d.guest, smoke: !!d.smoke, wood: d.wood || null,
-    egg: !!d.egg, zero: !!d.zero, yuzu: !!d.yuzu, umami: !!d.umami,
+    egg: !!d.egg, yuzu: !!d.yuzu, umami: !!d.umami,
     note: d.note || '', at: Number(d.at), done: !!d.done, doneAt: d.doneAt || null
   });
 

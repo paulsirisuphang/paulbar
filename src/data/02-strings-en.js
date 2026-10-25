@@ -27,7 +27,6 @@ const T_EN = {
   ago_min: (m) => (m === 1 ? '1 min ago' : m + ' min ago'),
   ago_hr: (h) => (h === 1 ? '1 hr ago' : h + ' hrs ago'),
   smoke_it: 'Smoke it', wood: 'Wood', egg_white: 'Egg white',
-  zero_sugar: 'Zero-sugar syrup',
   egg_why: 'Dry-shaken first, served up with a thick white foam. Skip it for a leaner, tarter drink over ice.',
   no_smoke_here: 'No smoke on this one. ', heads_up: 'Heads up. ',
 
@@ -47,7 +46,6 @@ const T_EN = {
   chip_smoke: 'Smoke — ', chip_smoke_best: 'Smoke — the best of them',
   chip_smoked: 'Smoked — ', chip_low: 'Low ABV', chip_na: 'No alcohol',
   chip_warn: 'Not alcohol-free', chip_egg_opt: 'Egg white optional', chip_egg: 'Egg white',
-  chip_zero_opt: 'Zero-sugar option', chip_zero: 'Zero sugar',
   chip_yuzu: 'Yuzu bitters', chip_umami: 'Umami bitters',
 
   egg_ing: 'egg white', egg_qty: '1',
@@ -59,7 +57,7 @@ const T_EN = {
   toast_ordered: 'Ordered — ', toast_poured: 'Poured — ', toast_back: 'Back on the rail',
   toast_for: ' for ',
 
-  aside_smoke: 'Smoke — ', aside_zero: 'Zero-sugar syrup', aside_tip: 'Worth knowing', aside_warn: 'Not alcohol-free',
+  aside_smoke: 'Smoke — ', aside_tip: 'Worth knowing', aside_warn: 'Not alcohol-free',
 
   smoke_step: function (chip, blended) {
     return 'Smoke the empty glass: invert it over the ' + chip +
