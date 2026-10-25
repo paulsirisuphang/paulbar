@@ -70,15 +70,35 @@ The code, file by file:
 
 ## Orders on every phone
 
-Orders are saved in the browser that placed them, then sent to a Supabase
-table so every phone sees the same rail. `src/data/00-config.js` holds the
-project URL and its publishable key. The publishable key is meant to be in a
-web page; the secret key never goes in this repo.
+Orders are saved in the browser that placed them, then sent to the bar's
+Firestore database (Firebase project `paulsbar`), and every phone sees a new
+order or a poured one the moment it changes. `src/data/00-config.js` holds the
+web app's settings; they are public by design, and the database's rules
+decide what anyone may do. Firebase's library is loaded from gstatic at a
+pinned version, and only when a book is configured.
 
-The table is `orders`, with columns `id` (text, primary key), `drink`,
-`guest`, `smoke`, `wood`, `egg`, `note`, `at`, `done` and `done_at`. Without a
-reachable book the bar still works on each phone by itself, and the Orders
-page says it's offline.
+Each order is a document in `orders`, named by its id, with the fields
+`drink`, `guest`, `smoke`, `wood`, `egg`, `zero`, `yuzu`, `umami`, `note`,
+`at`, `done` and `doneAt`. The rules, set in the Firebase console:
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /orders/{id} {
+      allow read: if true;
+      allow create, update: if request.resource.data.keys().hasOnly(
+          ['drink', 'guest', 'smoke', 'wood', 'egg', 'zero', 'yuzu', 'umami', 'note', 'at', 'done', 'doneAt'])
+        && request.resource.data.guest is string && request.resource.data.guest.size() <= 40
+        && request.resource.data.note is string && request.resource.data.note.size() <= 200;
+      allow delete: if true;
+    }
+  }
+}
+```
+
+Without a reachable book the bar still works on each phone by itself, and
+the Orders page says it's offline.
 
 ## Thai
 

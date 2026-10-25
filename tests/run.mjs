@@ -452,6 +452,8 @@ const checks = [
     await enter(page);
     ok(await page.$eval('#choice', (n) => parseFloat(getComputedStyle(n).borderTopLeftRadius)) >= 8, 'Surprise me has square corners');
     await openDrink(page, 'gimlet');
+    /* the edge is drawn to the card's size once the card has one */
+    await page.waitForFunction(() => document.getElementById('sheet').style.getPropertyValue('--deckle'), null, { timeout: 5000 }).catch(() => {});
     const card = await page.evaluate(() => {
       const paper = getComputedStyle(document.querySelector('#sheet .paper-sheet'));
       const band = getComputedStyle(document.querySelector('#sheet .btn'), '::before');

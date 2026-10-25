@@ -1526,16 +1526,19 @@ details.notes[open] summary svg { transform: rotate(90deg); }
 /* ---------- data/00-config.js ---------- */
 /* ================================================================
    THE SHARED ORDER BOOK
-   Fill these in and every phone reads and writes the same list; leave
-   them empty and orders stay on the device that placed them. The key
-   is Supabase's *publishable* key — it is meant to ship in the page,
-   and the table's own policies decide what it may do. The test build
-   blanks both so a test run never writes into the real list.
+   The bar's Firestore project. Fill these in and every phone reads and
+   writes the same list; leave them empty and orders stay on the device
+   that placed them. These are the web app's public settings, made to
+   ship in a page: the database's own rules (see the README) decide what
+   anyone may do with them. The test build blanks them, so a test run
+   never writes into the real list.
    ================================================================ */
 
 const BOOK = {
-  url: 'https://udyvhtrdrulpgxygznoc.supabase.co',
-  key: 'sb_publishable_bmOxYURr-Weyou44QT45uA_79tzZcqH'
+  apiKey: 'AIzaSyCaG-8o22ep4mA2ww3X-c0KHQRB4rpL2tI',
+  authDomain: 'paulsbar.firebaseapp.com',
+  projectId: 'paulsbar',
+  appId: '1:508959693857:web:58410ffa0bc7d7171d5760'
 };
 
 /* ---------- data/01-drinks.js ---------- */
@@ -3144,13 +3147,14 @@ function setLang(next) {
 /* ================================================================
    THE ORDER BOOK
    Every order is written to this browser first, so nothing is lost
-   when the wifi drops, then to the shared book (Supabase) so every
-   phone sees the same list. Without a shared book configured, the bar
-   runs on whichever device the orders were placed on.
+   when the wifi drops, then to the shared book (Firestore) so every
+   phone sees the same list the moment it changes. Without a shared
+   book configured, the bar runs on whichever device the orders were
+   placed on.
    ================================================================ */
 
 const Book = (() => {
-  const shared = !!(BOOK.url && BOOK.key);
+  const shared = !!(BOOK.apiKey && BOOK.projectId);
   let orders = store.json(KEYS.orders, []);
   if (!Array.isArray(orders)) orders = [];
 
@@ -3171,92 +3175,66 @@ const Book = (() => {
 
   /* ---------- the wire ---------- */
 
-  function api(path, opts = {}) {
-    return fetch(BOOK.url + '/rest/v1/orders' + path, {
-      method: opts.method || 'GET',
-      headers: {
-        apikey: BOOK.key,
-        Authorization: 'Bearer ' + BOOK.key,
-        'Content-Type': 'application/json',
-        /* re-sending an order updates it rather than colliding with itself */
-        Prefer: 'return=minimal,resolution=merge-duplicates'
-      },
-      body: opts.body ? JSON.stringify(opts.body) : undefined
-    }).then((r) => {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      setOnline(true);
-      /* a write answers with an empty body, a read with the book */
-      return r.text().then((body) => (body ? JSON.parse(body) : null));
-    }).catch((e) => {
-      setOnline(false);
-      throw e;
-    });
-  }
+  /* Firebase's own library, fetched only when there is a book to talk
+     to. A pinned version, so the page never changes under the bar. */
+  const SDK = 'https://www.gstatic.com/firebasejs/12.19.0/';
+  let fs = null;
+  let db = null;
 
-  /* The book's columns were fixed before zero sugar and the bitters
-     existed, so those flags travel on the front of the note, a mark each,
-     and are peeled off again. */
-  const MARKS = { zero: '~z ', yuzu: '~y ', umami: '~u ' };
-
-  const toRow = (o) => ({
-    id: o.id, drink: o.drink, guest: o.guest, smoke: !!o.smoke, wood: o.wood || null,
-    egg: !!o.egg, note: Object.keys(MARKS).filter((k) => o[k]).map((k) => MARKS[k]).join('') + (o.note || ''),
-    at: o.at, done: !!o.done, done_at: o.doneAt || null
+  /* An order as the book keeps it: the id is the document's name, and
+     every field the database's rules allow is always there. */
+  const toDoc = (o) => ({
+    drink: o.drink, guest: o.guest, smoke: !!o.smoke, wood: o.wood || null,
+    egg: !!o.egg, zero: !!o.zero, yuzu: !!o.yuzu, umami: !!o.umami,
+    note: o.note || '', at: o.at, done: !!o.done, doneAt: o.doneAt || null
   });
-  const fromRow = (r) => {
-    let note = r.note || '';
-    const flags = {};
-    for (const k of Object.keys(MARKS)) {
-      if (note.startsWith(MARKS[k])) { flags[k] = true; note = note.slice(MARKS[k].length); }
-    }
-    return {
-      id: r.id, drink: r.drink, guest: r.guest, smoke: !!r.smoke, wood: r.wood,
-      egg: !!r.egg, zero: !!flags.zero, yuzu: !!flags.yuzu, umami: !!flags.umami, note,
-      at: Number(r.at), done: !!r.done, doneAt: r.done_at
-    };
-  };
+  const fromDoc = (id, d) => ({
+    id, drink: d.drink, guest: d.guest, smoke: !!d.smoke, wood: d.wood || null,
+    egg: !!d.egg, zero: !!d.zero, yuzu: !!d.yuzu, umami: !!d.umami,
+    note: d.note || '', at: Number(d.at), done: !!d.done, doneAt: d.doneAt || null
+  });
 
+  const orderDoc = (id) => fs.doc(db, 'orders', id);
+
+  /* Firestore holds a write it can't send yet and sends it when it can,
+     so an order is only marked arrived once the book has it. */
   function push(order) {
-    if (!shared || inflight[order.id]) return;
+    if (!db || inflight[order.id]) return;
     order.pending = true;
     inflight[order.id] = true;
-    api('', { method: 'POST', body: toRow(order) })
+    fs.setDoc(orderDoc(order.id), toDoc(order))
       .then(() => { delete inflight[order.id]; order.pending = false; save(); })
-      .catch(() => { delete inflight[order.id]; /* goes again on the next good pull */ });
+      .catch(() => { delete inflight[order.id]; /* goes again with the next change in the book */ });
   }
 
-  /* The whole book, newest first. Orders that haven't reached it yet are
-     kept, so a dropped connection never loses anybody's drink. */
-  function pull() {
-    if (!shared) return Promise.resolve();
-    return api('?select=*&order=at.desc&limit=200').then((rows) => {
-      if (!rows) return;
-      const seen = new Set(rows.map((r) => r.id));
+  /* The whole book, newest first, every time it changes. Orders that
+     haven't reached it yet are kept, so a dropped connection never loses
+     anybody's drink. */
+  function listen() {
+    const q = fs.query(fs.collection(db, 'orders'), fs.orderBy('at', 'desc'), fs.limit(200));
+    fs.onSnapshot(q, { includeMetadataChanges: true }, (snap) => {
+      setOnline(!snap.metadata.fromCache);
+      if (snap.metadata.fromCache && !snap.size) return;
+      const fresh = snap.docs.map((d) => fromDoc(d.id, d.data()));
+      const seen = new Set(fresh.map((o) => o.id));
       const waiting = orders.filter((o) => o.pending && !seen.has(o.id));
-      orders = rows.map(fromRow).concat(waiting).sort((a, b) => b.at - a.at);
+      orders = fresh.concat(waiting).sort((a, b) => b.at - a.at);
       save();
       changed(true);
-      orders.filter((o) => o.pending).forEach(push);
-    });
+      waiting.forEach(push);
+    }, () => setOnline(false));
   }
 
-  /* Every three seconds while the book answers; when it doesn't, wait
-     longer each time — up to a minute — instead of hammering a book
-     that isn't there. Coming back to the tab always asks at once. */
-  const QUICK = 3000;
-  const SLOW = 60000;
-  let wait = QUICK;
-  let timer = null;
-
-  function schedule() {
-    clearTimeout(timer);
-    timer = setTimeout(tick, wait);
-  }
-  function tick() {
-    pull()
-      .then(() => { wait = QUICK; })
-      .catch(() => { wait = Math.min(SLOW, wait * 2); })
-      .then(schedule);
+  function connect() {
+    return Promise.all([import(SDK + 'firebase-app.js'), import(SDK + 'firebase-firestore.js')])
+      .then(([app, firestore]) => {
+        fs = firestore;
+        db = fs.getFirestore(app.initializeApp(BOOK));
+        listen();
+        /* anything placed before the book was reached goes now */
+        orders.filter((o) => o.pending).forEach(push);
+      })
+      .catch(() => setOnline(false));
   }
 
   /* ---------- what the rest of the bar uses ---------- */
@@ -3271,6 +3249,7 @@ const Book = (() => {
     onStatus: (fn) => statusFns.push(fn),
 
     add(order) {
+      if (shared) order.pending = true;
       orders.unshift(order);
       save();
       changed(true);
@@ -3285,19 +3264,19 @@ const Book = (() => {
       save();
       changed(false);
       if (o.pending) push(o);
-      else if (shared) {
-        api('?id=eq.' + encodeURIComponent(o.id), {
-          method: 'PATCH', body: { done: o.done, done_at: o.doneAt || null }
-        }).catch(() => {});
-      }
+      else if (db) fs.updateDoc(orderDoc(o.id), { done: o.done, doneAt: o.doneAt }).catch(() => {});
       return o;
     },
 
     clearPoured() {
+      const gone = orders.filter((o) => o.done);
       orders = orders.filter((o) => !o.done);
       save();
       changed(false);
-      if (shared) api('?done=eq.true', { method: 'DELETE' }).catch(() => {});
+      if (!db || !gone.length) return;
+      const batch = fs.writeBatch(db);
+      gone.forEach((o) => batch.delete(orderDoc(o.id)));
+      batch.commit().catch(() => {});
     },
 
     start() {
@@ -3307,14 +3286,7 @@ const Book = (() => {
         orders = store.json(KEYS.orders, []);
         changed(true);
       });
-      if (!shared) return;
-      tick();
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) return;
-        wait = QUICK;
-        clearTimeout(timer);
-        tick();
-      });
+      if (shared) connect();
     }
   };
 })();

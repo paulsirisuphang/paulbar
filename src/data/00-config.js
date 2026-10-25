@@ -1,13 +1,16 @@
 /* ================================================================
    THE SHARED ORDER BOOK
-   Fill these in and every phone reads and writes the same list; leave
-   them empty and orders stay on the device that placed them. The key
-   is Supabase's *publishable* key — it is meant to ship in the page,
-   and the table's own policies decide what it may do. The test build
-   blanks both so a test run never writes into the real list.
+   The bar's Firestore project. Fill these in and every phone reads and
+   writes the same list; leave them empty and orders stay on the device
+   that placed them. These are the web app's public settings, made to
+   ship in a page: the database's own rules (see the README) decide what
+   anyone may do with them. The test build blanks them, so a test run
+   never writes into the real list.
    ================================================================ */
 
 const BOOK = {
-  url: 'https://udyvhtrdrulpgxygznoc.supabase.co',
-  key: 'sb_publishable_bmOxYURr-Weyou44QT45uA_79tzZcqH'
+  apiKey: 'AIzaSyCaG-8o22ep4mA2ww3X-c0KHQRB4rpL2tI',
+  authDomain: 'paulsbar.firebaseapp.com',
+  projectId: 'paulsbar',
+  appId: '1:508959693857:web:58410ffa0bc7d7171d5760'
 };

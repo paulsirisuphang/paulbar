@@ -106,8 +106,8 @@ def main():
 
     (ROOT / "index.html").write_text(out, encoding="utf-8")
 
-    test = re.sub(r"const BOOK = \{[^}]*\};", "const BOOK = { url: '', key: '' }; /* test build: shared book off */", out, count=1)
-    if "supabase.co" in test:
+    test = re.sub(r"const BOOK = \{[^}]*\};", "const BOOK = {}; /* test build: shared book off */", out, count=1)
+    if "AIza" in test or "firebaseapp.com" in test:
         sys.exit("the test build still points at the real order book")
     BUILD.mkdir(exist_ok=True)
     (BUILD / "test.html").write_text(test, encoding="utf-8")
