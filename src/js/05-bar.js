@@ -1,11 +1,11 @@
 /* ================================================================
    THE BAR
-   The bar with nobody at it: a lit back bar of bottles, a paper
-   lantern, and on the hinoki counter the tools of the trade. Tap one
-   and it does its party piece for ten seconds: the wine bottles juggle
-   themselves, the spoon stirs, the shaker gives a hard shake, and a
-   golf ball is chipped into a coupe. An order arriving sets the shaker
-   going too.
+   The bar with nobody at it: a lit back bar of bottles, the wine among
+   them, a paper lantern, and on the hinoki counter the tools of the
+   trade. Tap one and it does its party piece for ten seconds: the spoon
+   stirs, the shaker gives a hard shake, a golf ball is chipped into a
+   coupe, and the smoking gun pours out smoke. An order arriving sets the
+   shaker going too.
 
    Every arrival paints it onto the page the way a painter would, a part
    at a time, and presses the house seal on the front of the bar to
@@ -225,6 +225,14 @@ function shelfJar(item) {
   return g;
 }
 
+/* The wine: three bottles of red standing together on the lower shelf,
+   about as tall as the spirits beside them. */
+const WINE = { row: 1, xs: [92, 101.2, 110.4], scale: 1.25 };
+const WINE_HALF = 3.3 * WINE.scale;
+
+/* a bottle or jar's half width on the shelf, to keep the wine clear of it */
+const halfOf = (item) => (item.jar ? 7.2 : BOTTLES[item.kind].w / 2) * item.scale;
+
 /* What stands on a shelf: little groups of two or three with room between
    them, and now and then a jar. The run is laid out from a fixed point far
    to the left, so a wider window shows more of the same bar rather than a
@@ -258,8 +266,19 @@ function shelfItems(row, x0, x1) {
     }
     x += 16 + r() * 20;
   }
+  if (row === WINE.row) {
+    /* the wine takes its place on the shelf, and whatever the run put there
+       makes room */
+    const from = WINE.xs[0] - WINE_HALF - 1.6, to = WINE.xs[WINE.xs.length - 1] + WINE_HALF + 1.6;
+    const clearOfWine = items.filter((item) => item.x + halfOf(item) < from || item.x - halfOf(item) > to);
+    WINE.xs.forEach((x) => { if (x > x0 - 12 && x < x1 + 12) clearOfWine.push({ wine: true, x, y, scale: WINE.scale }); });
+    return clearOfWine.sort((a, b) => a.x - b.x);
+  }
   return items;
 }
+
+/* a bottle of red on the shelf, standing on 0,0 */
+const shelfWine = (item) => S('g', { transform: placed(item), class: 'shelf-wine' }, [S('g', { transform: 'translate(0 -8)' }, [wineBottle(.42)])]);
 
 /* Floating hinoki shelves from one edge of the window to the other, lit
    along the back so the bottles stand against a warm glow. */
@@ -279,7 +298,7 @@ function backBar(defs, x0, x1) {
     g.appendChild(S('rect', { x: x0, y: y - 26, width: x1 - x0, height: 26, fill: 'url(#' + glow + ')', class: 'shelf-glow' }));
     /* each shelf is painted from the top down: its plank, then what
        stands on it from left to right */
-    shelfItems(row, x0, x1).forEach((item, i) => g.appendChild(paintAs(item.jar ? shelfJar(item) : shelfBottle(item), 'shelves', row * 1000 + 1 + i)));
+    shelfItems(row, x0, x1).forEach((item, i) => g.appendChild(paintAs(item.jar ? shelfJar(item) : item.wine ? shelfWine(item) : shelfBottle(item), 'shelves', row * 1000 + 1 + i)));
     /* the plank edge-on, and its shadow on the wall */
     g.appendChild(paintAs(S('g', {}, [
       S('rect', { x: x0, y: y + 3.4, width: x1 - x0, height: 5, fill: 'url(#' + shade + ')' }),
@@ -309,20 +328,21 @@ function shaker() {
   return g;
 }
 
-/* a bottle of red, standing about its middle */
-function wineBottle() {
+/* a bottle of red, standing about its middle; `weight` is its outline's,
+   lighter on the shelf where it is drawn larger */
+function wineBottle(weight = .6) {
   const g = S('g');
   const shape = 'M-3.3,8 L3.3,8 L3.3,-2.5 Q3.3,-5.6 1.3,-7.2 L1.3,-12 L-1.3,-12 L-1.3,-7.2 Q-3.3,-5.6 -3.3,-2.5 Z';
   g.appendChild(wash(shape, '#3E5A43', { alpha: .95, edge: .3, edgeWidth: .7 }));
   g.appendChild(S('rect', { x: -2.6, y: -1, width: 5.2, height: 5, fill: LABEL, stroke: INK, 'stroke-width': .35, 'stroke-opacity': .6 }));
   g.appendChild(S('rect', { x: -1.5, y: -13, width: 3, height: 3.4, fill: '#7B2B22' }));
   g.appendChild(brush(line([-1.9, 6], [-1.9, -3], 3), .7, { color: GOUACHE, alpha: .6, taper: .3, even: true }));
-  g.appendChild(S('path', { d: shape, fill: 'none', stroke: INK, 'stroke-width': .6, 'stroke-opacity': .8 }));
+  g.appendChild(S('path', { d: shape, fill: 'none', stroke: INK, 'stroke-width': weight, 'stroke-opacity': .8 }));
   return g;
 }
 
-/* Everything on the counter is drawn to one scale, the wine bottles' : a
-   bottle 30 cm tall is 35 units, so a centimetre is about 1.17. */
+/* Everything on the counter is drawn to one scale: a bottle 30 cm tall is
+   35 units, so a centimetre is about 1.17. */
 
 /* A Japanese mixing glass, the cut kind, half full and stirred: 11 cm
    tall and 9.5 across the rim, a little narrower at its thick base, with
@@ -436,7 +456,6 @@ function jigger() {
 /* What's on the bar, left to right, the stretch of it each one's button
    covers, and the words a screen reader says for it. */
 const PIECES = [
-  { id: 'juggle', x0: 82, x1: 124, label: 'piece_juggle' },
   { id: 'stir', x0: 136, x1: 170, label: 'piece_stir' },
   { id: 'shake', x0: 176, x1: 204, label: 'piece_shake' },
   { id: 'chip', x0: 232, x1: 300, label: 'piece_chip' },
@@ -453,17 +472,9 @@ function drawPieces(rand) {
     return g;
   };
 
-  /* three wine bottles, and the same three going round in the air */
   /* the painter's order along the counter: the shaker, the mixing glass and
-     its spoon, the wine bottles from the right, the smoking gun, then
-     (past the vase) the jigger, the tee and its ball, and the coupe */
-  const standing = [92, 103, 114].map((x, i) => paintAs(S('g', { transform: 'translate(' + x + ' ' + (BAR_TOP - 14) + ') scale(1.75)' }, [wineBottle()]), 'counter', 6 - i));
-  const loop = S('g', { transform: 'translate(103 64)' });
-  for (let i = 0; i < 3; i++) {
-    const b = S('g', { class: 'moves bottle' }, [S('g', { transform: 'scale(1.4)' }, [wineBottle()])]);
-    b.style.animationDelay = (-i * 1.3 / 3).toFixed(2) + 's';
-    loop.appendChild(b);
-  }
+     its spoon, the smoking gun, then (past the vase) the jigger, the tee and
+     its ball, and the coupe */
 
   /* a ball teed up beside a coupe, which is a Sidecar */
   const coupe = paintAs(drawDrink(drinkById('sidecar'), {}, 'static'), 'counter', 12);
@@ -491,7 +502,6 @@ function drawPieces(rand) {
   ], { seed: 'more', every: .9, width: 3.2, alpha: .34 });
 
   return [
-    piece('juggle', standing, [loop]),
     piece('stir', [
       paintAs(S('g', { transform: 'translate(152 ' + BAR_TOP + ')' }, [mixingGlass()]), 'counter', 2),
       paintAs(moving(152, BAR_TOP - 8, 'spoon', [barSpoon()]), 'counter', 3)

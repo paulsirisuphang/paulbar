@@ -436,17 +436,6 @@ main {
 .act { display: none; }
 .acting .act { display: inline; }
 
-/* the wine bottles leave the bar and go round in the air */
-.piece-juggle.acting .still { visibility: hidden; }
-.bottle { animation: juggle 1.3s linear infinite; }
-@keyframes juggle {
-  0%   { transform: translate(-13px, 18px) rotate(0deg); }
-  25%  { transform: translate(-10px, -16px) rotate(180deg); }
-  50%  { transform: translate(11px, -23px) rotate(360deg); }
-  75%  { transform: translate(14px, 14px) rotate(540deg); }
-  100% { transform: translate(-13px, 18px) rotate(720deg); }
-}
-
 /* the spoon goes round the mixing glass */
 .piece-stir.acting .spoon { animation: stir .8s ease-in-out infinite alternate; }
 @keyframes stir {
@@ -1347,30 +1336,6 @@ details.notes[open] summary svg { transform: rotate(90deg); }
    confirms an order, and the motion inside the drawings
    ================================================================ */
 
-/* smoke does not stay in the glass */
-.page-smoke {
-  position: fixed;
-  inset: 0;
-  z-index: 55;
-  pointer-events: none;
-  overflow: hidden;
-}
-.page-smoke svg {
-  position: absolute;
-  bottom: -30vh;
-  width: 34vw;
-  min-width: 160px;
-  max-width: 340px;
-  height: auto;
-  overflow: visible;
-  animation: page-smoke 6s cubic-bezier(.3, .2, .3, 1) forwards;
-}
-@keyframes page-smoke {
-  0%   { opacity: 0; transform: translate(0, 0) scale(.7); }
-  16%  { opacity: 1; }
-  100% { opacity: 0; transform: translate(var(--drift, 2vw), -120vh) scale(1.5); }
-}
-
 /* the slip that says it went through */
 .toast {
   position: fixed;
@@ -1395,9 +1360,26 @@ details.notes[open] summary svg { transform: rotate(90deg); }
   transition: opacity .3s ease, transform .4s var(--ease);
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
-.toast-art { width: 30px; aspect-ratio: 120 / 170; flex: none; }
+.toast-art { position: relative; width: 30px; aspect-ratio: 120 / 170; flex: none; }
 .toast-art:empty { display: none; }
 .toast-art svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* a smoked order: one thin curl leaves the glass on the slip, rises a
+   little and fades; its foot sits on the rim (app.js) */
+.toast-art svg.sent-smoke {
+  position: absolute;
+  left: 50%;
+  width: 24px;
+  height: auto;
+  transform-origin: 50% 100%;
+  opacity: 0;
+  animation: sent-smoke 3.2s ease-out .25s forwards;
+}
+@keyframes sent-smoke {
+  0%   { opacity: 0; transform: translate(-50%, 4px) scaleY(.55); }
+  35%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -12px) scaleY(1); }
+}
 
 /* ---------- inside the drawings ---------- */
 
@@ -1436,7 +1418,7 @@ details.notes[open] summary svg { transform: rotate(90deg); }
 @keyframes melt { to { transform: scale(.62); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .page-smoke { display: none; }
+  .sent-smoke { display: none; }
   *, *::before, *::after {
     animation-duration: .001ms !important;
     animation-delay: 0s !important;
@@ -2165,7 +2147,7 @@ const T_EN = {
   name_ph_err: 'The bar needs a name for this one',
   note_ph: 'Optional. Light on the vermouth, no garnish, make it two…',
 
-  piece_juggle: 'Juggle the wine bottles', piece_stir: 'Stir the mixing glass',
+  piece_stir: 'Stir the mixing glass',
   piece_shake: 'Shake the shaker', piece_chip: 'Chip the golf ball into the glass',
   piece_smoke: 'Fire up the smoking gun',
   filters_label: 'Show one kind of drink',
@@ -2320,7 +2302,7 @@ const T_TH = {
   name_ph_err: 'ใส่ชื่อก่อนนะ',
   note_ph: 'ไม่ใส่ก็ได้ เช่น เวอร์มุทน้อย ๆ ไม่เอาการ์นิช ขอสองแก้ว…',
 
-  piece_juggle: 'โยนขวดไวน์เล่น', piece_stir: 'คนแก้วผสม',
+  piece_stir: 'คนแก้วผสม',
   piece_shake: 'เขย่าเชคเกอร์', piece_chip: 'ตีลูกกอล์ฟลงแก้ว',
   piece_smoke: 'จุดปืนรมควัน',
   filters_label: 'เลือกดูทีละแบบ',
@@ -4118,12 +4100,12 @@ function artBox(cls, drink, opts, mode) {
 /* ---------- js/05-bar.js ---------- */
 /* ================================================================
    THE BAR
-   The bar with nobody at it: a lit back bar of bottles, a paper
-   lantern, and on the hinoki counter the tools of the trade. Tap one
-   and it does its party piece for ten seconds: the wine bottles juggle
-   themselves, the spoon stirs, the shaker gives a hard shake, and a
-   golf ball is chipped into a coupe. An order arriving sets the shaker
-   going too.
+   The bar with nobody at it: a lit back bar of bottles, the wine among
+   them, a paper lantern, and on the hinoki counter the tools of the
+   trade. Tap one and it does its party piece for ten seconds: the spoon
+   stirs, the shaker gives a hard shake, a golf ball is chipped into a
+   coupe, and the smoking gun pours out smoke. An order arriving sets the
+   shaker going too.
 
    Every arrival paints it onto the page the way a painter would, a part
    at a time, and presses the house seal on the front of the bar to
@@ -4343,6 +4325,14 @@ function shelfJar(item) {
   return g;
 }
 
+/* The wine: three bottles of red standing together on the lower shelf,
+   about as tall as the spirits beside them. */
+const WINE = { row: 1, xs: [92, 101.2, 110.4], scale: 1.25 };
+const WINE_HALF = 3.3 * WINE.scale;
+
+/* a bottle or jar's half width on the shelf, to keep the wine clear of it */
+const halfOf = (item) => (item.jar ? 7.2 : BOTTLES[item.kind].w / 2) * item.scale;
+
 /* What stands on a shelf: little groups of two or three with room between
    them, and now and then a jar. The run is laid out from a fixed point far
    to the left, so a wider window shows more of the same bar rather than a
@@ -4376,8 +4366,19 @@ function shelfItems(row, x0, x1) {
     }
     x += 16 + r() * 20;
   }
+  if (row === WINE.row) {
+    /* the wine takes its place on the shelf, and whatever the run put there
+       makes room */
+    const from = WINE.xs[0] - WINE_HALF - 1.6, to = WINE.xs[WINE.xs.length - 1] + WINE_HALF + 1.6;
+    const clearOfWine = items.filter((item) => item.x + halfOf(item) < from || item.x - halfOf(item) > to);
+    WINE.xs.forEach((x) => { if (x > x0 - 12 && x < x1 + 12) clearOfWine.push({ wine: true, x, y, scale: WINE.scale }); });
+    return clearOfWine.sort((a, b) => a.x - b.x);
+  }
   return items;
 }
+
+/* a bottle of red on the shelf, standing on 0,0 */
+const shelfWine = (item) => S('g', { transform: placed(item), class: 'shelf-wine' }, [S('g', { transform: 'translate(0 -8)' }, [wineBottle(.42)])]);
 
 /* Floating hinoki shelves from one edge of the window to the other, lit
    along the back so the bottles stand against a warm glow. */
@@ -4397,7 +4398,7 @@ function backBar(defs, x0, x1) {
     g.appendChild(S('rect', { x: x0, y: y - 26, width: x1 - x0, height: 26, fill: 'url(#' + glow + ')', class: 'shelf-glow' }));
     /* each shelf is painted from the top down: its plank, then what
        stands on it from left to right */
-    shelfItems(row, x0, x1).forEach((item, i) => g.appendChild(paintAs(item.jar ? shelfJar(item) : shelfBottle(item), 'shelves', row * 1000 + 1 + i)));
+    shelfItems(row, x0, x1).forEach((item, i) => g.appendChild(paintAs(item.jar ? shelfJar(item) : item.wine ? shelfWine(item) : shelfBottle(item), 'shelves', row * 1000 + 1 + i)));
     /* the plank edge-on, and its shadow on the wall */
     g.appendChild(paintAs(S('g', {}, [
       S('rect', { x: x0, y: y + 3.4, width: x1 - x0, height: 5, fill: 'url(#' + shade + ')' }),
@@ -4427,20 +4428,21 @@ function shaker() {
   return g;
 }
 
-/* a bottle of red, standing about its middle */
-function wineBottle() {
+/* a bottle of red, standing about its middle; `weight` is its outline's,
+   lighter on the shelf where it is drawn larger */
+function wineBottle(weight = .6) {
   const g = S('g');
   const shape = 'M-3.3,8 L3.3,8 L3.3,-2.5 Q3.3,-5.6 1.3,-7.2 L1.3,-12 L-1.3,-12 L-1.3,-7.2 Q-3.3,-5.6 -3.3,-2.5 Z';
   g.appendChild(wash(shape, '#3E5A43', { alpha: .95, edge: .3, edgeWidth: .7 }));
   g.appendChild(S('rect', { x: -2.6, y: -1, width: 5.2, height: 5, fill: LABEL, stroke: INK, 'stroke-width': .35, 'stroke-opacity': .6 }));
   g.appendChild(S('rect', { x: -1.5, y: -13, width: 3, height: 3.4, fill: '#7B2B22' }));
   g.appendChild(brush(line([-1.9, 6], [-1.9, -3], 3), .7, { color: GOUACHE, alpha: .6, taper: .3, even: true }));
-  g.appendChild(S('path', { d: shape, fill: 'none', stroke: INK, 'stroke-width': .6, 'stroke-opacity': .8 }));
+  g.appendChild(S('path', { d: shape, fill: 'none', stroke: INK, 'stroke-width': weight, 'stroke-opacity': .8 }));
   return g;
 }
 
-/* Everything on the counter is drawn to one scale, the wine bottles' : a
-   bottle 30 cm tall is 35 units, so a centimetre is about 1.17. */
+/* Everything on the counter is drawn to one scale: a bottle 30 cm tall is
+   35 units, so a centimetre is about 1.17. */
 
 /* A Japanese mixing glass, the cut kind, half full and stirred: 11 cm
    tall and 9.5 across the rim, a little narrower at its thick base, with
@@ -4554,7 +4556,6 @@ function jigger() {
 /* What's on the bar, left to right, the stretch of it each one's button
    covers, and the words a screen reader says for it. */
 const PIECES = [
-  { id: 'juggle', x0: 82, x1: 124, label: 'piece_juggle' },
   { id: 'stir', x0: 136, x1: 170, label: 'piece_stir' },
   { id: 'shake', x0: 176, x1: 204, label: 'piece_shake' },
   { id: 'chip', x0: 232, x1: 300, label: 'piece_chip' },
@@ -4571,17 +4572,9 @@ function drawPieces(rand) {
     return g;
   };
 
-  /* three wine bottles, and the same three going round in the air */
   /* the painter's order along the counter: the shaker, the mixing glass and
-     its spoon, the wine bottles from the right, the smoking gun, then
-     (past the vase) the jigger, the tee and its ball, and the coupe */
-  const standing = [92, 103, 114].map((x, i) => paintAs(S('g', { transform: 'translate(' + x + ' ' + (BAR_TOP - 14) + ') scale(1.75)' }, [wineBottle()]), 'counter', 6 - i));
-  const loop = S('g', { transform: 'translate(103 64)' });
-  for (let i = 0; i < 3; i++) {
-    const b = S('g', { class: 'moves bottle' }, [S('g', { transform: 'scale(1.4)' }, [wineBottle()])]);
-    b.style.animationDelay = (-i * 1.3 / 3).toFixed(2) + 's';
-    loop.appendChild(b);
-  }
+     its spoon, the smoking gun, then (past the vase) the jigger, the tee and
+     its ball, and the coupe */
 
   /* a ball teed up beside a coupe, which is a Sidecar */
   const coupe = paintAs(drawDrink(drinkById('sidecar'), {}, 'static'), 'counter', 12);
@@ -4609,7 +4602,6 @@ function drawPieces(rand) {
   ], { seed: 'more', every: .9, width: 3.2, alpha: .34 });
 
   return [
-    piece('juggle', standing, [loop]),
     piece('stir', [
       paintAs(S('g', { transform: 'translate(152 ' + BAR_TOP + ')' }, [mixingGlass()]), 'counter', 2),
       paintAs(moving(152, BAR_TOP - 8, 'spoon', [barSpoon()]), 'counter', 3)
@@ -5166,14 +5158,17 @@ function brushRule() {
 
 /* ---------- smoke that leaves the glass ---------- */
 
-function smokePlume(seedKey) {
+/* one thin curl, for the glass on the order slip: a pale veil round a
+   finer line, drawn from the rim (the foot of the box) upwards */
+function smokeCurl(seedKey) {
   const rand = seeded(seedKey);
-  const svg = S('svg', { viewBox: '0 0 100 300', 'aria-hidden': 'true', focusable: 'false' });
-  const drift = (rand() - .5) * 30;
-  const pts = trace((t) => [50 + Math.sin(t * Math.PI * 2.6 + rand() * 3) * (6 + t * 16) + drift * t, 300 - t * 300], 40);
-  svg.appendChild(brush(pts, (t) => 18 + t * 30, { color: SMOKE_INK, alpha: .06, rand, taper: .15, taperEnd: .3, vary: .4 }));
-  svg.appendChild(brush(pts, (t) => 7 + t * 12, { color: SMOKE_INK, alpha: .1, rand, taper: .15, taperEnd: .35, vary: .35 }));
-  svg.appendChild(brush(pts, (t) => 2.2 * (1 - t * .5), { color: SMOKE_INK, alpha: .22, rand, taper: .05, taperEnd: .5, vary: .25 }));
+  const svg = S('svg', { viewBox: '0 0 40 120', class: 'sent-smoke', 'aria-hidden': 'true', focusable: 'false' });
+  const lean = (rand() - .5) * 8;
+  const turn = rand() * Math.PI * 2;
+  const pts = trace((t) => [20 + Math.sin(t * Math.PI * 1.4 + turn) * (1 + t * 5) + lean * t, 120 - t * 116], 24);
+  svg.appendChild(brush(pts, (t) => 4 + t * 9, { color: SMOKE_INK, alpha: .12, rand, taper: .2, taperEnd: .3, vary: .3 }));
+  svg.appendChild(brush(pts, (t) => 1.8 + t * 3, { color: SMOKE_INK, alpha: .16, rand, taper: .15, taperEnd: .35, vary: .2 }));
+  svg.appendChild(brush(pts, (t) => 1 * (1 - t * .5), { color: SMOKE_INK, alpha: .3, rand, taper: .1, taperEnd: .5, vary: .12 }));
   return svg;
 }
 
@@ -5608,7 +5603,7 @@ function openSheet(drink) {
     sheet.close();
     toast(U('toast_ordered') + drink.name + U('toast_for') + who, drink, state);
     stirTheBar();
-    if (state.smoke) releaseSmoke();
+    if (state.smoke) releaseSmoke(drink);
   });
 
   sheet.appendChild(form);
@@ -5895,19 +5890,16 @@ function toast(message, drink, opts) {
   toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-/* smoke doesn't stay in the glass */
-function releaseSmoke() {
+/* A smoked order: one thin curl of smoke rises from the glass on the slip
+   and fades, and nothing else on the page moves. It starts at the rim,
+   which sits at a different height in each kind of glass. */
+function releaseSmoke(drink) {
   if (prefersStill()) return;
-  const layer = el('div', 'page-smoke');
-  for (let i = 0; i < 4; i++) {
-    const plume = smokePlume('plume' + Date.now() + i);
-    plume.style.left = (4 + i * 24 + Math.random() * 10) + '%';
-    plume.style.setProperty('--drift', (Math.random() * 14 - 7) + 'vw');
-    plume.style.animationDelay = (i * .25 + Math.random() * .3).toFixed(2) + 's';
-    layer.appendChild(plume);
-  }
-  document.body.appendChild(layer);
-  setTimeout(() => layer.remove(), 7000);
+  const curl = smokeCurl('sent' + Date.now());
+  const rim = GLASS[drink.glass].rimY / 170;
+  curl.style.bottom = ((1 - rim) * 100 - 3).toFixed(1) + '%';
+  $('#toast-art').appendChild(curl);
+  setTimeout(() => curl.remove(), 3600);
 }
 
 /* ---------- tabs and the menu button ---------- */

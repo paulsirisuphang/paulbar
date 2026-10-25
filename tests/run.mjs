@@ -267,6 +267,7 @@ const checks = [
     await page.fill('#sheet input.write', 'Nok');
     await page.click('#sheet .btn');
     await page.waitForFunction(() => !document.getElementById('sheet').open);
+    eq(await count(page, '#toast .sent-smoke'), 0, 'smoke on the slip for a drink sent without it');
     await page.click('#burger');
     await page.click('#tab-orders');
     eq(await count(page, '.ticket .note.smoke'), 0, 'smoke on a drink sent without it');
@@ -274,6 +275,13 @@ const checks = [
     await page.click('#tab-menu');
     await openDrink(page, 'old-fashioned');
     eq(await text(page, '#sheet .wood[aria-pressed="true"]'), 'Oak', 'the wood chosen for an Old Fashioned');
+    /* sent smoked, one thin curl leaves the glass on the slip; nothing
+       crosses the rest of the page */
+    await page.fill('#sheet input.write', 'Nok');
+    await page.click('#sheet .btn');
+    await page.waitForFunction(() => !document.getElementById('sheet').open);
+    eq(await count(page, '#toast .sent-smoke'), 1, 'curls of smoke on the slip');
+    eq(await count(page, '.page-smoke'), 0, 'smoke across the page');
   }],
 
   ['an order needs a name, then lands on the rail', {}, async (page) => {
@@ -367,12 +375,23 @@ const checks = [
     ok(m.bottom > .62 && m.bottom < .95, `the tee floats off the baseline (its foot at ${(m.bottom * 100).toFixed(0)}% of the line)`);
   }],
 
+  ['the wine stands on the back bar: three bottles on the lower shelf, and none on the counter', {}, async (page) => {
+    await enter(page);
+    const m = await page.evaluate(() => ({
+      wine: [...document.querySelectorAll('#scene .shelf-wine')].map((w) => w.getBoundingClientRect().bottom),
+      shelf: [...document.querySelectorAll('#scene .shelf-glow')].map((g) => g.getBoundingClientRect().bottom)
+    }));
+    eq(m.wine.length, 3, 'wine bottles on the back bar');
+    ok(m.wine.every((b) => Math.abs(b - m.shelf[1]) < 2), 'a wine bottle off the lower shelf: ' + m.wine.map((b) => b.toFixed(1)).join(', ') + ' against ' + m.shelf[1].toFixed(1));
+    eq(await count(page, '.piece-juggle'), 0, 'wine bottles on the counter');
+  }],
+
   ['each piece on the counter does its party piece, for ten seconds', { clock: true }, async (page) => {
     await enter(page);
-    eq(await count(page, '.piece-tap'), 5, 'buttons over the pieces');
+    eq(await count(page, '.piece-tap'), 4, 'buttons over the pieces');
     for (const b of await page.$$('.piece-tap')) await b.click();
     const acting = () => page.$$eval('.piece.acting', (p) => p.map((n) => n.className.baseVal.match(/piece-(\w+)/)[1]).join(', '));
-    eq(await acting(), 'juggle, stir, shake, chip, smoke', 'pieces performing');
+    eq(await acting(), 'stir, shake, chip, smoke', 'pieces performing');
     await page.clock.runFor(10100);
     eq(await acting(), '', 'pieces still performing after ten seconds');
     /* an order sets the shaker going for a few seconds */
@@ -427,17 +446,17 @@ const checks = [
   ['the bar runs the full width; what is on the counter keeps its size in the middle', { width: 1280, height: 860 }, async (page) => {
     await enter(page);
     /* the stage is 800px on a desktop and 340 units wide; the shaker stands
-       10 units right of its middle, and the wine bottles and the sidecar
-       stand 163 units apart */
+       10 units right of its middle, and the smoking gun and the sidecar
+       stand 208 units apart */
     const measure = () => page.evaluate(() => {
       const svg = document.querySelector('#scene svg').getBoundingClientRect();
       const taps = [...document.querySelectorAll('.piece-tap')].map((b) => { const r = b.getBoundingClientRect(); return r.left + r.width / 2; });
-      return { left: svg.left, right: svg.right, width: document.documentElement.clientWidth, shaker: taps[2], apart: taps[3] - taps[0] };
+      return { left: svg.left, right: svg.right, width: document.documentElement.clientWidth, shaker: taps[1], apart: taps[2] - taps[3] };
     });
     let m = await measure();
     ok(m.left <= 0 && m.right >= m.width - 1, `the bar spans ${m.left.toFixed(0)}–${m.right.toFixed(0)} of a ${m.width}px window`);
     ok(Math.abs(m.shaker - m.width / 2 - 10 * 800 / 340) < 2, `the shaker is ${(m.shaker - m.width / 2).toFixed(1)}px off centre`);
-    ok(Math.abs(m.apart - 163 * 800 / 340) < 2, `the outer pieces are ${m.apart.toFixed(1)}px apart on a desktop`);
+    ok(Math.abs(m.apart - 208 * 800 / 340) < 2, `the outer pieces are ${m.apart.toFixed(1)}px apart on a desktop`);
     eq(await count(page, '.shelf-glow'), 2, 'lit shelves behind the bar');
     /* a narrower window redraws the bar to fit, on the phone's stage; wait
        for the redraw itself, which a busy machine can take a while over */
@@ -446,7 +465,7 @@ const checks = [
     await page.waitForFunction((was) => document.querySelector('#scene svg').getAttribute('viewBox') !== was, drawn);
     m = await measure();
     ok(m.left <= 0 && m.right >= m.width - 1, `after narrowing, the bar spans ${m.left.toFixed(0)}–${m.right.toFixed(0)} of ${m.width}px`);
-    ok(Math.abs(m.apart - 163 * 560 / 340) < 2, `after narrowing, the outer pieces are ${m.apart.toFixed(1)}px apart`);
+    ok(Math.abs(m.apart - 208 * 560 / 340) < 2, `after narrowing, the outer pieces are ${m.apart.toFixed(1)}px apart`);
   }],
 
   ['spirit-forward comes first, in the filters and on the card', {}, async (page) => {

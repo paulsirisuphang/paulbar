@@ -185,14 +185,17 @@ function brushRule() {
 
 /* ---------- smoke that leaves the glass ---------- */
 
-function smokePlume(seedKey) {
+/* one thin curl, for the glass on the order slip: a pale veil round a
+   finer line, drawn from the rim (the foot of the box) upwards */
+function smokeCurl(seedKey) {
   const rand = seeded(seedKey);
-  const svg = S('svg', { viewBox: '0 0 100 300', 'aria-hidden': 'true', focusable: 'false' });
-  const drift = (rand() - .5) * 30;
-  const pts = trace((t) => [50 + Math.sin(t * Math.PI * 2.6 + rand() * 3) * (6 + t * 16) + drift * t, 300 - t * 300], 40);
-  svg.appendChild(brush(pts, (t) => 18 + t * 30, { color: SMOKE_INK, alpha: .06, rand, taper: .15, taperEnd: .3, vary: .4 }));
-  svg.appendChild(brush(pts, (t) => 7 + t * 12, { color: SMOKE_INK, alpha: .1, rand, taper: .15, taperEnd: .35, vary: .35 }));
-  svg.appendChild(brush(pts, (t) => 2.2 * (1 - t * .5), { color: SMOKE_INK, alpha: .22, rand, taper: .05, taperEnd: .5, vary: .25 }));
+  const svg = S('svg', { viewBox: '0 0 40 120', class: 'sent-smoke', 'aria-hidden': 'true', focusable: 'false' });
+  const lean = (rand() - .5) * 8;
+  const turn = rand() * Math.PI * 2;
+  const pts = trace((t) => [20 + Math.sin(t * Math.PI * 1.4 + turn) * (1 + t * 5) + lean * t, 120 - t * 116], 24);
+  svg.appendChild(brush(pts, (t) => 4 + t * 9, { color: SMOKE_INK, alpha: .12, rand, taper: .2, taperEnd: .3, vary: .3 }));
+  svg.appendChild(brush(pts, (t) => 1.8 + t * 3, { color: SMOKE_INK, alpha: .16, rand, taper: .15, taperEnd: .35, vary: .2 }));
+  svg.appendChild(brush(pts, (t) => 1 * (1 - t * .5), { color: SMOKE_INK, alpha: .3, rand, taper: .1, taperEnd: .5, vary: .12 }));
   return svg;
 }
 

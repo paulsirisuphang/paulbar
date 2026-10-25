@@ -283,7 +283,7 @@ function openSheet(drink) {
     sheet.close();
     toast(U('toast_ordered') + drink.name + U('toast_for') + who, drink, state);
     stirTheBar();
-    if (state.smoke) releaseSmoke();
+    if (state.smoke) releaseSmoke(drink);
   });
 
   sheet.appendChild(form);

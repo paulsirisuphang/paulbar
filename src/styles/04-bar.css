@@ -74,17 +74,6 @@
 .act { display: none; }
 .acting .act { display: inline; }
 
-/* the wine bottles leave the bar and go round in the air */
-.piece-juggle.acting .still { visibility: hidden; }
-.bottle { animation: juggle 1.3s linear infinite; }
-@keyframes juggle {
-  0%   { transform: translate(-13px, 18px) rotate(0deg); }
-  25%  { transform: translate(-10px, -16px) rotate(180deg); }
-  50%  { transform: translate(11px, -23px) rotate(360deg); }
-  75%  { transform: translate(14px, 14px) rotate(540deg); }
-  100% { transform: translate(-13px, 18px) rotate(720deg); }
-}
-
 /* the spoon goes round the mixing glass */
 .piece-stir.acting .spoon { animation: stir .8s ease-in-out infinite alternate; }
 @keyframes stir {

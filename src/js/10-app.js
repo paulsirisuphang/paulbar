@@ -61,19 +61,16 @@ function toast(message, drink, opts) {
   toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-/* smoke doesn't stay in the glass */
-function releaseSmoke() {
+/* A smoked order: one thin curl of smoke rises from the glass on the slip
+   and fades, and nothing else on the page moves. It starts at the rim,
+   which sits at a different height in each kind of glass. */
+function releaseSmoke(drink) {
   if (prefersStill()) return;
-  const layer = el('div', 'page-smoke');
-  for (let i = 0; i < 4; i++) {
-    const plume = smokePlume('plume' + Date.now() + i);
-    plume.style.left = (4 + i * 24 + Math.random() * 10) + '%';
-    plume.style.setProperty('--drift', (Math.random() * 14 - 7) + 'vw');
-    plume.style.animationDelay = (i * .25 + Math.random() * .3).toFixed(2) + 's';
-    layer.appendChild(plume);
-  }
-  document.body.appendChild(layer);
-  setTimeout(() => layer.remove(), 7000);
+  const curl = smokeCurl('sent' + Date.now());
+  const rim = GLASS[drink.glass].rimY / 170;
+  curl.style.bottom = ((1 - rim) * 100 - 3).toFixed(1) + '%';
+  $('#toast-art').appendChild(curl);
+  setTimeout(() => curl.remove(), 3600);
 }
 
 /* ---------- tabs and the menu button ---------- */
