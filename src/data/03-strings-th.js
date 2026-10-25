@@ -64,11 +64,11 @@ const T_TH = {
   sec_stirred: 'สายเข้ม',
   sec_stirred_sub: 'แรง จิบช้า ๆ · รมควันได้',
   sec_shaken: 'สายเปรี้ยว',
-  sec_shaken_sub: 'คั้นสด · เขย่า · ไม่รมควัน',
+  sec_shaken_sub: 'คั้นสด · เขย่า',
   sec_long: 'สายซ่า',
   sec_long_sub: 'ทำในแก้ว · ดีกรีต่ำ',
   sec_mocktail: 'สายไม่เมา',
-  sec_mocktail_sub: 'ม็อกเทล ไม่มีแอลกอฮอล์ · ใส่เกลือทุกแก้ว',
+  sec_mocktail_sub: 'ม็อกเทล ไม่มีแอลกอฮอล์',
 
   secret_line: 'ยังมีอีกแก้วหนึ่ง',
   the_story: 'เรื่องเล่า',

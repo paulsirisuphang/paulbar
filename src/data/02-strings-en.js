@@ -5,9 +5,9 @@ const T_EN = {
   level_light: 'Light', level_medium: 'Medium', level_strong: 'Strong',
 
   sec_stirred: 'Spirit-forward', sec_stirred_sub: 'strong and slow · smoke works here',
-  sec_shaken: 'Sour & bright', sec_shaken_sub: 'fresh citrus · shaken · no smoke',
+  sec_shaken: 'Sour & bright', sec_shaken_sub: 'fresh citrus · shaken',
   sec_long: 'Long & refreshing', sec_long_sub: 'built in the glass · low ABV',
-  sec_mocktail: 'Mocktails', sec_mocktail_sub: 'no alcohol · salt in every one',
+  sec_mocktail: 'Mocktails', sec_mocktail_sub: 'no alcohol',
 
   secret_line: 'There is one more.',
   the_story: 'The story',
