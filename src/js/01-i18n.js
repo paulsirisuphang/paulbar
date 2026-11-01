@@ -44,9 +44,10 @@ function strengthWord(drink) {
 }
 
 /* how it tastes, in a guest's words, then how strong:
-   "Bitter orange and herbs, for sipping slowly. Strong." */
+   "Bitter orange and herbs, for sipping slowly. Strong." In Thai the dot
+   stays with the word before it, so a wrapped line never starts with one */
 const tasteLine = (drink) => (lang === 'th'
-  ? drink.taste + ' · ' + strengthWord(drink)
+  ? drink.taste + '\u00a0· ' + strengthWord(drink)
   : drink.taste + ' ' + strengthWord(drink) + '.');
 
 const langListeners = [];

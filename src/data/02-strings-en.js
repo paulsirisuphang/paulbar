@@ -28,7 +28,7 @@ const T_EN = {
   ago_hr: (h) => (h === 1 ? '1 hr ago' : h + ' hrs ago'),
   smoke_it: 'Smoke it', wood: 'Wood', egg_white: 'Egg white',
   egg_why: 'Shaken into a thick white foam and served without ice. Leave it out for a lighter, tarter drink on ice.',
-  no_smoke_here: 'No smoke on this one. ', heads_up: 'Good to know. ',
+  heads_up: 'Good to know. ',
 
   axis_bitter: 'bitter', axis_sweet: 'sweet', axis_citrus: 'citrus',
   axis_herbal: 'herbal', axis_strength: 'strength',
@@ -71,6 +71,7 @@ const T_EN = {
   notes: [
     { h: 'Simple syrup', p: 'Equal parts sugar and hot water, stirred until clear. Keeps a month in the fridge.' },
     { h: 'Honey syrup', p: "Two parts honey to one part warm water. Raw honey is too thick to mix cold, so don't skip this. Keeps a month in the fridge." },
+    { h: 'Honey-ginger syrup', p: 'For the Penicillin. Simmer 1 cup honey and 1 cup water with a 15 cm piece of fresh ginger, sliced thin, for 5 minutes. Let it cool, then strain. Keeps 2 weeks in the fridge.' },
     { h: 'Stir or shake', p: "Stir drinks that are all spirits: about 30 seconds in a mixing glass with good ice. Shake anything with citrus or egg: 12 hard seconds, until the shaker is almost too cold to hold." },
     { h: 'Tall drinks', p: 'Fill the glass to the top with ice. Less ice melts faster, not slower.' },
     { h: 'Every mocktail gets salt', p: 'A pinch costs nothing, and it does more to stop a mocktail tasting like plain juice than any expensive alcohol-free spirit.' },

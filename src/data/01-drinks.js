@@ -161,24 +161,23 @@ const DRINKS = [
     glass: 'rocks', color: '#8E4A24', ice: 'cube', garnish: 'lemon-twist'
   },
   {
-    id: 'de-la-louisiane', name: 'De La Louisiane', method: 'Stirred', section: 'stirred',
-    inside: "Bourbon, sweet vermouth, Bénédictine, Peychaud's bitters",
-    taste: "Honey and spice, richer than a Manhattan.",
-    hook: "It's the house drink of a New Orleans restaurant that opened in 1881.",
-    story: "It's a Manhattan with Bénédictine and the Sazerac's Peychaud's bitters added.",
-    flavor: { bitter: 3, sweet: 4, citrus: 1, herbal: 5, strength: 5 },
-    build: [['2 oz', 'bourbon'], ['0.75 oz', 'sweet vermouth'], ['0.75 oz', 'Bénédictine'], ['3 dashes', "Peychaud's"]],
+    id: 'bobby-burns', name: 'Bobby Burns', method: 'Stirred', section: 'stirred',
+    inside: "Blended Scotch, sweet vermouth, Bénédictine",
+    taste: "Smooth Scotch with honey and herbs.",
+    hook: "It may be named after a cigar salesman, not the poet Robert Burns.",
+    story: "A 1931 book about the old Waldorf-Astoria bar in New York says either could be true. People still drink it on Burns Night, the poet's birthday on January 25.",
+    flavor: { bitter: 2, sweet: 3, citrus: 1, herbal: 4, strength: 5 },
+    build: [['2 oz', 'Johnnie Walker'], ['1 oz', 'sweet vermouth'], ['0.25 oz', 'Bénédictine']],
     steps: [
       "Fill a mixing glass with good ice.",
-      "Add the bourbon, sweet vermouth and Bénédictine.",
-      "Add three dashes of Peychaud's.",
+      "Add the Johnnie Walker, sweet vermouth and Bénédictine.",
       "Stir 30 seconds.",
       "Strain up into a chilled coupe.",
-      "Garnish with a cherry."
+      "Express a lemon peel and drop it in."
     ],
     smoke: true, woods: ['Oak', 'Pecan'],
-    smokeNote: "As in the Sazerac, smoke scents the glass in place of absinthe.",
-    glass: 'coupe', color: '#93502A', ice: 'none', garnish: 'cherry'
+    smokeNote: "Oak smoke suits the Scotch.",
+    glass: 'coupe', color: '#9C5A2A', ice: 'none', garnish: 'lemon-twist'
   },
   {
     id: 'umami-martini', name: 'Umami Martini', method: 'Stirred', section: 'stirred',
@@ -196,7 +195,6 @@ const DRINKS = [
     ],
     tip: "Start at 3 dashes. The bitters are strong, and a fourth makes it taste like soup.",
     smoke: false,
-    noSmoke: "Smoke would cover the sake, and the bitters are already smoky.",
     glass: 'coupe', color: '#ECE6CC', ice: 'none', garnish: 'none'
   },
   {
@@ -216,7 +214,6 @@ const DRINKS = [
       "Express a lemon peel and drop it in."
     ],
     smoke: false,
-    noSmoke: "Smoke would cover the Suze and Lillet, which give this drink its taste.",
     glass: 'rocks', color: '#BCAE6B', ice: 'cube', garnish: 'lemon-twist'
   },
 
@@ -242,7 +239,6 @@ const DRINKS = [
       "Three drops of Angostura on the foam."
     ],
     egg: true, smoke: false,
-    noSmoke: "Smoke and fresh lemon clash, and the foam would hide the smoke anyway.",
     glass: 'rocks', color: '#BE8330', ice: 'cubes', garnish: 'none'
   },
   {
@@ -266,8 +262,33 @@ const DRINKS = [
     ],
     egg: true, smoke: false,
     tip: "Try it once next to the Whiskey Sour.",
-    noSmoke: "Smoke and fresh lemon clash.",
     glass: 'rocks', color: '#CBBD75', ice: 'cubes', garnish: 'none'
+  },
+  {
+    id: 'pandan-sour', name: 'Pandan Sour', method: 'Shaken', section: 'shaken',
+    inside: "Rak Oei Toei Hom (Thai rice spirit with pandan), lime, sugar, egg white, yuzu bitters",
+    taste: "Pandan and fresh lime, under a soft foam.",
+    eggDefault: true,
+    hook: "Pandan, jasmine rice and white bread all get their smell from the same compound.",
+    story: "This sour is built like a Pisco Sour, with a Thai sticky rice spirit in place of the pisco.",
+    flavor: { bitter: 1, sweet: 3, citrus: 4, herbal: 3, strength: 3 },
+    build: [['2 oz', 'Rak Oei Toei Hom'], ['0.75 oz', 'lime'], ['0.75 oz', 'simple syrup'], ['3 dashes', 'yuzu bitters']],
+    steps: [
+      "Add the Rak Oei, lime and simple syrup to a shaker with ice.",
+      "Shake hard for 12 seconds, until the tin hurts to hold.",
+      "Strain over fresh ice.",
+      "Finish with 3 dashes of yuzu bitters on top."
+    ],
+    eggSteps: [
+      "Add the Rak Oei, lime, simple syrup and egg white to a shaker, with no ice yet.",
+      "Dry-shake 10 seconds to build the foam.",
+      "Add ice and shake hard 12 seconds more.",
+      "Double-strain into a chilled coupe, no ice.",
+      "Finish with 3 dashes of yuzu bitters on the foam."
+    ],
+    tip: "If you have a pandan leaf, tie it in a knot and rest it on the rim.",
+    egg: true, smoke: false,
+    glass: 'rocks', color: '#CED5A0', ice: 'cubes', garnish: 'none'
   },
   {
     id: 'bees-knees', name: "Bee's Knees", method: 'Shaken', section: 'shaken',
@@ -287,8 +308,25 @@ const DRINKS = [
     ],
     tip: "Use honey syrup, not straight honey. Cold honey goes hard and leaves sweet lumps.",
     smoke: false,
-    noSmoke: "Smoke and fresh lemon clash, and the smoke would hide the honey.",
     glass: 'coupe', color: '#CD9C35', ice: 'none', garnish: 'lemon-twist'
+  },
+  {
+    id: 'penicillin', name: 'Penicillin', method: 'Shaken', section: 'shaken',
+    inside: "Blended Scotch, lemon, honey, ginger, smoky Islay Scotch on top",
+    taste: "Honey, lemon and ginger, with smoke on top.",
+    hook: "It's named after the medicine because honey, lemon and ginger are a home remedy for colds.",
+    story: "Sam Ross, an Australian bartender, created it at Milk & Honey in New York in 2005. It's already on the International Bartenders Association's official list, beside drinks a century older.",
+    flavor: { bitter: 1, sweet: 3, citrus: 4, herbal: 2, strength: 3 },
+    build: [['2 oz', 'Johnnie Walker'], ['0.75 oz', 'lemon'], ['0.75 oz', 'honey-ginger syrup'], ['0.25 oz', 'Kilchoman']],
+    steps: [
+      "Add the Johnnie Walker, lemon and honey-ginger syrup to a shaker with ice.",
+      "Shake hard for 12 seconds.",
+      "Strain over one large cube in a rocks glass.",
+      "Pour the Kilchoman slowly over the back of a bar spoon so it floats on top."
+    ],
+    tip: "Float the Kilchoman, don't shake it in. On top, its smoke is the first thing you smell.",
+    smoke: false,
+    glass: 'rocks', color: '#C8963F', ice: 'cube', garnish: 'none'
   },
   {
     id: 'sidecar', name: 'Sidecar', method: 'Shaken', section: 'shaken',
@@ -306,7 +344,6 @@ const DRINKS = [
       "Garnish with a lemon peel."
     ],
     smoke: false,
-    noSmoke: "Smoke and fresh lemon clash.",
     glass: 'coupe', color: '#C98B3A', ice: 'none', garnish: 'lemon-twist'
   },
   {
@@ -325,7 +362,6 @@ const DRINKS = [
       "Strain over fresh ice."
     ],
     smoke: false,
-    noSmoke: "Smoke and fresh lime clash.",
     glass: 'rocks', color: '#CBD489', ice: 'cubes', garnish: 'lime-wedge'
   },
 
@@ -366,7 +402,6 @@ const DRINKS = [
       "Express a lime peel over the top."
     ],
     smoke: false,
-    noSmoke: "Smoke and fresh lime clash.",
     glass: 'coupe', color: '#CFC98A', ice: 'none', garnish: 'lime-twist'
   },
   {
@@ -384,7 +419,6 @@ const DRINKS = [
       "Garnish with a lime peel."
     ],
     smoke: false,
-    noSmoke: "Smoke and fresh lime clash.",
     glass: 'coupe', color: '#D2DCA0', ice: 'none', garnish: 'lime-twist'
   },
   {
@@ -403,7 +437,6 @@ const DRINKS = [
     ],
     tip: 'Taste it next to a plain Gimlet once. The bitters are the only difference.',
     smoke: false,
-    noSmoke: "Smoke and fresh lime clash.",
     glass: 'coupe', color: '#D6D79C', ice: 'none', garnish: 'lime-twist'
   },
   {
@@ -422,7 +455,7 @@ const DRINKS = [
       "Stir once, no more. More stirring knocks the bubbles out.",
       "Squeeze a lemon wedge over the top and drop it in."
     ],
-    smoke: false, noSmoke: "The bubbles carry the smoke away before you can taste it.",
+    smoke: false,
     glass: 'copa', color: '#B9CBD0', ice: 'bowl', garnish: 'lemon-wedge', bubbles: true
   },
   {
@@ -440,7 +473,7 @@ const DRINKS = [
       "Stir once and garnish with an orange slice."
     ],
     tip: "About 6% alcohol, one of the lightest drinks on the list.",
-    smoke: false, noSmoke: "Smoke would cover the light fruit, and the bubbles would carry it away anyway.",
+    smoke: false,
     glass: 'wine', color: '#CDB77C', ice: 'bowl', garnish: 'orange-slice', bubbles: true
   },
   {
@@ -457,7 +490,7 @@ const DRINKS = [
       "Top with tonic.",
       "Stir once and garnish with an orange wedge."
     ],
-    smoke: false, noSmoke: "The bubbles carry the smoke away. For smoke, try the Negroni.",
+    smoke: false,
     glass: 'tall', color: '#BB3627', ice: 'tall', garnish: 'orange-wedge', bubbles: true
   },
   {
@@ -474,7 +507,7 @@ const DRINKS = [
       "Top with tonic, low-sugar if you have it.",
       "Squeeze a lemon wedge over the top and drop it in."
     ],
-    smoke: false, noSmoke: "Smoke would cover the gentian, the bitter root that gives this drink its taste.",
+    smoke: false,
     glass: 'wine', color: '#C4C075', ice: 'bowl', garnish: 'lemon-wedge', bubbles: true
   },
   {
@@ -492,7 +525,7 @@ const DRINKS = [
       "Stir once and garnish with an orange slice."
     ],
     tip: 'Someone asked for this with gin instead of soda, and that was the Negroni.',
-    smoke: false, noSmoke: "The bubbles carry the smoke away. For smoke, try the Negroni.",
+    smoke: false,
     glass: 'tall', color: '#AE3527', ice: 'tall', garnish: 'orange-slice', bubbles: true
   },
   {
@@ -510,28 +543,28 @@ const DRINKS = [
       "Top with soda."
     ],
     tip: "Use bourbon instead of gin for a John Collins.",
-    smoke: false, noSmoke: "Smoke and fresh lemon clash.",
+    smoke: false,
     glass: 'tall', color: '#D0C384', ice: 'tall', garnish: 'none', bubbles: true
   },
   {
     id: 'whiskey-highball', name: 'Whiskey Highball', method: 'Built', section: 'long', low: true,
-    inside: "Bourbon, soda, lemon peel",
-    taste: "Whiskey and soda, cold and fizzy.",
+    inside: "Hibiki Harmony (Japanese whisky), soda, lemon peel",
+    taste: "Smooth and fizzy, with honey and orange.",
     yuzu: { qty: '3 dashes', step: 'Finish with 3 dashes of yuzu bitters on top.' },
     hook: "Suntory used this drink to get Japan drinking whisky again.",
     story: "Sales had fallen for 26 years when Suntory started promoting highballs in 2008. Within a year, bars serving them went from about 5,000 to over 40,000.",
-    flavor: { bitter: 1, sweet: 1, citrus: 2, herbal: 1, strength: 2 },
-    build: [['2 oz', 'bourbon'], ['4 oz', 'soda'], ['1', 'long lemon peel']],
+    flavor: { bitter: 1, sweet: 2, citrus: 2, herbal: 1, strength: 2 },
+    build: [['2 oz', 'Hibiki Harmony'], ['4 oz', 'soda'], ['1', 'long lemon peel']],
     steps: [
       "Fill a tall glass completely with ice.",
-      "Pour in the bourbon.",
+      "Pour in the Hibiki.",
       "Top with soda.",
       "Stir once.",
       "Drop in one long lemon peel."
     ],
-    tip: "A stronger bourbon still tastes clear through the soda, where a soft one fades.",
-    smoke: false, noSmoke: "The bubbles carry the smoke away. For smoke, try the Old Fashioned.",
-    glass: 'tall', color: '#B4823F', ice: 'tall', garnish: 'lemon-twist', bubbles: true
+    tip: "Use cold soda and pour it gently down the side of the glass, so it keeps its bubbles.",
+    smoke: false,
+    glass: 'tall', color: '#C29550', ice: 'tall', garnish: 'lemon-twist', bubbles: true
   },
   {
     id: 'honey-collins', name: 'Honey Collins', method: 'Shaken + soda', section: 'long', low: true,
@@ -547,7 +580,7 @@ const DRINKS = [
       "Strain into a tall glass filled with fresh ice.",
       "Top with soda."
     ],
-    smoke: false, noSmoke: "Smoke and fresh lemon clash.",
+    smoke: false,
     glass: 'tall', color: '#C79C4C', ice: 'tall', garnish: 'none', bubbles: true
   },
   {
@@ -564,7 +597,7 @@ const DRINKS = [
       "Top with soda.",
       "Garnish with a lemon wheel."
     ],
-    smoke: false, noSmoke: "Smoke would cover the delicate orange and honey.",
+    smoke: false,
     glass: 'wine', color: '#D2BE85', ice: 'bowl', garnish: 'lemon-wheel', bubbles: true
   },
 
@@ -602,7 +635,6 @@ const DRINKS = [
     ],
     warning: "Angostura is 44.7% alcohol, so this drink is about 1 to 2%. That's more than a non-alcoholic beer, so skip it if you avoid alcohol completely.",
     smoke: false,
-    noSmoke: "The bitters already smell strongly of spice.",
     glass: 'tall', color: '#C3937B', ice: 'tall', garnish: 'lemon-wedge', bubbles: true
   }
 ];

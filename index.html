@@ -1010,16 +1010,6 @@ dialog[open] { animation: card-in .4s var(--ease); }
 .wood[aria-pressed='true'] > span { border-color: var(--smoke); }
 .wood-note { margin: 0; font-style: italic; font-size: .9375rem; color: var(--ink-3); }
 
-.no-smoke {
-  margin: 0;
-  padding-left: 14px;
-  border-left: 1px solid var(--rule-2);
-  font-size: .9375rem;
-  line-height: 1.5;
-  color: var(--ink-3);
-}
-.no-smoke b { font-weight: 500; color: var(--ink-2); }
-
 /* the guest's name and note, written on a line */
 .write {
   width: 100%;
@@ -1677,24 +1667,23 @@ const DRINKS = [
     glass: 'rocks', color: '#8E4A24', ice: 'cube', garnish: 'lemon-twist'
   },
   {
-    id: 'de-la-louisiane', name: 'De La Louisiane', method: 'Stirred', section: 'stirred',
-    inside: "Bourbon, sweet vermouth, Bénédictine, Peychaud's bitters",
-    taste: "Honey and spice, richer than a Manhattan.",
-    hook: "It's the house drink of a New Orleans restaurant that opened in 1881.",
-    story: "It's a Manhattan with Bénédictine and the Sazerac's Peychaud's bitters added.",
-    flavor: { bitter: 3, sweet: 4, citrus: 1, herbal: 5, strength: 5 },
-    build: [['2 oz', 'bourbon'], ['0.75 oz', 'sweet vermouth'], ['0.75 oz', 'Bénédictine'], ['3 dashes', "Peychaud's"]],
+    id: 'bobby-burns', name: 'Bobby Burns', method: 'Stirred', section: 'stirred',
+    inside: "Blended Scotch, sweet vermouth, Bénédictine",
+    taste: "Smooth Scotch with honey and herbs.",
+    hook: "It may be named after a cigar salesman, not the poet Robert Burns.",
+    story: "A 1931 book about the old Waldorf-Astoria bar in New York says either could be true. People still drink it on Burns Night, the poet's birthday on January 25.",
+    flavor: { bitter: 2, sweet: 3, citrus: 1, herbal: 4, strength: 5 },
+    build: [['2 oz', 'Johnnie Walker'], ['1 oz', 'sweet vermouth'], ['0.25 oz', 'Bénédictine']],
     steps: [
       "Fill a mixing glass with good ice.",
-      "Add the bourbon, sweet vermouth and Bénédictine.",
-      "Add three dashes of Peychaud's.",
+      "Add the Johnnie Walker, sweet vermouth and Bénédictine.",
       "Stir 30 seconds.",
       "Strain up into a chilled coupe.",
-      "Garnish with a cherry."
+      "Express a lemon peel and drop it in."
     ],
     smoke: true, woods: ['Oak', 'Pecan'],
-    smokeNote: "As in the Sazerac, smoke scents the glass in place of absinthe.",
-    glass: 'coupe', color: '#93502A', ice: 'none', garnish: 'cherry'
+    smokeNote: "Oak smoke suits the Scotch.",
+    glass: 'coupe', color: '#9C5A2A', ice: 'none', garnish: 'lemon-twist'
   },
   {
     id: 'umami-martini', name: 'Umami Martini', method: 'Stirred', section: 'stirred',
@@ -1712,7 +1701,6 @@ const DRINKS = [
     ],
     tip: "Start at 3 dashes. The bitters are strong, and a fourth makes it taste like soup.",
     smoke: false,
-    noSmoke: "Smoke would cover the sake, and the bitters are already smoky.",
     glass: 'coupe', color: '#ECE6CC', ice: 'none', garnish: 'none'
   },
   {
@@ -1732,7 +1720,6 @@ const DRINKS = [
       "Express a lemon peel and drop it in."
     ],
     smoke: false,
-    noSmoke: "Smoke would cover the Suze and Lillet, which give this drink its taste.",
     glass: 'rocks', color: '#BCAE6B', ice: 'cube', garnish: 'lemon-twist'
   },
 
@@ -1758,7 +1745,6 @@ const DRINKS = [
       "Three drops of Angostura on the foam."
     ],
     egg: true, smoke: false,
-    noSmoke: "Smoke and fresh lemon clash, and the foam would hide the smoke anyway.",
     glass: 'rocks', color: '#BE8330', ice: 'cubes', garnish: 'none'
   },
   {
@@ -1782,8 +1768,33 @@ const DRINKS = [
     ],
     egg: true, smoke: false,
     tip: "Try it once next to the Whiskey Sour.",
-    noSmoke: "Smoke and fresh lemon clash.",
     glass: 'rocks', color: '#CBBD75', ice: 'cubes', garnish: 'none'
+  },
+  {
+    id: 'pandan-sour', name: 'Pandan Sour', method: 'Shaken', section: 'shaken',
+    inside: "Rak Oei Toei Hom (Thai rice spirit with pandan), lime, sugar, egg white, yuzu bitters",
+    taste: "Pandan and fresh lime, under a soft foam.",
+    eggDefault: true,
+    hook: "Pandan, jasmine rice and white bread all get their smell from the same compound.",
+    story: "This sour is built like a Pisco Sour, with a Thai sticky rice spirit in place of the pisco.",
+    flavor: { bitter: 1, sweet: 3, citrus: 4, herbal: 3, strength: 3 },
+    build: [['2 oz', 'Rak Oei Toei Hom'], ['0.75 oz', 'lime'], ['0.75 oz', 'simple syrup'], ['3 dashes', 'yuzu bitters']],
+    steps: [
+      "Add the Rak Oei, lime and simple syrup to a shaker with ice.",
+      "Shake hard for 12 seconds, until the tin hurts to hold.",
+      "Strain over fresh ice.",
+      "Finish with 3 dashes of yuzu bitters on top."
+    ],
+    eggSteps: [
+      "Add the Rak Oei, lime, simple syrup and egg white to a shaker, with no ice yet.",
+      "Dry-shake 10 seconds to build the foam.",
+      "Add ice and shake hard 12 seconds more.",
+      "Double-strain into a chilled coupe, no ice.",
+      "Finish with 3 dashes of yuzu bitters on the foam."
+    ],
+    tip: "If you have a pandan leaf, tie it in a knot and rest it on the rim.",
+    egg: true, smoke: false,
+    glass: 'rocks', color: '#CED5A0', ice: 'cubes', garnish: 'none'
   },
   {
     id: 'bees-knees', name: "Bee's Knees", method: 'Shaken', section: 'shaken',
@@ -1803,8 +1814,25 @@ const DRINKS = [
     ],
     tip: "Use honey syrup, not straight honey. Cold honey goes hard and leaves sweet lumps.",
     smoke: false,
-    noSmoke: "Smoke and fresh lemon clash, and the smoke would hide the honey.",
     glass: 'coupe', color: '#CD9C35', ice: 'none', garnish: 'lemon-twist'
+  },
+  {
+    id: 'penicillin', name: 'Penicillin', method: 'Shaken', section: 'shaken',
+    inside: "Blended Scotch, lemon, honey, ginger, smoky Islay Scotch on top",
+    taste: "Honey, lemon and ginger, with smoke on top.",
+    hook: "It's named after the medicine because honey, lemon and ginger are a home remedy for colds.",
+    story: "Sam Ross, an Australian bartender, created it at Milk & Honey in New York in 2005. It's already on the International Bartenders Association's official list, beside drinks a century older.",
+    flavor: { bitter: 1, sweet: 3, citrus: 4, herbal: 2, strength: 3 },
+    build: [['2 oz', 'Johnnie Walker'], ['0.75 oz', 'lemon'], ['0.75 oz', 'honey-ginger syrup'], ['0.25 oz', 'Kilchoman']],
+    steps: [
+      "Add the Johnnie Walker, lemon and honey-ginger syrup to a shaker with ice.",
+      "Shake hard for 12 seconds.",
+      "Strain over one large cube in a rocks glass.",
+      "Pour the Kilchoman slowly over the back of a bar spoon so it floats on top."
+    ],
+    tip: "Float the Kilchoman, don't shake it in. On top, its smoke is the first thing you smell.",
+    smoke: false,
+    glass: 'rocks', color: '#C8963F', ice: 'cube', garnish: 'none'
   },
   {
     id: 'sidecar', name: 'Sidecar', method: 'Shaken', section: 'shaken',
@@ -1822,7 +1850,6 @@ const DRINKS = [
       "Garnish with a lemon peel."
     ],
     smoke: false,
-    noSmoke: "Smoke and fresh lemon clash.",
     glass: 'coupe', color: '#C98B3A', ice: 'none', garnish: 'lemon-twist'
   },
   {
@@ -1841,7 +1868,6 @@ const DRINKS = [
       "Strain over fresh ice."
     ],
     smoke: false,
-    noSmoke: "Smoke and fresh lime clash.",
     glass: 'rocks', color: '#CBD489', ice: 'cubes', garnish: 'lime-wedge'
   },
 
@@ -1882,7 +1908,6 @@ const DRINKS = [
       "Express a lime peel over the top."
     ],
     smoke: false,
-    noSmoke: "Smoke and fresh lime clash.",
     glass: 'coupe', color: '#CFC98A', ice: 'none', garnish: 'lime-twist'
   },
   {
@@ -1900,7 +1925,6 @@ const DRINKS = [
       "Garnish with a lime peel."
     ],
     smoke: false,
-    noSmoke: "Smoke and fresh lime clash.",
     glass: 'coupe', color: '#D2DCA0', ice: 'none', garnish: 'lime-twist'
   },
   {
@@ -1919,7 +1943,6 @@ const DRINKS = [
     ],
     tip: 'Taste it next to a plain Gimlet once. The bitters are the only difference.',
     smoke: false,
-    noSmoke: "Smoke and fresh lime clash.",
     glass: 'coupe', color: '#D6D79C', ice: 'none', garnish: 'lime-twist'
   },
   {
@@ -1938,7 +1961,7 @@ const DRINKS = [
       "Stir once, no more. More stirring knocks the bubbles out.",
       "Squeeze a lemon wedge over the top and drop it in."
     ],
-    smoke: false, noSmoke: "The bubbles carry the smoke away before you can taste it.",
+    smoke: false,
     glass: 'copa', color: '#B9CBD0', ice: 'bowl', garnish: 'lemon-wedge', bubbles: true
   },
   {
@@ -1956,7 +1979,7 @@ const DRINKS = [
       "Stir once and garnish with an orange slice."
     ],
     tip: "About 6% alcohol, one of the lightest drinks on the list.",
-    smoke: false, noSmoke: "Smoke would cover the light fruit, and the bubbles would carry it away anyway.",
+    smoke: false,
     glass: 'wine', color: '#CDB77C', ice: 'bowl', garnish: 'orange-slice', bubbles: true
   },
   {
@@ -1973,7 +1996,7 @@ const DRINKS = [
       "Top with tonic.",
       "Stir once and garnish with an orange wedge."
     ],
-    smoke: false, noSmoke: "The bubbles carry the smoke away. For smoke, try the Negroni.",
+    smoke: false,
     glass: 'tall', color: '#BB3627', ice: 'tall', garnish: 'orange-wedge', bubbles: true
   },
   {
@@ -1990,7 +2013,7 @@ const DRINKS = [
       "Top with tonic, low-sugar if you have it.",
       "Squeeze a lemon wedge over the top and drop it in."
     ],
-    smoke: false, noSmoke: "Smoke would cover the gentian, the bitter root that gives this drink its taste.",
+    smoke: false,
     glass: 'wine', color: '#C4C075', ice: 'bowl', garnish: 'lemon-wedge', bubbles: true
   },
   {
@@ -2008,7 +2031,7 @@ const DRINKS = [
       "Stir once and garnish with an orange slice."
     ],
     tip: 'Someone asked for this with gin instead of soda, and that was the Negroni.',
-    smoke: false, noSmoke: "The bubbles carry the smoke away. For smoke, try the Negroni.",
+    smoke: false,
     glass: 'tall', color: '#AE3527', ice: 'tall', garnish: 'orange-slice', bubbles: true
   },
   {
@@ -2026,28 +2049,28 @@ const DRINKS = [
       "Top with soda."
     ],
     tip: "Use bourbon instead of gin for a John Collins.",
-    smoke: false, noSmoke: "Smoke and fresh lemon clash.",
+    smoke: false,
     glass: 'tall', color: '#D0C384', ice: 'tall', garnish: 'none', bubbles: true
   },
   {
     id: 'whiskey-highball', name: 'Whiskey Highball', method: 'Built', section: 'long', low: true,
-    inside: "Bourbon, soda, lemon peel",
-    taste: "Whiskey and soda, cold and fizzy.",
+    inside: "Hibiki Harmony (Japanese whisky), soda, lemon peel",
+    taste: "Smooth and fizzy, with honey and orange.",
     yuzu: { qty: '3 dashes', step: 'Finish with 3 dashes of yuzu bitters on top.' },
     hook: "Suntory used this drink to get Japan drinking whisky again.",
     story: "Sales had fallen for 26 years when Suntory started promoting highballs in 2008. Within a year, bars serving them went from about 5,000 to over 40,000.",
-    flavor: { bitter: 1, sweet: 1, citrus: 2, herbal: 1, strength: 2 },
-    build: [['2 oz', 'bourbon'], ['4 oz', 'soda'], ['1', 'long lemon peel']],
+    flavor: { bitter: 1, sweet: 2, citrus: 2, herbal: 1, strength: 2 },
+    build: [['2 oz', 'Hibiki Harmony'], ['4 oz', 'soda'], ['1', 'long lemon peel']],
     steps: [
       "Fill a tall glass completely with ice.",
-      "Pour in the bourbon.",
+      "Pour in the Hibiki.",
       "Top with soda.",
       "Stir once.",
       "Drop in one long lemon peel."
     ],
-    tip: "A stronger bourbon still tastes clear through the soda, where a soft one fades.",
-    smoke: false, noSmoke: "The bubbles carry the smoke away. For smoke, try the Old Fashioned.",
-    glass: 'tall', color: '#B4823F', ice: 'tall', garnish: 'lemon-twist', bubbles: true
+    tip: "Use cold soda and pour it gently down the side of the glass, so it keeps its bubbles.",
+    smoke: false,
+    glass: 'tall', color: '#C29550', ice: 'tall', garnish: 'lemon-twist', bubbles: true
   },
   {
     id: 'honey-collins', name: 'Honey Collins', method: 'Shaken + soda', section: 'long', low: true,
@@ -2063,7 +2086,7 @@ const DRINKS = [
       "Strain into a tall glass filled with fresh ice.",
       "Top with soda."
     ],
-    smoke: false, noSmoke: "Smoke and fresh lemon clash.",
+    smoke: false,
     glass: 'tall', color: '#C79C4C', ice: 'tall', garnish: 'none', bubbles: true
   },
   {
@@ -2080,7 +2103,7 @@ const DRINKS = [
       "Top with soda.",
       "Garnish with a lemon wheel."
     ],
-    smoke: false, noSmoke: "Smoke would cover the delicate orange and honey.",
+    smoke: false,
     glass: 'wine', color: '#D2BE85', ice: 'bowl', garnish: 'lemon-wheel', bubbles: true
   },
 
@@ -2118,7 +2141,6 @@ const DRINKS = [
     ],
     warning: "Angostura is 44.7% alcohol, so this drink is about 1 to 2%. That's more than a non-alcoholic beer, so skip it if you avoid alcohol completely.",
     smoke: false,
-    noSmoke: "The bitters already smell strongly of spice.",
     glass: 'tall', color: '#C3937B', ice: 'tall', garnish: 'lemon-wedge', bubbles: true
   }
 ];
@@ -2157,7 +2179,7 @@ const T_EN = {
   ago_hr: (h) => (h === 1 ? '1 hr ago' : h + ' hrs ago'),
   smoke_it: 'Smoke it', wood: 'Wood', egg_white: 'Egg white',
   egg_why: 'Shaken into a thick white foam and served without ice. Leave it out for a lighter, tarter drink on ice.',
-  no_smoke_here: 'No smoke on this one. ', heads_up: 'Good to know. ',
+  heads_up: 'Good to know. ',
 
   axis_bitter: 'bitter', axis_sweet: 'sweet', axis_citrus: 'citrus',
   axis_herbal: 'herbal', axis_strength: 'strength',
@@ -2200,6 +2222,7 @@ const T_EN = {
   notes: [
     { h: 'Simple syrup', p: 'Equal parts sugar and hot water, stirred until clear. Keeps a month in the fridge.' },
     { h: 'Honey syrup', p: "Two parts honey to one part warm water. Raw honey is too thick to mix cold, so don't skip this. Keeps a month in the fridge." },
+    { h: 'Honey-ginger syrup', p: 'For the Penicillin. Simmer 1 cup honey and 1 cup water with a 15 cm piece of fresh ginger, sliced thin, for 5 minutes. Let it cool, then strain. Keeps 2 weeks in the fridge.' },
     { h: 'Stir or shake', p: "Stir drinks that are all spirits: about 30 seconds in a mixing glass with good ice. Shake anything with citrus or egg: 12 hard seconds, until the shaker is almost too cold to hold." },
     { h: 'Tall drinks', p: 'Fill the glass to the top with ice. Less ice melts faster, not slower.' },
     { h: 'Every mocktail gets salt', p: 'A pinch costs nothing, and it does more to stop a mocktail tasting like plain juice than any expensive alcohol-free spirit.' },
@@ -2223,7 +2246,7 @@ const T_EN = {
    line. Drink names and brand names stay in Latin (Campari, Suze,
    Peychaud's): that is how Thai menus print them, and spelled out in
    Thai they read as a joke. Kinds of spirit move (จิน, เบอร์เบิน,
-   ไรย์วิสกี้), and so does everything else.
+   สก็อตช์), and so does everything else.
    --------------------------------------------------------------- */
 
 const WOOD_TH = {
@@ -2262,14 +2285,16 @@ const TH_KEEP = [
   'เชอร์ชิล', 'ปิกัสโซ', 'คอลลาจ', 'เกสตาโป', 'ริตซ์', 'โรงแรม', 'ซันโทรี่', 'อิซากายะ', 'หลุยเซียนา',
   'นิวออร์ลีนส์', 'เฟรนช์', 'ควอเตอร์', 'วิสคอนซิน', 'คาร์นิวัล', 'บอร์โด', 'มิลาน', 'ตูริน', 'แอลป์',
   'ปรัสเซีย', 'เวเนซุเอลา', 'ออสเตรีย', 'โกธิก', 'บอลข่าน', 'ออฟไลน์', 'แฮงค์', 'ดีกรี', 'อิตาเลียน',
-  'สไตล์', 'อังกอสตูรา', 'บาร์', 'รู้สึก', 'กลิ่น', 'กลับ', 'กวาดล้าง',
+  'สไตล์', 'อังกอสตูรา', 'บาร์', 'รู้สึก', 'กลิ่น', 'กลับ', 'กวาดล้าง', 'สก็อตช์', 'เบลนเด็ด',
+  'ไอส์เลย์', 'เพนิซิลลิน', 'พิสโก้', 'เซลส์แมน', 'ซิการ์', 'รักเอย',
   /* compounds the dictionary splits, which would read wrong cut across two lines */
   'น้ำแข็ง', 'น้ำผึ้ง', 'น้ำเลมอน', 'น้ำมะนาว', 'น้ำผลไม้', 'ผลไม้', 'น้ำร้อน', 'น้ำอุ่น', 'ตู้เย็น',
   'แช่เย็น', 'ไซรัปน้ำตาล', 'ไซรัปน้ำผึ้ง', 'สวีทเวอร์มุท', 'ไรย์วิสกี้', 'รมควัน', 'ไข่ขาว', 'แก้วผสม',
   'ทรงสูง', 'ปานกลาง', 'คั้นสด', 'หยิบมือ', 'เล็กน้อย', 'ส่วนใหญ่', 'นายทหาร', 'ราคาถูก', 'หลักฐาน',
   'ฝานแว่น', 'หั่นเสี้ยว', 'เข้มข้น', 'เปรี้ยวสด', 'ส่วนผสม', 'คอเหล้า', 'เคล็ดลับ', 'เครื่องมือ',
   'เครื่องเทศ', 'โรงกลั่น', 'ยึดครอง', 'ราชสำนัก', 'ม้าหมุน', 'หัวจ่าย', 'เด็ดขาด', 'ผู้โดยสาร', 'รายชื่อ',
-  'อักษรย่อ', 'ตลอดกาล', 'สายเข้ม', 'สายเปรี้ยว', 'สายซ่า', 'สายไม่เมา', 'เสี่ยงดวง', 'สัดส่วน', 'ยูซุ', 'อูมามิ', 'คอมบุ', 'พอนสึ', 'ดาชิ', 'จุนไม', 'โคจิ', 'สาเก', 'นางาซากิ', 'ดัตช์', 'เกรปฟรุต', 'ปลาโอแห้ง', 'ปลาโอ', 'เห็ดหอม', 'พันช์', 'น้ำซุป', 'โป๊ยกั๊ก', 'เลมอนเนด', 'ซิตรัส', 'รากไม้', 'อะเพอริทีฟ', 'นุ่มลื่น', 'กลมกล่อม', 'เชื้อสาย', 'เนื้อสัมผัส', 'นิดหนึ่ง', 'นิดเดียว', 'นิดหน่อย', 'หนานุ่ม', 'ครูสอนฟันดาบ', 'ขณะที่', 'ต่อมา', 'กลายเป็น', 'แดช', 'ด้านบน', 'ขึ้นมา', 'ขี้เกียจ', 'ข้างนอก'
+  'อักษรย่อ', 'ตลอดกาล', 'สายเข้ม', 'สายเปรี้ยว', 'สายซ่า', 'สายไม่เมา', 'เสี่ยงดวง', 'สัดส่วน', 'ยูซุ', 'อูมามิ', 'คอมบุ', 'พอนสึ', 'ดาชิ', 'จุนไม', 'โคจิ', 'สาเก', 'นางาซากิ', 'ดัตช์', 'เกรปฟรุต', 'ปลาโอแห้ง', 'ปลาโอ', 'เห็ดหอม', 'พันช์', 'น้ำซุป', 'โป๊ยกั๊ก', 'เลมอนเนด', 'ซิตรัส', 'รากไม้', 'อะเพอริทีฟ', 'นุ่มลื่น', 'กลมกล่อม', 'เชื้อสาย', 'เนื้อสัมผัส', 'นิดหนึ่ง', 'นิดเดียว', 'นิดหน่อย', 'หนานุ่ม', 'ครูสอนฟันดาบ', 'ขณะที่', 'ต่อมา', 'กลายเป็น', 'แดช', 'ด้านบน', 'ขึ้นมา', 'ขี้เกียจ', 'ข้างนอก',
+  'ใบเตย', 'เตยหอม', 'ข้าวเหนียว', 'ข้าวหอมมะลิ', 'ขนมปังขาว', 'สารหอม', 'ลอยหน้า', 'ช้อนบาร์', 'กรอง', 'ฟองนุ่ม'
 ];
 
 const T_TH = {
@@ -2320,7 +2345,6 @@ const T_TH = {
   wood: 'ไม้',
   egg_white: 'ไข่ขาว',
   egg_why: 'ได้ฟองขาวหนานุ่มด้านบน เสิร์ฟแบบไม่มีน้ำแข็ง ถ้าไม่ใส่ จะเปรี้ยวกว่า เบากว่า และเสิร์ฟกับน้ำแข็ง',
-  no_smoke_here: 'แก้วนี้ไม่รมควัน ',
   heads_up: 'บอกไว้ก่อน ',
 
   axis_bitter: 'ขม',
@@ -2372,6 +2396,7 @@ const T_TH = {
   notes: [
     { h: 'ไซรัปน้ำตาล', p: 'น้ำตาลกับน้ำร้อนอย่างละเท่ากัน คนจนใส แช่ตู้เย็นเก็บได้หนึ่งเดือน' },
     { h: 'ไซรัปน้ำผึ้ง', p: 'น้ำผึ้งสองส่วนต่อน้ำอุ่นหนึ่งส่วน น้ำผึ้งดิบข้นเกินกว่าจะผสมกับของเย็นได้ ขั้นนี้จึงข้ามไม่ได้ เก็บได้หนึ่งเดือน' },
+    { h: 'ไซรัปน้ำผึ้งขิง', p: 'สำหรับ Penicillin ต้มน้ำผึ้ง 1 ถ้วยกับน้ำ 1 ถ้วย ใส่ขิงสดหั่นบาง ๆ ยาวราว 15 ซม. เคี่ยว 5 นาที พักให้เย็นแล้วกรอง แช่ตู้เย็นเก็บได้สองสัปดาห์' },
     { h: 'คนหรือเขย่า', p: 'ถ้ามีแต่เหล้า ให้คนในแก้วผสมกับน้ำแข็งก้อนแข็ง ๆ ราว 30 วินาที ถ้ามีน้ำมะนาวหรือไข่ ให้เขย่าแรง ๆ 12 วินาที จนเชคเกอร์เย็นจนแทบจับไม่ไหว' },
     { h: 'แก้วทรงสูง', p: 'ใส่น้ำแข็งให้เต็มแก้ว น้ำแข็งครึ่งแก้วละลายเร็วกว่า ไม่ได้ช้ากว่า' },
     { h: 'ม็อกเทลใส่เกลือทุกแก้ว', p: 'แค่หยิบมือเดียว ไม่เสียเงินสักบาท แต่ช่วยไม่ให้รสออกมาเหมือนน้ำผลไม้จืด ๆ ได้ดีกว่าเหล้า 0% แพง ๆ เสียอีก' },
@@ -2400,8 +2425,6 @@ const FILL_WINE = 'ใส่น้ำแข็งให้เต็มแก้�
 const ORANGE_IN = 'บีบเปลือกส้มเหนือแก้ว แล้วหย่อนลงไป';
 const LEMON_IN = 'บีบเปลือกเลมอนเหนือแก้ว แล้วหย่อนลงไป';
 const LEMON_GONE = 'บีบเปลือกเลมอนเหนือแก้ว แล้วทิ้งเปลือกไป ไม่ต้องใส่ลงในแก้ว';
-const NO_SMOKE_LEMON = 'ควันกับน้ำเลมอนสดรสจะตีกัน';
-const NO_SMOKE_LIME = 'ควันกับน้ำมะนาวสดรสจะตีกัน';
 
 /* per-drink Thai */
 const TH = {
@@ -2520,8 +2543,7 @@ const TH = {
       STIR,
       'กรองลงแก้วคูเป้แช่เย็น'
     ],
-    tip: "เริ่มที่ 3 แดช บิตเตอร์ตัวนี้แรง แดชที่ 4 จะทำให้รสเหมือนน้ำซุป",
-    noSmoke: "ควันจะกลบกลิ่นสาเก และบิตเตอร์ก็มีกลิ่นรมควันอยู่แล้ว"
+    tip: "เริ่มที่ 3 แดช บิตเตอร์ตัวนี้แรง แดชที่ 4 จะทำให้รสเหมือนน้ำซุป"
   },
   'white-negroni': {
     inside: "จิน · Suze (ลิเคียวรสขมจากราก) · Lillet Blanc (ไวน์ฝรั่งเศสกลิ่นส้ม)",
@@ -2537,8 +2559,7 @@ const TH = {
       STIR,
       'กรองลงบนน้ำแข็งก้อนใหญ่หนึ่งก้อน',
       LEMON_IN
-    ],
-    noSmoke: "ควันจะกลบ Suze กับ Lillet ซึ่งเป็นรสหลักของแก้วนี้"
+    ]
   },
   'whiskey-sour': {
     inside: "เบอร์เบิน · เลมอน · น้ำตาล · ไข่ขาว",
@@ -2558,8 +2579,7 @@ const TH = {
       'ใส่น้ำแข็ง แล้วเขย่าแรง ๆ ต่ออีก 12 วินาที',
       'กรองสองชั้นลงแก้วแช่เย็น ไม่ใส่น้ำแข็ง',
       'หยด Angostura 3 หยดลงบนฟอง'
-    ],
-    noSmoke: 'ควันกับน้ำเลมอนสดรสจะตีกัน และฟองก็กลบกลิ่นควันอยู่ดี'
+    ]
   },
   'gin-sour': {
     inside: "จิน · เลมอน · น้ำตาล · ไข่ขาว (ไม่ใส่ก็ได้)",
@@ -2579,8 +2599,29 @@ const TH = {
       'ใส่น้ำแข็ง แล้วเขย่าแรง ๆ ต่ออีก 12 วินาที',
       'กรองสองชั้นลงแก้วแช่เย็น ไม่ใส่น้ำแข็ง'
     ],
-    tip: 'ลองทำคู่กับ Whiskey Sour แล้วชิมเทียบกันสักครั้ง',
-    noSmoke: "ควันกับน้ำเลมอนสดรสจะตีกัน"
+    tip: 'ลองทำคู่กับ Whiskey Sour แล้วชิมเทียบกันสักครั้ง'
+  },
+  'pandan-sour': {
+    inside: "รักเอย เตยหอม (สุราข้าวเหนียวกลิ่นใบเตย) · มะนาว · น้ำตาล · ไข่ขาว · บิตเตอร์ยูซุ",
+    taste: "หอมใบเตย เปรี้ยวมะนาว ฟองนุ่ม",
+    method: 'เขย่ากับน้ำแข็ง',
+    hook: "กลิ่นใบเตย ข้าวหอมมะลิ และขนมปังขาว มาจากสารหอมตัวเดียวกัน",
+    story: "แก้วนี้ทำแบบ Pisco Sour แต่ใช้สุราข้าวเหนียวของไทยแทนพิสโก้",
+    build: [['2 ออนซ์', 'รักเอย เตยหอม'], ['0.75 ออนซ์', 'น้ำมะนาว'], ['0.75 ออนซ์', 'ไซรัปน้ำตาล'], ['3 แดช', 'บิตเตอร์ยูซุ']],
+    steps: [
+      'ใส่สุรารักเอย น้ำมะนาว ไซรัปน้ำตาล และน้ำแข็งลงในเชคเกอร์',
+      SHAKE_HARD,
+      'กรองลงบนน้ำแข็งใหม่',
+      'ปิดท้ายด้วยบิตเตอร์ยูซุ 3 แดชด้านบน'
+    ],
+    eggSteps: [
+      'ใส่สุรารักเอย น้ำมะนาว ไซรัปน้ำตาล และไข่ขาวลงในเชคเกอร์ ยังไม่ต้องใส่น้ำแข็ง',
+      'เขย่าเปล่า ๆ 10 วินาที ให้เกิดฟอง',
+      'ใส่น้ำแข็ง แล้วเขย่าแรง ๆ ต่ออีก 12 วินาที',
+      'กรองสองชั้นลงแก้วคูเป้แช่เย็น ไม่ใส่น้ำแข็ง',
+      'ปิดท้ายด้วยบิตเตอร์ยูซุ 3 แดชบนฟอง'
+    ],
+    tip: 'ถ้ามีใบเตย ผูกเป็นปมแล้ววางพาดขอบแก้ว'
   },
   'bees-knees': {
     inside: "จิน · น้ำผึ้ง · เลมอน",
@@ -2597,8 +2638,22 @@ const TH = {
       INTO_COUPE,
       'ตกแต่งด้วยเปลือกเลมอน'
     ],
-    tip: "ใช้ไซรัปน้ำผึ้ง อย่าใช้น้ำผึ้งเพียว ๆ น้ำผึ้งเจอความเย็นจะแข็งเป็นก้อน",
-    noSmoke: 'ควันกับน้ำเลมอนสดรสจะตีกัน แถมยังกลบกลิ่นน้ำผึ้งจนหมด'
+    tip: "ใช้ไซรัปน้ำผึ้ง อย่าใช้น้ำผึ้งเพียว ๆ น้ำผึ้งเจอความเย็นจะแข็งเป็นก้อน"
+  },
+  'penicillin': {
+    inside: "เบลนเด็ดสก็อตช์ · เลมอน · น้ำผึ้ง · ขิง · สก็อตช์ไอส์เลย์กลิ่นควันลอยหน้า",
+    taste: "น้ำผึ้ง เลมอน ขิง หอมควันด้านบน",
+    method: 'เขย่ากับน้ำแข็ง',
+    hook: 'ตั้งชื่อตามยาเพนิซิลลิน เพราะน้ำผึ้ง เลมอน และขิง เป็นยาแก้หวัดแบบบ้าน ๆ',
+    story: "Sam Ross บาร์เทนเดอร์ชาวออสเตรเลีย คิดแก้วนี้ที่บาร์ Milk & Honey ในนิวยอร์กเมื่อปี 2005 ทุกวันนี้อยู่ในรายชื่อค็อกเทลทางการของสมาคมบาร์เทนเดอร์นานาชาติแล้ว ข้างแก้วที่เก่ากว่าเป็นร้อยปี",
+    build: [['2 ออนซ์', 'Johnnie Walker'], ['0.75 ออนซ์', 'น้ำเลมอน'], ['0.75 ออนซ์', 'ไซรัปน้ำผึ้งขิง'], ['0.25 ออนซ์', 'Kilchoman']],
+    steps: [
+      'ใส่ Johnnie Walker น้ำเลมอน ไซรัปน้ำผึ้งขิง และน้ำแข็งลงในเชคเกอร์',
+      SHAKE,
+      'กรองลงแก้วร็อกที่มีน้ำแข็งก้อนใหญ่หนึ่งก้อน',
+      'ค่อย ๆ ริน Kilchoman ผ่านหลังช้อนบาร์ ให้ลอยอยู่ด้านบน'
+    ],
+    tip: 'ลอย Kilchoman ไว้ด้านบน อย่าเขย่ารวมไปด้วย พออยู่ด้านบน กลิ่นควันจะเป็นกลิ่นแรกที่ได้'
   },
   'sidecar': {
     inside: "คอนญัก · Cointreau · เลมอน",
@@ -2613,8 +2668,7 @@ const TH = {
       SHAKE,
       'กรองสองชั้นลงแก้วคูเป้',
       'ตกแต่งด้วยเปลือกเลมอน'
-    ],
-    noSmoke: NO_SMOKE_LEMON
+    ]
   },
   'margarita': {
     inside: "เตกีลา · Cointreau · มะนาว · เกลือครึ่งขอบ",
@@ -2629,8 +2683,7 @@ const TH = {
       'ใส่เตกีลา Cointreau น้ำมะนาว และน้ำแข็งลงในเชคเกอร์',
       SHAKE,
       'กรองลงบนน้ำแข็งใหม่'
-    ],
-    noSmoke: NO_SMOKE_LIME
+    ]
   },
   'vieux-carre': {
     inside: "เบอร์เบิน · คอนญัก · สวีทเวอร์มุท · Bénédictine · บิตเตอร์",
@@ -2681,8 +2734,7 @@ const TH = {
       SHAKE,
       INTO_COUPE,
       'บีบเปลือกมะนาวเหนือแก้ว'
-    ],
-    noSmoke: NO_SMOKE_LIME
+    ]
   },
   'gimlet': {
     inside: "จิน · มะนาว · น้ำตาล",
@@ -2696,8 +2748,7 @@ const TH = {
       SHAKE,
       INTO_COUPE,
       'ตกแต่งด้วยเปลือกมะนาว'
-    ],
-    noSmoke: NO_SMOKE_LIME
+    ]
   },
   'ponzu-gimlet': {
     inside: "จิน · มะนาว · น้ำตาล · บิตเตอร์ยูซุกับอูมามิ",
@@ -2712,25 +2763,23 @@ const TH = {
       INTO_COUPE,
       'ตกแต่งด้วยเปลือกมะนาว'
     ],
-    tip: 'ลองชิมเทียบกับ Gimlet ธรรมดาสักครั้ง บิตเตอร์คือความต่างอย่างเดียว',
-    noSmoke: NO_SMOKE_LIME
+    tip: 'ลองชิมเทียบกับ Gimlet ธรรมดาสักครั้ง บิตเตอร์คือความต่างอย่างเดียว'
   },
-  'de-la-louisiane': {
-    inside: "เบอร์เบิน · สวีทเวอร์มุท · Bénédictine · Peychaud's",
-    taste: "หอมน้ำผึ้งกับเครื่องเทศ เข้มกว่า Manhattan",
+  'bobby-burns': {
+    inside: "เบลนเด็ดสก็อตช์ · สวีทเวอร์มุท · Bénédictine",
+    taste: "สก็อตช์นุ่ม ๆ หอมน้ำผึ้งกับสมุนไพร",
     method: 'คนกับน้ำแข็ง',
-    hook: 'แก้วประจำร้านอาหารในนิวออร์ลีนส์ที่เปิดมาตั้งแต่ปี 1881',
-    story: "คือ Manhattan ที่เติม Bénédictine กับ Peychaud's บิตเตอร์ตัวเดียวกับใน Sazerac",
-    build: [['2 ออนซ์', 'เบอร์เบิน'], ['0.75 ออนซ์', 'สวีทเวอร์มุท'], ['0.75 ออนซ์', 'Bénédictine'], ['3 แดช', "Peychaud's"]],
+    hook: 'ชื่อแก้วนี้อาจมาจากเซลส์แมนขายซิการ์ ไม่ใช่กวี Robert Burns',
+    story: "หนังสือปี 1931 ที่เล่าเรื่องบาร์ของโรงแรม Waldorf-Astoria แห่งเดิมในนิวยอร์ก บอกว่าเป็นไปได้ทั้งสองทาง ทุกวันนี้คนยังดื่มแก้วนี้ในงาน Burns Night วันเกิดของกวีคนนี้ 25 มกราคม",
+    build: [['2 ออนซ์', 'Johnnie Walker'], ['1 ออนซ์', 'สวีทเวอร์มุท'], ['0.25 ออนซ์', 'Bénédictine']],
     steps: [
       FILL_MIXING,
-      'เทเบอร์เบิน สวีทเวอร์มุท และ Bénédictine ลงไป',
-      "หยด Peychaud's สามแดช",
+      'เท Johnnie Walker สวีทเวอร์มุท และ Bénédictine ลงไป',
       STIR,
       'กรองลงแก้วคูเป้แช่เย็น',
-      'ตกแต่งด้วยเชอร์รี'
+      LEMON_IN
     ],
-    smokeNote: "ควันแต่งกลิ่นแก้วแทนแอบซินธ์ เหมือนใน Sazerac"
+    smokeNote: "ควันไม้โอ๊กเข้ากับสก็อตช์"
   },
   'gin-tonic': {
     inside: "จิน · โทนิก · เลมอน",
@@ -2746,8 +2795,7 @@ const TH = {
       'เติมโทนิกจนเต็ม',
       'คนแค่ครั้งเดียว คนมากไปความซ่าจะหาย',
       'บีบเลมอนเหนือแก้ว แล้วหย่อนลงไป'
-    ],
-    noSmoke: "ฟองจะพาควันลอยหายไปก่อนได้ชิม"
+    ]
   },
   'lillet-tonic': {
     inside: "Lillet Blanc (ไวน์ฝรั่งเศสกลิ่นส้ม) · โทนิก · ส้ม",
@@ -2762,8 +2810,7 @@ const TH = {
       'เติมโทนิกจนเต็ม',
       'คนครั้งเดียว แล้วตกแต่งด้วยส้มฝานแว่น'
     ],
-    tip: "ดีกรีราว 6% เป็นหนึ่งในแก้วที่เบาที่สุดในเมนู",
-    noSmoke: "ควันจะกลบกลิ่นผลไม้เบา ๆ และฟองก็จะพาควันลอยหายไปอยู่ดี"
+    tip: "ดีกรีราว 6% เป็นหนึ่งในแก้วที่เบาที่สุดในเมนู"
   },
   'campari-tonic': {
     inside: "Campari · โทนิก · ส้ม",
@@ -2777,8 +2824,7 @@ const TH = {
       'เท Campari ลงไป',
       'เติมโทนิกจนเต็ม',
       'คนครั้งเดียว แล้วตกแต่งด้วยส้มหั่นเสี้ยว'
-    ],
-    noSmoke: "ฟองจะพาควันลอยหายไป ถ้าอยากได้ควัน ลอง Negroni"
+    ]
   },
   'suze-tonic': {
     inside: "Suze (ลิเคียวรสขมจากราก) · โทนิก · เลมอน",
@@ -2792,8 +2838,7 @@ const TH = {
       'เท Suze ลงไป',
       'เติมโทนิกจนเต็ม ถ้ามีแบบน้ำตาลน้อยจะดีกว่า',
       'บีบเลมอนเหนือแก้ว แล้วหย่อนลงไป'
-    ],
-    noSmoke: "ควันจะกลบรากเจนเชียน ซึ่งเป็นรสขมหลักของแก้วนี้"
+    ]
   },
   'americano': {
     inside: "Campari · สวีทเวอร์มุท · โซดา · ส้ม",
@@ -2808,8 +2853,7 @@ const TH = {
       'เติมโซดาจนเต็ม',
       'คนครั้งเดียว แล้วตกแต่งด้วยส้มฝานแว่น'
     ],
-    tip: 'มีคนขอแก้วนี้แบบใส่จินแทนโซดา และนั่นคือที่มาของ Negroni',
-    noSmoke: "ฟองจะพาควันลอยหายไป ถ้าอยากได้ควัน ลอง Negroni"
+    tip: 'มีคนขอแก้วนี้แบบใส่จินแทนโซดา และนั่นคือที่มาของ Negroni'
   },
   'tom-collins': {
     inside: "จิน · เลมอน · น้ำตาล · โซดา",
@@ -2824,26 +2868,24 @@ const TH = {
       'กรองลงแก้วทรงสูงที่ใส่น้ำแข็งใหม่ไว้เต็ม',
       'เติมโซดาจนเต็ม'
     ],
-    tip: "ใช้เบอร์เบินแทนจินจะได้ John Collins",
-    noSmoke: NO_SMOKE_LEMON
+    tip: "ใช้เบอร์เบินแทนจินจะได้ John Collins"
   },
   'whiskey-highball': {
-    inside: "เบอร์เบิน · โซดา · ผิวเลมอน",
-    taste: "วิสกี้โซดา เย็น ซ่า",
+    inside: "Hibiki Harmony (วิสกี้ญี่ปุ่น) · โซดา · ผิวเลมอน",
+    taste: "นุ่ม ซ่า หอมน้ำผึ้งกับส้ม",
     yuzu: { qty: '3 แดช', step: 'ปิดท้ายด้วยบิตเตอร์ยูซุ 3 แดชด้านบน' },
     method: 'ผสมในแก้ว',
     hook: "ซันโทรี่ใช้แก้วนี้ชวนคนญี่ปุ่นกลับมาดื่มวิสกี้",
     story: "ยอดขายวิสกี้ตกติดกัน 26 ปี จนปี 2008 ซันโทรี่เริ่มโปรโมตไฮบอล ภายในปีเดียว ร้านที่ขายไฮบอลเพิ่มจากราว 5,000 ร้าน เป็นมากกว่า 40,000 ร้าน",
-    build: [['2 ออนซ์', 'เบอร์เบิน'], ['4 ออนซ์', 'โซดา'], ['1 เส้น', 'เปลือกเลมอนเส้นยาว']],
+    build: [['2 ออนซ์', 'Hibiki Harmony'], ['4 ออนซ์', 'โซดา'], ['1 เส้น', 'เปลือกเลมอนเส้นยาว']],
     steps: [
       FILL_TALL,
-      'เทเบอร์เบินลงไป',
+      'เท Hibiki ลงไป',
       'เติมโซดาจนเต็ม',
       'คนครั้งเดียว',
       'หย่อนเปลือกเลมอนเส้นยาวลงไปหนึ่งเส้น'
     ],
-    tip: "เบอร์เบินดีกรีสูงยังมีรสชัดแม้เติมโซดา ส่วนตัวนุ่ม ๆ จะจางหายไป",
-    noSmoke: "ฟองจะพาควันลอยหายไป ถ้าอยากได้ควัน ลอง Old Fashioned"
+    tip: "ใช้โซดาแช่เย็น แล้วรินเบา ๆ ไปตามข้างแก้ว ความซ่าจะอยู่ได้นานขึ้น"
   },
   'honey-collins': {
     inside: "จิน · น้ำผึ้ง · เลมอน · โซดา",
@@ -2857,8 +2899,7 @@ const TH = {
       SHAKE,
       'กรองลงแก้วทรงสูงที่ใส่น้ำแข็งใหม่ไว้เต็ม',
       'เติมโซดาจนเต็ม'
-    ],
-    noSmoke: NO_SMOKE_LEMON
+    ]
   },
   'lillet-spritz': {
     inside: "Lillet Blanc (ไวน์ฝรั่งเศสกลิ่นส้ม) · โซดา · เลมอน",
@@ -2872,8 +2913,7 @@ const TH = {
       'เท Lillet ลงไป',
       'เติมโซดาจนเต็ม',
       'ตกแต่งด้วยเลมอนฝานแว่น'
-    ],
-    noSmoke: "ควันจะกลบกลิ่นส้มกับน้ำผึ้งที่บอบบาง"
+    ]
   },
   'honey-lemon-fizz': {
     inside: "น้ำผึ้ง · เลมอน · เกลือหยิบมือ · โซดา",
@@ -2903,8 +2943,7 @@ const TH = {
       'เติมโซดาจนเต็ม แล้วคนเบา ๆ',
       'บีบเลมอนเหนือแก้ว แล้วหย่อนลงไป'
     ],
-    warning: "Angostura มีแอลกอฮอล์ 44.7% แก้วนี้จึงมีแอลกอฮอล์ราว 1 ถึง 2% มากกว่าเบียร์ 0% ถ้างดแอลกอฮอล์เด็ดขาด ข้ามแก้วนี้ไปก่อนนะ",
-    noSmoke: "บิตเตอร์มีกลิ่นเครื่องเทศแรงอยู่แล้ว"
+    warning: "Angostura มีแอลกอฮอล์ 44.7% แก้วนี้จึงมีแอลกอฮอล์ราว 1 ถึง 2% มากกว่าเบียร์ 0% ถ้างดแอลกอฮอล์เด็ดขาด ข้ามแก้วนี้ไปก่อนนะ"
   }
 };
 
@@ -3049,9 +3088,10 @@ function strengthWord(drink) {
 }
 
 /* how it tastes, in a guest's words, then how strong:
-   "Bitter orange and herbs, for sipping slowly. Strong." */
+   "Bitter orange and herbs, for sipping slowly. Strong." In Thai the dot
+   stays with the word before it, so a wrapped line never starts with one */
 const tasteLine = (drink) => (lang === 'th'
-  ? drink.taste + ' · ' + strengthWord(drink)
+  ? drink.taste + '\u00a0· ' + strengthWord(drink)
   : drink.taste + ' ' + strengthWord(drink) + '.');
 
 const langListeners = [];
@@ -5529,11 +5569,6 @@ function openSheet(drink) {
       redraw();
     });
     body.appendChild(block);
-  } else {
-    const no = el('p', 'no-smoke');
-    no.appendChild(el('b', null, U('no_smoke_here')));
-    no.appendChild(txt(drink.noSmoke));
-    body.appendChild(no);
   }
 
   if (drink.egg) {

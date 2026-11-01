@@ -306,16 +306,6 @@ dialog[open] { animation: card-in .4s var(--ease); }
 .wood[aria-pressed='true'] > span { border-color: var(--smoke); }
 .wood-note { margin: 0; font-style: italic; font-size: .9375rem; color: var(--ink-3); }
 
-.no-smoke {
-  margin: 0;
-  padding-left: 14px;
-  border-left: 1px solid var(--rule-2);
-  font-size: .9375rem;
-  line-height: 1.5;
-  color: var(--ink-3);
-}
-.no-smoke b { font-weight: 500; color: var(--ink-2); }
-
 /* the guest's name and note, written on a line */
 .write {
   width: 100%;

@@ -210,11 +210,6 @@ function openSheet(drink) {
       redraw();
     });
     body.appendChild(block);
-  } else {
-    const no = el('p', 'no-smoke');
-    no.appendChild(el('b', null, U('no_smoke_here')));
-    no.appendChild(txt(drink.noSmoke));
-    body.appendChild(no);
   }
 
   if (drink.egg) {

@@ -185,7 +185,9 @@ const checks = [
 
   ['the menu lists every drink but the secret one', {}, async (page) => {
     await enter(page);
-    eq(await count(page, '.entry'), 29, 'drinks on the menu');
+    eq(await count(page, '.entry'), 31, 'drinks on the menu');
+    for (const id of ['bobby-burns', 'penicillin', 'pandan-sour']) eq(await count(page, `.entry[data-drink="${id}"]`), 1, id + ' on the menu');
+    eq(await count(page, '.entry[data-drink="de-la-louisiane"]'), 0, 'De La Louisiane on the menu');
     eq(await count(page, '.entry[data-drink="vieux-carre"]'), 0, 'the secret drink on the menu');
     eq(await count(page, '.section'), 4, 'sections');
   }],
@@ -256,6 +258,11 @@ const checks = [
     const smoked = await page.$$eval('.entry', (n) => n.filter((e) => e.querySelector('.entry-art .wisp-soft')).map((e) => e.dataset.drink));
     eq(smoked.length, 9, 'drinks shown smoking on the menu: ' + smoked.join(', '));
     ok(!smoked.includes('gimlet'), 'smoke over a drink that never takes it');
+    /* a drink that never takes smoke just doesn't offer it, without saying why */
+    await openDrink(page, 'gimlet');
+    eq(await count(page, '#sheet .option.smoke'), 0, 'a smoke option on the Gimlet');
+    ok(!(await text(page, '#sheet')).includes('No smoke'), 'the Gimlet explains why it has no smoke');
+    await closeCard(page);
     await openDrink(page, 'negroni');
     ok(await page.$eval('#sheet .option.smoke input', (i) => i.checked), 'smoke is not on to begin with');
     eq(await text(page, '#sheet .wood[aria-pressed="true"]'), 'Cherry', 'the wood chosen for a Negroni');
