@@ -1573,13 +1573,13 @@ const DRINKS = [
   },
   {
     id: 'old-fashioned', name: 'Old Fashioned', method: 'Stirred', section: 'stirred',
-    inside: "Bourbon or rye, sugar, Angostura",
+    inside: "Bourbon, sugar, Angostura",
     taste: "Mostly whiskey, a little sweet, a little spice.",
     umami: { qty: '2 dashes', step: 'Add 2 dashes of umami bitters.', at: 2 },
     hook: "People ordered it the old-fashioned way, and that became its name.",
     story: "By the 1880s bartenders added liqueurs to everything. The old way meant just spirit, sugar, water and bitters.",
     flavor: { bitter: 2, sweet: 3, citrus: 1, herbal: 1, strength: 5 },
-    build: [['2 oz', 'bourbon or rye'], ['1', 'sugar cube (or 0.25 oz simple syrup)'], ['2 dashes', 'Angostura']],
+    build: [['2 oz', 'bourbon'], ['1', 'sugar cube (or 0.25 oz simple syrup)'], ['2 dashes', 'Angostura']],
     steps: [
       "Put the sugar cube in the glass with the bitters and a bar spoon of water.",
       "Muddle until the sugar is mostly dissolved.",
@@ -1587,22 +1587,21 @@ const DRINKS = [
       "Stir 30 seconds, adding a second cube partway through.",
       "Express an orange peel and drop it in."
     ],
-    tip: "Try it both ways. Rittenhouse rye at 100 proof makes a very different drink from bourbon.",
     smoke: true, woods: ['Oak', 'Oak + a pinch of cinnamon', 'Pecan', 'Walnut'],
     smokeNote: "The classic drink to smoke. Oak suits the whiskey.",
     glass: 'rocks', color: '#A55E22', ice: 'cube', garnish: 'orange-twist'
   },
   {
     id: 'monte-carlo', name: 'Monte Carlo', method: 'Stirred', section: 'stirred',
-    inside: "Rye, Bénédictine (honey-herb liqueur), Angostura",
+    inside: "Bourbon, Bénédictine (honey-herb liqueur), Angostura",
     taste: "Honey and herbs, less sweet than a Manhattan.",
     hook: "The Bénédictine in it was sold with the story of a monk who never existed.",
     story: "A 19th-century wine merchant seems to have invented him, then built a Gothic palace for the brand.",
     flavor: { bitter: 2, sweet: 3, citrus: 1, herbal: 5, strength: 5 },
-    build: [['2 oz', 'rye'], ['0.5 oz', 'Bénédictine'], ['2 dashes', 'Angostura']],
+    build: [['2 oz', 'bourbon'], ['0.5 oz', 'Bénédictine'], ['2 dashes', 'Angostura']],
     steps: [
       "Fill a mixing glass with good ice.",
-      "Add the rye, Bénédictine and Angostura.",
+      "Add the bourbon, Bénédictine and Angostura.",
       "Stir 30 seconds.",
       "Strain up into a chilled coupe, or over one large cube.",
       "Express a lemon peel and drop it in."
@@ -1612,40 +1611,41 @@ const DRINKS = [
     smokeNote: "Light smoke goes well with the honey in the Bénédictine.",
     glass: 'coupe', color: '#A9722A', ice: 'none', garnish: 'lemon-twist'
   },
+  /* made with bourbon now; the id stays so orders already in the book still find it */
   {
-    id: 'rye-manhattan', name: 'Rye Manhattan', method: 'Stirred', section: 'stirred',
-    inside: "Rye, sweet vermouth, Angostura",
-    taste: "Spicy rye whiskey, rich and a little sweet.",
+    id: 'rye-manhattan', name: 'Manhattan', method: 'Stirred', section: 'stirred',
+    inside: "Bourbon, sweet vermouth, Angostura",
+    taste: "Rich and a little sweet, with caramel and spice.",
     umami: { qty: '2 dashes', step: 'Add 2 dashes of umami bitters.', at: 3 },
     hook: "It wasn't invented for Winston Churchill's mother, whatever other bars tell you.",
     story: "She was in England at the time, about to give birth to Winston.",
     flavor: { bitter: 2, sweet: 3, citrus: 1, herbal: 3, strength: 5 },
-    build: [['2 oz', 'rye'], ['1 oz', 'sweet vermouth'], ['2 dashes', 'Angostura']],
+    build: [['2 oz', 'bourbon'], ['1 oz', 'sweet vermouth'], ['2 dashes', 'Angostura']],
     steps: [
       "Taste the vermouth before you start. Flat vermouth is what ruins this drink.",
       "Fill a mixing glass with good ice.",
-      "Add the rye, sweet vermouth and Angostura.",
+      "Add the bourbon, sweet vermouth and Angostura.",
       "Stir 30 seconds.",
       "Strain up into a chilled coupe.",
       "Garnish with a cherry, or express an orange peel."
     ],
     tip: "Taste the vermouth first. After a month or two open on the shelf it goes flat, and that's the most common reason a home Manhattan tastes wrong.",
     smoke: true, woods: ['Oak', 'Pecan'],
-    smokeNote: "Oak smoke goes well with rye's spice.",
+    smokeNote: "Oak smoke suits the bourbon.",
     glass: 'coupe', color: '#8A3B21', ice: 'none', garnish: 'cherry'
   },
   {
     id: 'sazerac', name: 'Sazerac', method: 'Stirred', section: 'stirred',
-    inside: "Rye, sugar, Peychaud's bitters",
-    taste: "Spice and anise, a little sweet, no ice.",
-    hook: "Louisiana's lawmakers refused to make it the state cocktail.",
-    story: "In 2008 they worried it would encourage drinking, so it became the official cocktail of New Orleans instead.",
+    inside: "Cognac, sugar, Peychaud's bitters",
+    taste: "Spice, anise and soft fruit, a little sweet, no ice.",
+    hook: "It's named after the cognac it was first made with.",
+    story: "Rye took its place later, and this one goes back to cognac.",
     flavor: { bitter: 3, sweet: 2, citrus: 2, herbal: 2, strength: 5 },
-    build: [['2 oz', 'rye'], ['1', 'sugar cube'], ['4 dashes', "Peychaud's"]],
+    build: [['2 oz', 'cognac'], ['1', 'sugar cube'], ['4 dashes', "Peychaud's"]],
     steps: [
       "Put the sugar cube in a mixing glass with the Peychaud's and a splash of water.",
       "Muddle until the sugar is mostly dissolved.",
-      "Add the rye and ice, and stir 30 seconds.",
+      "Add the cognac and ice, and stir 30 seconds.",
       "Strain into a chilled rocks glass, with no ice.",
       "Express a lemon peel over the top, then throw the peel away. It does not go in."
     ],
@@ -1655,17 +1655,17 @@ const DRINKS = [
   },
   {
     id: 'vieux-carre', name: 'Smoke Vieux Carré', method: 'Stirred',
-    inside: "Rye, cognac, sweet vermouth, Bénédictine, bitters",
+    inside: "Bourbon, cognac, sweet vermouth, Bénédictine, bitters",
     taste: "Rich and spiced, with smoke.",
     section: 'stirred', hidden: true,
     hook: "It was created at a New Orleans hotel whose bar now turns like a carousel.",
     story: "Vieux Carré means old square, the old name for the French Quarter.",
     flavor: { bitter: 3, sweet: 3, citrus: 1, herbal: 5, strength: 5 },
-    build: [['1 oz', 'rye'], ['1 oz', 'cognac'], ['1 oz', 'sweet vermouth'],
+    build: [['1 oz', 'bourbon'], ['1 oz', 'cognac'], ['1 oz', 'sweet vermouth'],
             ['0.25 oz', 'Bénédictine'], ['1 dash', "Peychaud's"], ['1 dash', 'Angostura']],
     steps: [
       "Fill a mixing glass with good ice.",
-      "Add the rye, cognac, sweet vermouth and Bénédictine.",
+      "Add the bourbon, cognac, sweet vermouth and Bénédictine.",
       "Add one dash each of Peychaud's and Angostura.",
       "Stir 30 seconds.",
       "Strain over one large cube.",
@@ -1678,15 +1678,15 @@ const DRINKS = [
   },
   {
     id: 'de-la-louisiane', name: 'De La Louisiane', method: 'Stirred', section: 'stirred',
-    inside: "Rye, sweet vermouth, Bénédictine, Peychaud's bitters",
-    taste: "A sweeter Sazerac, with honey and spice.",
+    inside: "Bourbon, sweet vermouth, Bénédictine, Peychaud's bitters",
+    taste: "Honey and spice, richer than a Manhattan.",
     hook: "It's the house drink of a New Orleans restaurant that opened in 1881.",
-    story: "It starts with a Sazerac's rye and Peychaud's bitters, then adds Bénédictine and sweet vermouth.",
+    story: "It's a Manhattan with Bénédictine and the Sazerac's Peychaud's bitters added.",
     flavor: { bitter: 3, sweet: 4, citrus: 1, herbal: 5, strength: 5 },
-    build: [['2 oz', 'rye'], ['0.75 oz', 'sweet vermouth'], ['0.75 oz', 'Bénédictine'], ['3 dashes', "Peychaud's"]],
+    build: [['2 oz', 'bourbon'], ['0.75 oz', 'sweet vermouth'], ['0.75 oz', 'Bénédictine'], ['3 dashes', "Peychaud's"]],
     steps: [
       "Fill a mixing glass with good ice.",
-      "Add the rye, sweet vermouth and Bénédictine.",
+      "Add the bourbon, sweet vermouth and Bénédictine.",
       "Add three dashes of Peychaud's.",
       "Stir 30 seconds.",
       "Strain up into a chilled coupe.",
@@ -2025,27 +2025,27 @@ const DRINKS = [
       "Strain into a tall glass filled with fresh ice.",
       "Top with soda."
     ],
-    tip: "Use bourbon instead of gin for a John Collins, or rye for more spice.",
+    tip: "Use bourbon instead of gin for a John Collins.",
     smoke: false, noSmoke: "Smoke and fresh lemon clash.",
     glass: 'tall', color: '#D0C384', ice: 'tall', garnish: 'none', bubbles: true
   },
   {
     id: 'whiskey-highball', name: 'Whiskey Highball', method: 'Built', section: 'long', low: true,
-    inside: "Rittenhouse rye, soda, lemon peel",
+    inside: "Bourbon, soda, lemon peel",
     taste: "Whiskey and soda, cold and fizzy.",
     yuzu: { qty: '3 dashes', step: 'Finish with 3 dashes of yuzu bitters on top.' },
     hook: "Suntory used this drink to get Japan drinking whisky again.",
     story: "Sales had fallen for 26 years when Suntory started promoting highballs in 2008. Within a year, bars serving them went from about 5,000 to over 40,000.",
     flavor: { bitter: 1, sweet: 1, citrus: 2, herbal: 1, strength: 2 },
-    build: [['2 oz', 'Rittenhouse'], ['4 oz', 'soda'], ['1', 'long lemon peel']],
+    build: [['2 oz', 'bourbon'], ['4 oz', 'soda'], ['1', 'long lemon peel']],
     steps: [
       "Fill a tall glass completely with ice.",
-      "Pour in the Rittenhouse.",
+      "Pour in the bourbon.",
       "Top with soda.",
       "Stir once.",
       "Drop in one long lemon peel."
     ],
-    tip: "At 100 proof, the rye still comes through the soda, where a softer bourbon would fade.",
+    tip: "A stronger bourbon still tastes clear through the soda, where a soft one fades.",
     smoke: false, noSmoke: "The bubbles carry the smoke away. For smoke, try the Old Fashioned.",
     glass: 'tall', color: '#B4823F', ice: 'tall', garnish: 'lemon-twist', bubbles: true
   },
@@ -2439,13 +2439,13 @@ const TH = {
     smokeNote: "แก้วที่รมควันแล้วอร่อยที่สุดในเมนู คาราเมลกับโอ๊กของเบอร์เบินเข้ากับควันพอดี"
   },
   'old-fashioned': {
-    inside: "เบอร์เบินหรือไรย์วิสกี้ · น้ำตาล · Angostura",
+    inside: "เบอร์เบิน · น้ำตาล · Angostura",
     taste: "วิสกี้นำ หวานนิด เครื่องเทศหน่อย",
     umami: { qty: '2 แดช', step: 'ใส่บิตเตอร์อูมามิ 2 แดช', at: 2 },
     method: 'คนกับน้ำแข็ง',
     hook: 'คอเหล้าสั่งกันว่า “ขอแบบโบราณ” จนกลายเป็นชื่อแก้วนี้',
     story: "ยุค 1880 บาร์เทนเดอร์ใส่ลิเคียวลงไปแทบทุกแก้ว ขอแบบโบราณเลยหมายถึงเหล้า น้ำตาล น้ำ และบิตเตอร์ แค่นั้น",
-    build: [['2 ออนซ์', 'เบอร์เบินหรือไรย์วิสกี้'], ['1 ก้อน', 'น้ำตาลก้อน (หรือไซรัปน้ำตาล 0.25 ออนซ์)'], ['2 แดช', 'Angostura']],
+    build: [['2 ออนซ์', 'เบอร์เบิน'], ['1 ก้อน', 'น้ำตาลก้อน (หรือไซรัปน้ำตาล 0.25 ออนซ์)'], ['2 แดช', 'Angostura']],
     steps: [
       'ใส่น้ำตาลก้อน บิตเตอร์ และน้ำหนึ่งช้อนบาร์ลงในแก้ว',
       'บดจนน้ำตาลละลายเกือบหมด',
@@ -2453,19 +2453,18 @@ const TH = {
       'คน 30 วินาที ระหว่างนั้นเติมน้ำแข็งอีกหนึ่งก้อน',
       ORANGE_IN
     ],
-    tip: "ลองทำทั้งสองแบบ Rittenhouse ไรย์ 100 proof ให้รสต่างจากเบอร์เบินชัดเจน",
     smokeNote: "แก้วคลาสสิกของการรมควัน ไม้โอ๊กเข้ากับวิสกี้ที่สุด"
   },
   'monte-carlo': {
-    inside: "ไรย์วิสกี้ · Bénédictine (ลิเคียวสมุนไพรน้ำผึ้ง) · Angostura",
+    inside: "เบอร์เบิน · Bénédictine (ลิเคียวสมุนไพรน้ำผึ้ง) · Angostura",
     taste: "หอมน้ำผึ้งกับสมุนไพร หวานน้อยกว่า Manhattan",
     method: 'คนกับน้ำแข็ง',
     hook: 'Bénédictine ในแก้วนี้ขายด้วยเรื่องของนักบวชที่ไม่เคยมีตัวตน',
     story: "คนแต่งเรื่องนี้น่าจะเป็นพ่อค้าไวน์ในศตวรรษที่ 19 ซึ่งถึงขั้นสร้างวังสไตล์โกธิกขึ้นมาให้แบรนด์",
-    build: [['2 ออนซ์', 'ไรย์วิสกี้'], ['0.5 ออนซ์', 'Bénédictine'], ['2 แดช', 'Angostura']],
+    build: [['2 ออนซ์', 'เบอร์เบิน'], ['0.5 ออนซ์', 'Bénédictine'], ['2 แดช', 'Angostura']],
     steps: [
       FILL_MIXING,
-      'เทไรย์วิสกี้ Bénédictine และ Angostura ลงไป',
+      'เทเบอร์เบิน Bénédictine และ Angostura ลงไป',
       STIR,
       'กรองลงแก้วคูเป้แช่เย็น หรือลงบนน้ำแข็งก้อนใหญ่หนึ่งก้อน',
       LEMON_IN
@@ -2474,35 +2473,35 @@ const TH = {
     smokeNote: "ควันอ่อน ๆ เข้ากับกลิ่นน้ำผึ้งของ Bénédictine"
   },
   'rye-manhattan': {
-    inside: "ไรย์วิสกี้ · สวีทเวอร์มุท · Angostura",
-    taste: "ไรย์เผ็ดนิด ๆ เข้มข้น หวานหน่อย",
+    inside: "เบอร์เบิน · สวีทเวอร์มุท · Angostura",
+    taste: "เข้มข้น หวานหน่อย หอมคาราเมลกับเครื่องเทศ",
     umami: { qty: '2 แดช', step: 'ใส่บิตเตอร์อูมามิ 2 แดช', at: 3 },
     method: 'คนกับน้ำแข็ง',
     hook: "บาร์อื่นจะเล่ายังไงก็ตาม แก้วนี้ไม่ได้คิดขึ้นเพื่อแม่ของวินสตัน เชอร์ชิล",
     story: "ตอนนั้นเธออยู่ที่อังกฤษ และกำลังจะคลอดวินสตัน",
-    build: [['2 ออนซ์', 'ไรย์วิสกี้'], ['1 ออนซ์', 'สวีทเวอร์มุท'], ['2 แดช', 'Angostura']],
+    build: [['2 ออนซ์', 'เบอร์เบิน'], ['1 ออนซ์', 'สวีทเวอร์มุท'], ['2 แดช', 'Angostura']],
     steps: [
       'ชิมเวอร์มุทก่อนเริ่ม เวอร์มุทที่รสตกแล้วคือตัวที่ทำให้แก้วนี้พัง',
       FILL_MIXING,
-      'เทไรย์วิสกี้ สวีทเวอร์มุท และ Angostura ลงไป',
+      'เทเบอร์เบิน สวีทเวอร์มุท และ Angostura ลงไป',
       STIR,
       'กรองลงแก้วคูเป้แช่เย็น',
       'ตกแต่งด้วยเชอร์รี หรือบีบเปลือกส้มเหนือแก้ว'
     ],
     tip: "ชิมเวอร์มุทก่อน ถ้าเปิดขวดทิ้งไว้เกินเดือนสองเดือน รสจะตก และนี่คือสาเหตุอันดับหนึ่งที่ Manhattan ทำเองที่บ้านไม่อร่อย",
-    smokeNote: "ควันไม้โอ๊กเข้ากับความเผ็ดของไรย์"
+    smokeNote: "ควันไม้โอ๊กเข้ากับเบอร์เบิน"
   },
   'sazerac': {
-    inside: "ไรย์วิสกี้ · น้ำตาล · Peychaud's",
-    taste: "เครื่องเทศ กลิ่นโป๊ยกั๊ก หวานนิด ไม่มีน้ำแข็ง",
+    inside: "คอนญัก · น้ำตาล · Peychaud's",
+    taste: "เครื่องเทศ กลิ่นโป๊ยกั๊ก ผลไม้นุ่ม ๆ หวานนิด ไม่มีน้ำแข็ง",
     method: 'คนกับน้ำแข็ง',
-    hook: "สภารัฐหลุยเซียนาไม่ยอมให้แก้วนี้เป็นค็อกเทลประจำรัฐ",
-    story: "ปี 2008 พวกเขากลัวจะเป็นการส่งเสริมการดื่มเหล้า สุดท้ายเลยให้เป็นค็อกเทลประจำเมืองนิวออร์ลีนส์แทน",
-    build: [['2 ออนซ์', 'ไรย์วิสกี้'], ['1 ก้อน', 'น้ำตาลก้อน'], ['4 แดช', "Peychaud's"]],
+    hook: "แก้วนี้ตั้งชื่อตามคอนญักที่ใช้ทำในยุคแรก",
+    story: "ต่อมาไรย์วิสกี้เข้ามาแทน ส่วนแก้วนี้กลับไปใช้คอนญักแบบต้นฉบับ",
+    build: [['2 ออนซ์', 'คอนญัก'], ['1 ก้อน', 'น้ำตาลก้อน'], ['4 แดช', "Peychaud's"]],
     steps: [
       "ใส่น้ำตาลก้อน Peychaud's และน้ำเล็กน้อยลงในแก้วผสม",
       'บดจนน้ำตาลละลายเกือบหมด',
-      'ใส่ไรย์วิสกี้กับน้ำแข็ง แล้วคน 30 วินาที',
+      'ใส่คอนญักกับน้ำแข็ง แล้วคน 30 วินาที',
       'กรองลงแก้วร็อกแช่เย็น ไม่ใส่น้ำแข็ง',
       LEMON_GONE
     ],
@@ -2634,16 +2633,16 @@ const TH = {
     noSmoke: NO_SMOKE_LIME
   },
   'vieux-carre': {
-    inside: "ไรย์วิสกี้ · คอนญัก · สวีทเวอร์มุท · Bénédictine · บิตเตอร์",
+    inside: "เบอร์เบิน · คอนญัก · สวีทเวอร์มุท · Bénédictine · บิตเตอร์",
     taste: "เข้ม เครื่องเทศ หอมควัน",
     method: 'คนกับน้ำแข็ง',
     hook: "แก้วนี้เกิดที่โรงแรมแห่งหนึ่งในนิวออร์ลีนส์ ที่ทุกวันนี้บาร์ของโรงแรมหมุนได้เหมือนม้าหมุน",
     story: "Vieux Carré แปลว่าจัตุรัสเก่า ชื่อเดิมของย่านเฟรนช์ควอเตอร์",
-    build: [['1 ออนซ์', 'ไรย์วิสกี้'], ['1 ออนซ์', 'คอนญัก'], ['1 ออนซ์', 'สวีทเวอร์มุท'],
+    build: [['1 ออนซ์', 'เบอร์เบิน'], ['1 ออนซ์', 'คอนญัก'], ['1 ออนซ์', 'สวีทเวอร์มุท'],
             ['0.25 ออนซ์', 'Bénédictine'], ['1 แดช', "Peychaud's"], ['1 แดช', 'Angostura']],
     steps: [
       FILL_MIXING,
-      'เทไรย์วิสกี้ คอนญัก สวีทเวอร์มุท และ Bénédictine ลงไป',
+      'เทเบอร์เบิน คอนญัก สวีทเวอร์มุท และ Bénédictine ลงไป',
       "หยด Peychaud's และ Angostura อย่างละหนึ่งแดช",
       STIR,
       'กรองลงบนน้ำแข็งก้อนใหญ่หนึ่งก้อน',
@@ -2717,15 +2716,15 @@ const TH = {
     noSmoke: NO_SMOKE_LIME
   },
   'de-la-louisiane': {
-    inside: "ไรย์วิสกี้ · สวีทเวอร์มุท · Bénédictine · Peychaud's",
-    taste: "Sazerac ที่หวานกว่า หอมน้ำผึ้งกับเครื่องเทศ",
+    inside: "เบอร์เบิน · สวีทเวอร์มุท · Bénédictine · Peychaud's",
+    taste: "หอมน้ำผึ้งกับเครื่องเทศ เข้มกว่า Manhattan",
     method: 'คนกับน้ำแข็ง',
     hook: 'แก้วประจำร้านอาหารในนิวออร์ลีนส์ที่เปิดมาตั้งแต่ปี 1881',
-    story: "ใช้ไรย์กับ Peychaud's แบบ Sazerac แล้วเติม Bénédictine กับสวีทเวอร์มุท",
-    build: [['2 ออนซ์', 'ไรย์วิสกี้'], ['0.75 ออนซ์', 'สวีทเวอร์มุท'], ['0.75 ออนซ์', 'Bénédictine'], ['3 แดช', "Peychaud's"]],
+    story: "คือ Manhattan ที่เติม Bénédictine กับ Peychaud's บิตเตอร์ตัวเดียวกับใน Sazerac",
+    build: [['2 ออนซ์', 'เบอร์เบิน'], ['0.75 ออนซ์', 'สวีทเวอร์มุท'], ['0.75 ออนซ์', 'Bénédictine'], ['3 แดช', "Peychaud's"]],
     steps: [
       FILL_MIXING,
-      'เทไรย์วิสกี้ สวีทเวอร์มุท และ Bénédictine ลงไป',
+      'เทเบอร์เบิน สวีทเวอร์มุท และ Bénédictine ลงไป',
       "หยด Peychaud's สามแดช",
       STIR,
       'กรองลงแก้วคูเป้แช่เย็น',
@@ -2825,25 +2824,25 @@ const TH = {
       'กรองลงแก้วทรงสูงที่ใส่น้ำแข็งใหม่ไว้เต็ม',
       'เติมโซดาจนเต็ม'
     ],
-    tip: "ใช้เบอร์เบินแทนจินจะได้ John Collins หรือใช้ไรย์ถ้าอยากได้เครื่องเทศมากขึ้น",
+    tip: "ใช้เบอร์เบินแทนจินจะได้ John Collins",
     noSmoke: NO_SMOKE_LEMON
   },
   'whiskey-highball': {
-    inside: "Rittenhouse · โซดา · ผิวเลมอน",
+    inside: "เบอร์เบิน · โซดา · ผิวเลมอน",
     taste: "วิสกี้โซดา เย็น ซ่า",
     yuzu: { qty: '3 แดช', step: 'ปิดท้ายด้วยบิตเตอร์ยูซุ 3 แดชด้านบน' },
     method: 'ผสมในแก้ว',
     hook: "ซันโทรี่ใช้แก้วนี้ชวนคนญี่ปุ่นกลับมาดื่มวิสกี้",
     story: "ยอดขายวิสกี้ตกติดกัน 26 ปี จนปี 2008 ซันโทรี่เริ่มโปรโมตไฮบอล ภายในปีเดียว ร้านที่ขายไฮบอลเพิ่มจากราว 5,000 ร้าน เป็นมากกว่า 40,000 ร้าน",
-    build: [['2 ออนซ์', 'Rittenhouse'], ['4 ออนซ์', 'โซดา'], ['1 เส้น', 'เปลือกเลมอนเส้นยาว']],
+    build: [['2 ออนซ์', 'เบอร์เบิน'], ['4 ออนซ์', 'โซดา'], ['1 เส้น', 'เปลือกเลมอนเส้นยาว']],
     steps: [
       FILL_TALL,
-      'เท Rittenhouse ลงไป',
+      'เทเบอร์เบินลงไป',
       'เติมโซดาจนเต็ม',
       'คนครั้งเดียว',
       'หย่อนเปลือกเลมอนเส้นยาวลงไปหนึ่งเส้น'
     ],
-    tip: "ไรย์ 100 proof ยังมีรสชัดแม้เติมโซดา ส่วนเบอร์เบินนุ่ม ๆ จะจางหายไป",
+    tip: "เบอร์เบินดีกรีสูงยังมีรสชัดแม้เติมโซดา ส่วนตัวนุ่ม ๆ จะจางหายไป",
     noSmoke: "ฟองจะพาควันลอยหายไป ถ้าอยากได้ควัน ลอง Old Fashioned"
   },
   'honey-collins': {
