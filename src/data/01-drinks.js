@@ -191,6 +191,7 @@ const DRINKS = [
       "Fill a mixing glass with good ice.",
       "Add the gin, dry vermouth and umami bitters.",
       "Stir 30 seconds.",
+      "If you want a touch of smoke, swirl a few drops of Kilchoman in the chilled coupe and pour it out.",
       "Strain up into a chilled coupe."
     ],
     tip: "Start at 3 dashes. The bitters are strong, and a fourth makes it taste like soup.",
@@ -252,13 +253,15 @@ const DRINKS = [
     steps: [
       "Add the gin, lemon and simple syrup to a shaker with ice.",
       "Shake hard for 12 seconds, until the tin hurts to hold.",
-      "Strain over fresh ice."
+      "Strain over fresh ice.",
+      "If you want, express a lemon peel over the top, then throw the peel away."
     ],
     eggSteps: [
       "Add the gin, lemon, simple syrup and egg white to a shaker, with no ice yet.",
       "Dry-shake 10 seconds to build the foam.",
       "Add ice and shake hard 12 seconds more.",
-      "Double-strain into a chilled glass, no ice."
+      "Double-strain into a chilled glass, no ice.",
+      "If you want, express a lemon peel over the top, then throw the peel away."
     ],
     egg: true, smoke: false,
     tip: "Try it once next to the Whiskey Sour.",
@@ -277,14 +280,16 @@ const DRINKS = [
       "Add the Rak Oei, lime and honey syrup to a shaker with ice.",
       "Shake hard for 12 seconds, until the tin hurts to hold.",
       "Strain over fresh ice.",
-      "Finish with 4 dashes of yuzu bitters on top."
+      "Finish with 4 dashes of yuzu bitters on top.",
+      "If you have a small spray bottle of Rak Oei, mist the top once or twice."
     ],
     eggSteps: [
       "Add the Rak Oei, lime, honey syrup and egg white to a shaker, with no ice yet.",
       "Dry-shake 10 seconds to build the foam.",
       "Add ice and shake hard 12 seconds more.",
       "Double-strain into a chilled coupe, no ice.",
-      "Finish with 4 dashes of yuzu bitters on the foam."
+      "Finish with 4 dashes of yuzu bitters on the foam.",
+      "If you have a small spray bottle of Rak Oei, mist the top once or twice."
     ],
     tip: "If you have a pandan leaf, tie it in a knot and rest it on the rim.",
     egg: true, smoke: false,
@@ -304,7 +309,8 @@ const DRINKS = [
       "Add the gin, honey syrup and lemon to a shaker with ice.",
       "Shake hard for 12 seconds.",
       "Double-strain up into a chilled coupe.",
-      "Garnish with a lemon peel."
+      "Garnish with a lemon peel.",
+      "If you want, clap a small thyme sprig between your palms and float it next to the peel."
     ],
     tip: "Use honey syrup, not straight honey. Cold honey goes hard and leaves sweet lumps.",
     smoke: false,
@@ -416,7 +422,8 @@ const DRINKS = [
       "Add the gin, lime and simple syrup to a shaker with ice.",
       "Shake hard for 12 seconds.",
       "Double-strain up into a chilled coupe.",
-      "Garnish with a lime peel."
+      "Garnish with a lime peel.",
+      "If you want, clap a Thai basil leaf between your palms and float it on top."
     ],
     smoke: false,
     glass: 'coupe', color: '#D2DCA0', ice: 'none', garnish: 'lime-twist'
@@ -443,7 +450,7 @@ const DRINKS = [
     id: 'gin-tonic', name: 'Gin & Tonic', method: 'Built', section: 'long', low: true,
     inside: "Gin, tonic, lemon",
     taste: "Crisp and a little bitter, not sweet.",
-    yuzu: { qty: '3 dashes', step: 'Finish with 3 dashes of yuzu bitters on top.' },
+    yuzu: { qty: '3 dashes', step: 'Finish with 3 dashes of yuzu bitters on top.', at: 5 },
     hook: "Cheap gin once caused so much trouble in London that Hogarth painted it.",
     story: "The government had backed cheap gin to hurt French brandy, and gin shops filled the city.",
     flavor: { bitter: 2, sweet: 2, citrus: 3, herbal: 3, strength: 2 },
@@ -453,7 +460,8 @@ const DRINKS = [
       "Pour in the gin.",
       "Top with tonic.",
       "Stir once, no more. More stirring knocks the bubbles out.",
-      "Squeeze a lemon wedge over the top and drop it in."
+      "Squeeze a lemon wedge over the top and drop it in.",
+      "If you want, clap a rosemary sprig between your palms and stand it in the glass."
     ],
     smoke: false,
     glass: 'copa', color: '#B9CBD0', ice: 'bowl', garnish: 'lemon-wedge', bubbles: true
@@ -470,7 +478,8 @@ const DRINKS = [
       "Fill a large wine glass with ice.",
       "Pour in the Lillet Blanc.",
       "Top with tonic.",
-      "Stir once and garnish with an orange slice."
+      "Stir once and garnish with an orange slice.",
+      "If you want, clap a small mint sprig between your palms and add it to the glass."
     ],
     tip: "About 6% alcohol, one of the lightest drinks on the list.",
     smoke: false,
@@ -488,7 +497,8 @@ const DRINKS = [
       "Fill a tall glass completely with ice.",
       "Pour in the Campari.",
       "Top with tonic.",
-      "Stir once and garnish with an orange wedge."
+      "Stir once and garnish with an orange wedge.",
+      "If you want more orange smell, express a strip of orange peel over the glass."
     ],
     smoke: false,
     glass: 'tall', color: '#BB3627', ice: 'tall', garnish: 'orange-wedge', bubbles: true
@@ -522,7 +532,8 @@ const DRINKS = [
       "Fill a tall glass completely with ice.",
       "Add the Campari and sweet vermouth.",
       "Top with soda.",
-      "Stir once and garnish with an orange slice."
+      "Stir once and garnish with an orange slice.",
+      "If you want more orange smell, express a strip of orange peel over the glass."
     ],
     tip: 'Someone asked for this with gin instead of soda, and that was the Negroni.',
     smoke: false,
@@ -540,7 +551,8 @@ const DRINKS = [
       "Add the gin, lemon and simple syrup to a shaker with ice.",
       "Shake hard for 12 seconds.",
       "Strain into a tall glass filled with fresh ice.",
-      "Top with soda."
+      "Top with soda.",
+      "If you want, express a lemon peel over the top and drop it in."
     ],
     tip: "Use bourbon instead of gin for a John Collins.",
     smoke: false,
@@ -578,7 +590,8 @@ const DRINKS = [
       "Add the gin, honey syrup and lemon to a shaker with ice.",
       "Shake hard for 12 seconds.",
       "Strain into a tall glass filled with fresh ice.",
-      "Top with soda."
+      "Top with soda.",
+      "If you want, clap a rosemary sprig between your palms and stand it in the glass."
     ],
     smoke: false,
     glass: 'tall', color: '#C79C4C', ice: 'tall', garnish: 'none', bubbles: true
@@ -595,7 +608,8 @@ const DRINKS = [
       "Fill a large wine glass with ice.",
       "Pour in the Lillet.",
       "Top with soda.",
-      "Garnish with a lemon wheel."
+      "Garnish with a lemon wheel.",
+      "If you want, clap a small mint sprig between your palms and add it to the glass."
     ],
     smoke: false,
     glass: 'wine', color: '#D2BE85', ice: 'bowl', garnish: 'lemon-wheel', bubbles: true
@@ -613,7 +627,8 @@ const DRINKS = [
       "Shake the honey syrup, lemon and salt with ice.",
       "Strain into a tall glass over fresh ice.",
       "Top with soda.",
-      "Garnish with a lemon wheel."
+      "Garnish with a lemon wheel.",
+      "If you want, clap a thyme sprig between your palms and add it to the glass."
     ],
     smoke: true, woods: ['Apple', 'Pear', 'Peach'],
     smokeNote: "Light smoke only. Without alcohol, a stronger wood would cover everything.",
