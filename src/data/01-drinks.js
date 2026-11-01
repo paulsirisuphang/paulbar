@@ -272,19 +272,19 @@ const DRINKS = [
     hook: "Pandan, jasmine rice and white bread all get their smell from the same compound.",
     story: "This sour is built like a Pisco Sour, with a Thai sticky rice spirit in place of the pisco.",
     flavor: { bitter: 1, sweet: 3, citrus: 5, herbal: 3, strength: 3 },
-    build: [['2 oz', 'Rak Oei Toei Hom'], ['1 oz', 'lime'], ['0.75 oz', 'honey syrup'], ['3 dashes', 'yuzu bitters']],
+    build: [['2 oz', 'Rak Oei Toei Hom'], ['1 oz', 'lime'], ['0.75 oz', 'honey syrup'], ['4 dashes', 'yuzu bitters']],
     steps: [
       "Add the Rak Oei, lime and honey syrup to a shaker with ice.",
       "Shake hard for 12 seconds, until the tin hurts to hold.",
       "Strain over fresh ice.",
-      "Finish with 3 dashes of yuzu bitters on top."
+      "Finish with 4 dashes of yuzu bitters on top."
     ],
     eggSteps: [
       "Add the Rak Oei, lime, honey syrup and egg white to a shaker, with no ice yet.",
       "Dry-shake 10 seconds to build the foam.",
       "Add ice and shake hard 12 seconds more.",
       "Double-strain into a chilled coupe, no ice.",
-      "Finish with 3 dashes of yuzu bitters on the foam."
+      "Finish with 4 dashes of yuzu bitters on the foam."
     ],
     tip: "If you have a pandan leaf, tie it in a knot and rest it on the rim.",
     egg: true, smoke: false,
