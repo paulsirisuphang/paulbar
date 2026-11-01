@@ -31,6 +31,19 @@
 .toast-art:empty { display: none; }
 .toast-art svg { display: block; width: 100%; height: 100%; overflow: visible; }
 
+/* the order on its way, folded into a paper plane (marks.js); it draws in
+   page pixels from the top left, and never takes a tap */
+.plane {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 70;
+  width: 100vw;
+  height: 100vh;
+  overflow: visible;
+  pointer-events: none;
+}
+
 /* a smoked order: one thin curl leaves the glass on the slip, rises a
    little and fades; its foot sits on the rim (app.js) */
 .toast-art svg.sent-smoke {

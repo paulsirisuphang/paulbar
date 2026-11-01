@@ -26,6 +26,10 @@ list.
   in by default, out for the classic. The Whiskey Sour and the Pandan Sour
   come with egg white, and the guest can take it out. A drink that doesn't
   take smoke has no smoke option, and its card doesn't explain why.
+- **Sending** an order folds its card into a paper plane, the way a dart is
+  folded by hand, and flies it to the orders button in the top right corner;
+  the slip confirming the order comes when it lands. With reduced motion the
+  order just goes.
 - **Orders** land on a rail as tickets, each with the full build behind it.
   Ticking a ticket stamps it poured.
 - The **lantern** is the way to the drink that isn't on the list: tap it.
@@ -66,7 +70,7 @@ The code, file by file:
 | `03-ink.js` | The brush: strokes, washes and paper grain |
 | `04-glass.js` | Every drink, drawn from its recipe |
 | `05-bar.js` | The bar: shelves, lantern, counter, the party pieces, the drink behind the lantern, and painting it in |
-| `06-marks.js` | The seals, the tee, the icons, smoke that leaves the glass |
+| `06-marks.js` | The seals, the tee, the icons, smoke that leaves the glass, and the paper plane an order flies off in |
 | `07-menu.js` | Filters, sections and the list |
 | `08-sheet.js` | A drink's card and placing an order |
 | `09-orders.js` | The tickets and their builds |

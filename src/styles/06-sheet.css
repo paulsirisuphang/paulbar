@@ -54,6 +54,13 @@ dialog::backdrop { background: rgba(48, 40, 32, .38); backdrop-filter: blur(2px)
 /* laid down on the table, settling square */
 dialog[open] { animation: card-in .4s var(--ease); }
 @keyframes card-in { from { opacity: 0; transform: translateY(14px) rotate(-.6deg); } }
+/* sent: the writing fades and the card folds itself down to a small
+   sheet, which becomes a paper plane (marks.js) */
+dialog.sending { pointer-events: none; animation: card-send .45s cubic-bezier(.45, 0, .25, 1) forwards; }
+dialog.sending .sheet { animation: card-send-fade .2s ease forwards; }
+dialog.sending::backdrop { animation: card-send-fade .45s ease forwards; }
+@keyframes card-send { to { transform: scale(var(--send-x), var(--send-y)); } }
+@keyframes card-send-fade { to { opacity: 0; } }
 
 .sheet {
   position: relative;

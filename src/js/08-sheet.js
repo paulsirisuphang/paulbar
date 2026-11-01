@@ -262,6 +262,15 @@ function openSheet(drink) {
       return;
     }
     rememberGuest(who);
+    /* the slip, the shaker and the count answer once the order reaches
+       the bar; with motion off, that's at once */
+    const reached = () => {
+      toast(U('toast_ordered') + drink.name + U('toast_for') + who, drink, state);
+      stirTheBar();
+      if (state.smoke) releaseSmoke(drink);
+    };
+    const still = prefersStill();
+    if (!still) foldAndFly(sheet, drink.color, () => { pulseCounts(); reached(); });
     Book.add({
       id: 'o' + Date.now() + Math.random().toString(36).slice(2, 6),
       drink: drink.id,
@@ -275,10 +284,10 @@ function openSheet(drink) {
       at: Date.now(),
       done: false
     });
-    sheet.close();
-    toast(U('toast_ordered') + drink.name + U('toast_for') + who, drink, state);
-    stirTheBar();
-    if (state.smoke) releaseSmoke(drink);
+    if (still) {
+      sheet.close();
+      reached();
+    }
   });
 
   sheet.appendChild(form);

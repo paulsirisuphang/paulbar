@@ -117,6 +117,12 @@ function railHead(title, action) {
   return h;
 }
 
+/* the count on the way to the orders says something new has come in */
+function pulseCounts() {
+  if ($('#tab-orders').getAttribute('aria-selected') === 'true') return;
+  [$('#pending-count'), $('#burger-count')].forEach((n) => { n.classList.remove('pulse'); void n.offsetWidth; n.classList.add('pulse'); });
+}
+
 function renderOrders(isNew) {
   const key = ordersKey();
   if (key === lastOrdersKey) return;
@@ -132,9 +138,8 @@ function renderOrders(isNew) {
   $('#tally-poured').textContent = poured.length;
   const counts = [$('#pending-count'), $('#burger-count')];
   counts.forEach((n) => { n.textContent = working.length; n.hidden = !working.length; });
-  if (isNew && working.length > lastWorking && $('#tab-orders').getAttribute('aria-selected') !== 'true') {
-    counts.forEach((n) => { n.classList.remove('pulse'); void n.offsetWidth; n.classList.add('pulse'); });
-  }
+  /* an order flying in as a paper plane pulses the count when it lands */
+  if (isNew && working.length > lastWorking && !planesAloft) pulseCounts();
   lastWorking = working.length;
 
   const body = $('#orders-body');

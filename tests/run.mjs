@@ -273,7 +273,7 @@ const checks = [
     eq(await count(page, '#sheet .preview .wisp'), 0, 'smoke still over the drink once taken off');
     await page.fill('#sheet input.write', 'Nok');
     await page.click('#sheet .btn');
-    await page.waitForFunction(() => !document.getElementById('sheet').open);
+    await page.waitForSelector('#toast.show');
     eq(await count(page, '#toast .sent-smoke'), 0, 'smoke on the slip for a drink sent without it');
     await page.click('#burger');
     await page.click('#tab-orders');
@@ -287,6 +287,8 @@ const checks = [
     await page.fill('#sheet input.write', 'Nok');
     await page.click('#sheet .btn');
     await page.waitForFunction(() => !document.getElementById('sheet').open);
+    await page.waitForFunction(() => !document.getElementById('toast').classList.contains('show'));
+    await page.waitForSelector('#toast.show');
     eq(await count(page, '#toast .sent-smoke'), 1, 'curls of smoke on the slip');
     eq(await count(page, '.page-smoke'), 0, 'smoke across the page');
   }],
@@ -301,7 +303,7 @@ const checks = [
     await page.fill('#sheet input.write', 'Mai');
     await page.click('#sheet .btn');
     await page.waitForFunction(() => !document.getElementById('sheet').open);
-    ok(await page.$('#toast.show'), 'no toast after ordering');
+    await page.waitForSelector('#toast.show');
     eq(await text(page, '#burger-count'), '1', 'the count on the menu button');
     await page.click('#burger');
     await page.click('#tab-orders');
@@ -401,8 +403,9 @@ const checks = [
     eq(await acting(), 'stir, shake, chip, smoke', 'pieces performing');
     await page.clock.runFor(10100);
     eq(await acting(), '', 'pieces still performing after ten seconds');
-    /* an order sets the shaker going for a few seconds */
+    /* an order sets the shaker going for a few seconds, once its plane lands */
     await order(page, 'gimlet', 'Ploy');
+    for (let i = 0; i < 60 && !(await page.$('#toast.show')); i++) await page.clock.runFor(100);
     eq(await acting(), 'shake', 'pieces performing after an order');
     await page.clock.runFor(3100);
     eq(await acting(), '', 'the shaker still going after three seconds');
@@ -432,6 +435,36 @@ const checks = [
     const names = await page.$$eval('.ticket-guest', (n) => n.map((g) => g.textContent + ' ' + getComputedStyle(g.firstElementChild || g).fontStyle));
     ok(names.includes('นก normal'), 'a Thai name set in italic: ' + names.join(', '));
     ok(names.includes('Ben italic'), 'an English name lost its italic: ' + names.join(', '));
+  }],
+
+  ['sent, the card folds into a paper plane that flies to the orders, and the slip follows', {}, async (page) => {
+    await enter(page);
+    await openDrink(page, 'pandan-sour');
+    await page.fill('#sheet input.write', 'Nok');
+    await page.click('#sheet .btn');
+    await page.waitForSelector('svg.plane');
+    ok(!(await page.$('#toast.show')), 'the slip came before the plane landed');
+    eq(await text(page, '#burger-count'), '1', 'the count on the menu button while the plane flies');
+    /* it ends small, in the top right corner, on the way to the orders */
+    let last = null;
+    while (await page.$('svg.plane')) {
+      last = await page.$eval('svg.plane', (s) => { const b = s.firstElementChild.nextElementSibling.getBoundingClientRect(); return b.width ? [b.left + b.width / 2, b.top + b.height / 2, b.width] : null; }).catch(() => last) || last;
+      await page.waitForTimeout(60);
+    }
+    const burger = await page.$eval('#burger', (b) => { const r = b.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
+    ok(last && Math.hypot(last[0] - burger[0], last[1] - burger[1]) < 60, 'the plane did not land on the orders button: ' + JSON.stringify(last));
+    await page.waitForSelector('#toast.show');
+    ok((await text(page, '#toast-text')).includes('Pandan Sour'), 'the slip after the plane');
+  }],
+
+  ['with motion off, an order goes straight through: no plane', { reducedMotion: true }, async (page) => {
+    await page.goto(TEST_PAGE);
+    await openDrink(page, 'gimlet');
+    await page.fill('#sheet input.write', 'Nok');
+    await page.click('#sheet .btn');
+    await page.waitForFunction(() => !document.getElementById('sheet').open);
+    ok(await page.$('#toast.show'), 'no slip at once with motion off');
+    eq(await count(page, 'svg.plane'), 0, 'a paper plane with motion off');
   }],
 
   ['with reduced motion the bar is simply there, and nothing performs', { reducedMotion: true }, async (page) => {

@@ -181,15 +181,15 @@ const DRINKS = [
   },
   {
     id: 'umami-martini', name: 'Umami Martini', method: 'Stirred', section: 'stirred',
-    inside: "Gin, junmai sake, umami bitters",
-    taste: "Gin and sake, savory and not sweet.",
+    inside: "Gin, dry vermouth, umami bitters",
+    taste: "A dry gin Martini, savory and not sweet.",
     hook: "A few dashes of umami bitters turn a gin martini savory.",
-    story: "The bitters are made from kelp, shiitake and bonito, the base of Japanese dashi broth. Sake takes the place of vermouth.",
+    story: "The bitters are made from kelp, shiitake and bonito, the base of Japanese dashi broth.",
     flavor: { bitter: 1, sweet: 1, citrus: 1, herbal: 3, strength: 5 },
-    build: [['2 oz', 'gin'], ['0.5 oz', 'junmai sake'], ['3 dashes', 'umami bitters']],
+    build: [['2 oz', 'gin'], ['0.5 oz', 'dry vermouth'], ['3 dashes', 'umami bitters']],
     steps: [
       "Fill a mixing glass with good ice.",
-      "Add the gin, sake and umami bitters.",
+      "Add the gin, dry vermouth and umami bitters.",
       "Stir 30 seconds.",
       "Strain up into a chilled coupe."
     ],
@@ -266,21 +266,21 @@ const DRINKS = [
   },
   {
     id: 'pandan-sour', name: 'Pandan Sour', method: 'Shaken', section: 'shaken',
-    inside: "Rak Oei Toei Hom (Thai rice spirit with pandan), lime, sugar, egg white, yuzu bitters",
-    taste: "Pandan and fresh lime, under a soft foam.",
+    inside: "Rak Oei Toei Hom (Thai rice spirit with pandan), lime, honey, egg white, yuzu bitters",
+    taste: "Pandan, honey and fresh lime, under a soft foam.",
     eggDefault: true,
     hook: "Pandan, jasmine rice and white bread all get their smell from the same compound.",
     story: "This sour is built like a Pisco Sour, with a Thai sticky rice spirit in place of the pisco.",
-    flavor: { bitter: 1, sweet: 3, citrus: 4, herbal: 3, strength: 3 },
-    build: [['2 oz', 'Rak Oei Toei Hom'], ['0.75 oz', 'lime'], ['0.75 oz', 'simple syrup'], ['3 dashes', 'yuzu bitters']],
+    flavor: { bitter: 1, sweet: 3, citrus: 5, herbal: 3, strength: 3 },
+    build: [['2 oz', 'Rak Oei Toei Hom'], ['1 oz', 'lime'], ['0.75 oz', 'honey syrup'], ['3 dashes', 'yuzu bitters']],
     steps: [
-      "Add the Rak Oei, lime and simple syrup to a shaker with ice.",
+      "Add the Rak Oei, lime and honey syrup to a shaker with ice.",
       "Shake hard for 12 seconds, until the tin hurts to hold.",
       "Strain over fresh ice.",
       "Finish with 3 dashes of yuzu bitters on top."
     ],
     eggSteps: [
-      "Add the Rak Oei, lime, simple syrup and egg white to a shaker, with no ice yet.",
+      "Add the Rak Oei, lime, honey syrup and egg white to a shaker, with no ice yet.",
       "Dry-shake 10 seconds to build the foam.",
       "Add ice and shake hard 12 seconds more.",
       "Double-strain into a chilled coupe, no ice.",

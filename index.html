@@ -758,6 +758,13 @@ dialog::backdrop { background: rgba(48, 40, 32, .38); backdrop-filter: blur(2px)
 /* laid down on the table, settling square */
 dialog[open] { animation: card-in .4s var(--ease); }
 @keyframes card-in { from { opacity: 0; transform: translateY(14px) rotate(-.6deg); } }
+/* sent: the writing fades and the card folds itself down to a small
+   sheet, which becomes a paper plane (marks.js) */
+dialog.sending { pointer-events: none; animation: card-send .45s cubic-bezier(.45, 0, .25, 1) forwards; }
+dialog.sending .sheet { animation: card-send-fade .2s ease forwards; }
+dialog.sending::backdrop { animation: card-send-fade .45s ease forwards; }
+@keyframes card-send { to { transform: scale(var(--send-x), var(--send-y)); } }
+@keyframes card-send-fade { to { opacity: 0; } }
 
 .sheet {
   position: relative;
@@ -1354,6 +1361,19 @@ details.notes[open] summary svg { transform: rotate(90deg); }
 .toast-art:empty { display: none; }
 .toast-art svg { display: block; width: 100%; height: 100%; overflow: visible; }
 
+/* the order on its way, folded into a paper plane (marks.js); it draws in
+   page pixels from the top left, and never takes a tap */
+.plane {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 70;
+  width: 100vw;
+  height: 100vh;
+  overflow: visible;
+  pointer-events: none;
+}
+
 /* a smoked order: one thin curl leaves the glass on the slip, rises a
    little and fades; its foot sits on the rim (app.js) */
 .toast-art svg.sent-smoke {
@@ -1687,15 +1707,15 @@ const DRINKS = [
   },
   {
     id: 'umami-martini', name: 'Umami Martini', method: 'Stirred', section: 'stirred',
-    inside: "Gin, junmai sake, umami bitters",
-    taste: "Gin and sake, savory and not sweet.",
+    inside: "Gin, dry vermouth, umami bitters",
+    taste: "A dry gin Martini, savory and not sweet.",
     hook: "A few dashes of umami bitters turn a gin martini savory.",
-    story: "The bitters are made from kelp, shiitake and bonito, the base of Japanese dashi broth. Sake takes the place of vermouth.",
+    story: "The bitters are made from kelp, shiitake and bonito, the base of Japanese dashi broth.",
     flavor: { bitter: 1, sweet: 1, citrus: 1, herbal: 3, strength: 5 },
-    build: [['2 oz', 'gin'], ['0.5 oz', 'junmai sake'], ['3 dashes', 'umami bitters']],
+    build: [['2 oz', 'gin'], ['0.5 oz', 'dry vermouth'], ['3 dashes', 'umami bitters']],
     steps: [
       "Fill a mixing glass with good ice.",
-      "Add the gin, sake and umami bitters.",
+      "Add the gin, dry vermouth and umami bitters.",
       "Stir 30 seconds.",
       "Strain up into a chilled coupe."
     ],
@@ -1772,21 +1792,21 @@ const DRINKS = [
   },
   {
     id: 'pandan-sour', name: 'Pandan Sour', method: 'Shaken', section: 'shaken',
-    inside: "Rak Oei Toei Hom (Thai rice spirit with pandan), lime, sugar, egg white, yuzu bitters",
-    taste: "Pandan and fresh lime, under a soft foam.",
+    inside: "Rak Oei Toei Hom (Thai rice spirit with pandan), lime, honey, egg white, yuzu bitters",
+    taste: "Pandan, honey and fresh lime, under a soft foam.",
     eggDefault: true,
     hook: "Pandan, jasmine rice and white bread all get their smell from the same compound.",
     story: "This sour is built like a Pisco Sour, with a Thai sticky rice spirit in place of the pisco.",
-    flavor: { bitter: 1, sweet: 3, citrus: 4, herbal: 3, strength: 3 },
-    build: [['2 oz', 'Rak Oei Toei Hom'], ['0.75 oz', 'lime'], ['0.75 oz', 'simple syrup'], ['3 dashes', 'yuzu bitters']],
+    flavor: { bitter: 1, sweet: 3, citrus: 5, herbal: 3, strength: 3 },
+    build: [['2 oz', 'Rak Oei Toei Hom'], ['1 oz', 'lime'], ['0.75 oz', 'honey syrup'], ['3 dashes', 'yuzu bitters']],
     steps: [
-      "Add the Rak Oei, lime and simple syrup to a shaker with ice.",
+      "Add the Rak Oei, lime and honey syrup to a shaker with ice.",
       "Shake hard for 12 seconds, until the tin hurts to hold.",
       "Strain over fresh ice.",
       "Finish with 3 dashes of yuzu bitters on top."
     ],
     eggSteps: [
-      "Add the Rak Oei, lime, simple syrup and egg white to a shaker, with no ice yet.",
+      "Add the Rak Oei, lime, honey syrup and egg white to a shaker, with no ice yet.",
       "Dry-shake 10 seconds to build the foam.",
       "Add ice and shake hard 12 seconds more.",
       "Double-strain into a chilled coupe, no ice.",
@@ -2294,7 +2314,7 @@ const TH_KEEP = [
   'ฝานแว่น', 'หั่นเสี้ยว', 'เข้มข้น', 'เปรี้ยวสด', 'ส่วนผสม', 'คอเหล้า', 'เคล็ดลับ', 'เครื่องมือ',
   'เครื่องเทศ', 'โรงกลั่น', 'ยึดครอง', 'ราชสำนัก', 'ม้าหมุน', 'หัวจ่าย', 'เด็ดขาด', 'ผู้โดยสาร', 'รายชื่อ',
   'อักษรย่อ', 'ตลอดกาล', 'สายเข้ม', 'สายเปรี้ยว', 'สายซ่า', 'สายไม่เมา', 'เสี่ยงดวง', 'สัดส่วน', 'ยูซุ', 'อูมามิ', 'คอมบุ', 'พอนสึ', 'ดาชิ', 'จุนไม', 'โคจิ', 'สาเก', 'นางาซากิ', 'ดัตช์', 'เกรปฟรุต', 'ปลาโอแห้ง', 'ปลาโอ', 'เห็ดหอม', 'พันช์', 'น้ำซุป', 'โป๊ยกั๊ก', 'เลมอนเนด', 'ซิตรัส', 'รากไม้', 'อะเพอริทีฟ', 'นุ่มลื่น', 'กลมกล่อม', 'เชื้อสาย', 'เนื้อสัมผัส', 'นิดหนึ่ง', 'นิดเดียว', 'นิดหน่อย', 'หนานุ่ม', 'ครูสอนฟันดาบ', 'ขณะที่', 'ต่อมา', 'กลายเป็น', 'แดช', 'ด้านบน', 'ขึ้นมา', 'ขี้เกียจ', 'ข้างนอก',
-  'ใบเตย', 'เตยหอม', 'ข้าวเหนียว', 'ข้าวหอมมะลิ', 'ขนมปังขาว', 'สารหอม', 'ลอยหน้า', 'ช้อนบาร์', 'กรอง', 'ฟองนุ่ม'
+  'ใบเตย', 'เตยหอม', 'ข้าวเหนียว', 'ข้าวหอมมะลิ', 'ขนมปังขาว', 'สารหอม', 'ลอยหน้า', 'ช้อนบาร์', 'กรอง', 'ฟองนุ่ม', 'ดรายเวอร์มุท', 'ดราย'
 ];
 
 const T_TH = {
@@ -2531,15 +2551,15 @@ const TH = {
     smokeNote: "สูตรดั้งเดิมต้องเคลือบแก้วด้วยแอบซินธ์ ซึ่งบาร์เราไม่มี เลยใช้ควันแต่งกลิ่นแก้วแทน"
   },
   'umami-martini': {
-    inside: "จิน · สาเกจุนไม · บิตเตอร์อูมามิ",
-    taste: "จินกับสาเก รสอูมามิ ไม่หวานเลย",
+    inside: "จิน · ดรายเวอร์มุท · บิตเตอร์อูมามิ",
+    taste: "มาร์ตินี่จินแบบดราย รสอูมามิ ไม่หวานเลย",
     method: 'คนกับน้ำแข็ง',
     hook: "บิตเตอร์อูมามิไม่กี่แดช เปลี่ยนมาร์ตินี่จินให้เป็นรสอูมามิ",
-    story: "บิตเตอร์ทำจากคอมบุ เห็ดหอม และปลาโอ ชุดเดียวกับที่ใช้ทำน้ำซุปดาชิ ส่วนสาเกมาแทนเวอร์มุท",
-    build: [['2 ออนซ์', 'จิน'], ['0.5 ออนซ์', 'สาเกจุนไม'], ['3 แดช', 'บิตเตอร์อูมามิ']],
+    story: "บิตเตอร์ทำจากคอมบุ เห็ดหอม และปลาโอ ชุดเดียวกับที่ใช้ทำน้ำซุปดาชิ",
+    build: [['2 ออนซ์', 'จิน'], ['0.5 ออนซ์', 'ดรายเวอร์มุท'], ['3 แดช', 'บิตเตอร์อูมามิ']],
     steps: [
       FILL_MIXING,
-      'เทจิน สาเก และบิตเตอร์อูมามิลงไป',
+      'เทจิน ดรายเวอร์มุท และบิตเตอร์อูมามิลงไป',
       STIR,
       'กรองลงแก้วคูเป้แช่เย็น'
     ],
@@ -2602,20 +2622,20 @@ const TH = {
     tip: 'ลองทำคู่กับ Whiskey Sour แล้วชิมเทียบกันสักครั้ง'
   },
   'pandan-sour': {
-    inside: "รักเอย เตยหอม (สุราข้าวเหนียวกลิ่นใบเตย) · มะนาว · น้ำตาล · ไข่ขาว · บิตเตอร์ยูซุ",
-    taste: "หอมใบเตย เปรี้ยวมะนาว ฟองนุ่ม",
+    inside: "รักเอย เตยหอม (สุราข้าวเหนียวกลิ่นใบเตย) · มะนาว · น้ำผึ้ง · ไข่ขาว · บิตเตอร์ยูซุ",
+    taste: "หอมใบเตยกับน้ำผึ้ง เปรี้ยวมะนาว ฟองนุ่ม",
     method: 'เขย่ากับน้ำแข็ง',
     hook: "กลิ่นใบเตย ข้าวหอมมะลิ และขนมปังขาว มาจากสารหอมตัวเดียวกัน",
     story: "แก้วนี้ทำแบบ Pisco Sour แต่ใช้สุราข้าวเหนียวของไทยแทนพิสโก้",
-    build: [['2 ออนซ์', 'รักเอย เตยหอม'], ['0.75 ออนซ์', 'น้ำมะนาว'], ['0.75 ออนซ์', 'ไซรัปน้ำตาล'], ['3 แดช', 'บิตเตอร์ยูซุ']],
+    build: [['2 ออนซ์', 'รักเอย เตยหอม'], ['1 ออนซ์', 'น้ำมะนาว'], ['0.75 ออนซ์', 'ไซรัปน้ำผึ้ง'], ['3 แดช', 'บิตเตอร์ยูซุ']],
     steps: [
-      'ใส่สุรารักเอย น้ำมะนาว ไซรัปน้ำตาล และน้ำแข็งลงในเชคเกอร์',
+      'ใส่สุรารักเอย น้ำมะนาว ไซรัปน้ำผึ้ง และน้ำแข็งลงในเชคเกอร์',
       SHAKE_HARD,
       'กรองลงบนน้ำแข็งใหม่',
       'ปิดท้ายด้วยบิตเตอร์ยูซุ 3 แดชด้านบน'
     ],
     eggSteps: [
-      'ใส่สุรารักเอย น้ำมะนาว ไซรัปน้ำตาล และไข่ขาวลงในเชคเกอร์ ยังไม่ต้องใส่น้ำแข็ง',
+      'ใส่สุรารักเอย น้ำมะนาว ไซรัปน้ำผึ้ง และไข่ขาวลงในเชคเกอร์ ยังไม่ต้องใส่น้ำแข็ง',
       'เขย่าเปล่า ๆ 10 วินาที ให้เกิดฟอง',
       'ใส่น้ำแข็ง แล้วเขย่าแรง ๆ ต่ออีก 12 วินาที',
       'กรองสองชั้นลงแก้วคูเป้แช่เย็น ไม่ใส่น้ำแข็ง',
@@ -5012,7 +5032,7 @@ function fitScene() {
 /* ---------- js/06-marks.js ---------- */
 /* ================================================================
    MARKS — the small drawings around the menu: the tee, the seals, icons,
-   smoke that leaves.
+   smoke that leaves, and the paper plane an order flies off in.
    ================================================================ */
 
 const SEAL_RED = '#B0392A';
@@ -5209,6 +5229,289 @@ function smokeCurl(seedKey) {
   svg.appendChild(brush(pts, (t) => 1.8 + t * 3, { color: SMOKE_INK, alpha: .16, rand, taper: .15, taperEnd: .35, vary: .2 }));
   svg.appendChild(brush(pts, (t) => 1 * (1 - t * .5), { color: SMOKE_INK, alpha: .3, rand, taper: .1, taperEnd: .5, vary: .12 }));
   return svg;
+}
+
+/* ---------- the order, folded into a paper plane ---------- */
+
+/* Sending an order folds its card into a paper plane that flies to the
+   orders button, top right. The card shrinks to a small sheet in CSS
+   (sheet.css); from there it's paper, folded the way a dart is folded by
+   hand: the corners to the centre line, the edges to it again, the sheet
+   in half, the wings down. A fold splits every piece of paper it crosses,
+   so each piece stays flat, and is drawn once in the sheet's own units
+   (2 across, y running down from the nose edge) through the one affine
+   transform its plane projects to, writing and creases with it. */
+const PLANE = { long: 2.83, keel: .3, shrink: 450, fold: 1700, flight: 1500 };
+const PAPER_BACK = '#EFE9DD';
+const PAPER_SHADE = '#A3927A';
+let planesAloft = 0;
+
+const smoothstep = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
+const unitVec = (x, y, z = 0) => { const n = Math.hypot(x, y, z); return [x / n, y / n, z / n]; };
+const onSheet = (p) => [p[0], PLANE.long / 2 - p[1], 0];
+
+/* rigid motions, { m: 3×3 by rows, t } */
+const STILL = { m: [[1, 0, 0], [0, 1, 0], [0, 0, 1]], t: [0, 0, 0] };
+const turnBy = (q, v) => [0, 1, 2].map((i) => q.m[i][0] * v[0] + q.m[i][1] * v[1] + q.m[i][2] * v[2]);
+const moveBy = (q, v) => turnBy(q, v).map((n, i) => n + q.t[i]);
+/* a, then b */
+const andThen = (a, b) => ({
+  m: [0, 1, 2].map((i) => [0, 1, 2].map((j) => b.m[i][0] * a.m[0][j] + b.m[i][1] * a.m[1][j] + b.m[i][2] * a.m[2][j])),
+  t: moveBy(b, a.t)
+});
+const undo = (q) => {
+  const m = [0, 1, 2].map((i) => [0, 1, 2].map((j) => q.m[j][i]));
+  return { m, t: turnBy({ m }, q.t).map((n) => -n) };
+};
+/* a turn by angle a about the line through o along the unit vector d */
+function turnAbout(o, d, a) {
+  const c = Math.cos(a), s = Math.sin(a), v = 1 - c, [x, y, z] = d;
+  const m = [
+    [c + x * x * v, x * y * v - z * s, x * z * v + y * s],
+    [y * x * v + z * s, c + y * y * v, y * z * v - x * s],
+    [z * x * v - y * s, z * y * v + x * s, c + z * z * v]
+  ];
+  return { m, t: [0, 1, 2].map((i) => o[i] - (m[i][0] * o[0] + m[i][1] * o[1] + m[i][2] * o[2])) };
+}
+
+/* The folds, in order. Each is a line across the paper as it lies by then,
+   a point on the side that moves, and how far it turns: toward the eye
+   when positive, a half turn when it folds flat. */
+function planeFolds() {
+  const L = PLANE.long, q = Math.PI / 2, folds = [];
+  const fold = (step, b, toward, turn) => folds.push({ step, a: [0, 0], b, toward, turn, flat: Math.abs(turn) > q });
+  for (const s of [1, -1]) fold('corners', [s, 1], [s, 0], Math.PI);
+  for (const s of [1, -1]) fold('edges', [s, 1 + Math.SQRT2], [s, 2], Math.PI);
+  for (const s of [1, -1]) fold('half', [0, L], [s, L / 2], q);
+  for (const s of [1, -1]) fold('wings', [s * PLANE.keel, L], [s, L], -q);
+  return folds;
+}
+
+/* the part of a convex piece on one side of a line, keeping which edges
+   are the paper's cut and which are creases; the new edge is a crease */
+function clipPiece(pts, edges, side, crease) {
+  const out = [];
+  pts.forEach((p, i) => {
+    const q = pts[(i + 1) % pts.length], sp = side(p), sq = side(q);
+    const at = () => { const t = sp / (sp - sq); return [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t]; };
+    const pIn = sp >= -1e-9, qIn = sq >= -1e-9;
+    /* a corner on the line, with the rest of its edge outside, leaves along the line */
+    if (pIn) out.push([p, qIn || sp > 1e-9 ? edges[i] : crease]);
+    if (pIn && !qIn && sp > 1e-9) out.push([at(), crease]);
+    if (!pIn && qIn && sq > 1e-9) out.push([at(), edges[i]]);
+  });
+  const kept = out.filter((e, i) => {
+    const n = out[(i + 1) % out.length];
+    return Math.hypot(e[0][0] - n[0][0], e[0][1] - n[0][1]) > 1e-9 || out.length < 2;
+  });
+  const area = kept.reduce((sum, e, i) => {
+    const n = kept[(i + 1) % kept.length][0];
+    return sum + e[0][0] * n[1] - n[0] * e[0][1];
+  }, 0);
+  return Math.abs(area) < 1e-7 ? null : { pts: kept.map((e) => e[0]), edges: kept.map((e) => e[1]) };
+}
+
+/* the sheet cut into the flat pieces the folds make. Each remembers the
+   folds that move it, with where it lay before each one, and its layer in
+   the stack: a fold lays what it moves over everything, upside down */
+function planePieces() {
+  const L = PLANE.long;
+  let pieces = [{ pts: [[-1, 0], [1, 0], [1, L], [-1, L]], edges: ['cut', 'cut', 'cut', 'cut'], flat: STILL, flips: 0, ops: [], layer: 0 }];
+  planeFolds().forEach((f) => {
+    const A = onSheet(f.a), d = unitVec(f.b[0] - f.a[0], f.a[1] - f.b[1]), r = onSheet(f.toward).map((n, i) => n - A[i]);
+    f.angle = f.turn * Math.sign(d[0] * r[1] - d[1] * r[0]);
+    f.axis = [A, d];
+    const across = (p) => (f.b[0] - f.a[0]) * (p[1] - f.a[1]) - (f.b[1] - f.a[1]) * (p[0] - f.a[0]);
+    const sign = Math.sign(across(f.toward));
+    const next = [], moved = [];
+    pieces.forEach((pc) => {
+      /* where the piece lies now, cut there, and taken back to the sheet */
+      const lay = pc.pts.map((p) => { const v = moveBy(pc.flat, onSheet(p)); return [v[0], L / 2 - v[1]]; });
+      const back = undo(pc.flat);
+      const home = (p) => { const v = moveBy(back, onSheet(p)); return [v[0], L / 2 - v[1]]; };
+      [1, -1].forEach((keep) => {
+        const part = clipPiece(lay, pc.edges, (p) => keep * sign * across(p), f.step);
+        if (!part) return;
+        const piece = Object.assign({}, pc, { pts: part.pts.map(home), edges: part.edges });
+        if (keep === 1) {
+          piece.ops = pc.ops.concat([{ f, before: pc.flat }]);
+          if (f.flat) Object.assign(piece, { flat: andThen(pc.flat, turnAbout(A, d, f.angle)), flips: pc.flips + 1 });
+          moved.push(piece);
+        }
+        next.push(piece);
+      });
+    });
+    if (f.flat && moved.length) {
+      const top = Math.max(...pieces.map((p) => p.layer)), high = Math.max(...moved.map((p) => p.layer));
+      moved.forEach((p) => { p.layer = top + 1 + high - p.layer; });
+    }
+    pieces = next;
+  });
+  pieces.forEach((p) => { p.group = p.ops.filter((o) => !o.f.flat).map((o) => o.f.step + o.f.toward[0]).join(' '); });
+  return pieces;
+}
+
+/* where the piece is, part way through every fold: each fold turns it
+   about its line as the paper lay before that fold, so a piece stays
+   joined to its neighbours however far each fold has gone */
+function planePlace(piece, done) {
+  return piece.ops.reduceRight((q, o) => {
+    const [A, d] = o.f.axis;
+    const fold = andThen(andThen(o.before, turnAbout(A, d, o.f.angle * done[o.f.step])), undo(o.before));
+    return andThen(q, fold);
+  }, STILL);
+}
+
+/* the plane as seen: banked about its length, tipped away from us, then
+   turned on the page toward where it's going */
+function planeView(v, cam) {
+  let [x, y, z] = v;
+  let c = Math.cos(cam.roll), s = Math.sin(cam.roll);
+  [x, z] = [x * c + z * s, z * c - x * s];
+  c = Math.cos(cam.tilt); s = Math.sin(cam.tilt);
+  [y, z] = [y * c - z * s, y * s + z * c];
+  c = Math.cos(cam.turn); s = Math.sin(cam.turn);
+  [x, y] = [x * c - y * s, x * s + y * c];
+  return [x, y, z];
+}
+
+/* the card it was, in a few strokes: the drink, its name, the story, the
+   button at the foot */
+function planeWriting(color) {
+  const rand = seeded('plane');
+  const g = S('g', { fill: 'none', stroke: INK, 'stroke-linecap': 'round' });
+  g.appendChild(S('ellipse', { cx: -.58, cy: .5, rx: .2, ry: .24, fill: color, 'fill-opacity': .35, stroke: 'none' }));
+  const stroke = (x0, x1, y, w, a) => g.appendChild(S('path', {
+    d: `M${x0} ${y}L${x1} ${y}`, 'stroke-width': w, 'stroke-opacity': a, 'vector-effect': 'non-scaling-stroke'
+  }));
+  stroke(-.18, .66, .52, 2, .42);
+  for (let i = 0; i < 6; i++) stroke(-.72, .3 + rand() * .42, .98 + i * .2, 1, .2);
+  stroke(-.6, .6, 2.5, 3.5, .26);
+  return g;
+}
+
+/* where it flies to: the orders button, or the corner if that's hidden */
+function planeTarget() {
+  const b = $('#burger').getBoundingClientRect();
+  return b.width ? [b.left + b.width / 2, b.top + b.height / 2] : [innerWidth - 32, 32];
+}
+
+function foldAndFly(card, color, landed) {
+  const box = card.getBoundingClientRect();
+  const w = Math.min(140, box.width * .38);
+  card.style.setProperty('--send-x', (w / box.width).toFixed(4));
+  card.style.setProperty('--send-y', (w * PLANE.long / 2 / box.height).toFixed(4));
+  card.classList.add('sending');
+  planesAloft++;
+  setTimeout(() => {
+    if (card.open) card.close();
+    card.classList.remove('sending');
+    flyPlane(box.left + box.width / 2, box.top + box.height / 2, w / 2, color, () => {
+      planesAloft--;
+      landed();
+    });
+  }, PLANE.shrink);
+}
+
+function flyPlane(x0, y0, size, color, landed) {
+  const svg = S('svg', { class: 'plane', 'aria-hidden': 'true', focusable: 'false' });
+  const defs = S('defs');
+  const id = inkId('plane');
+  defs.appendChild(S('filter', { id: id + 's', x: '-40%', y: '-40%', width: '180%', height: '180%' }, [
+    S('feDropShadow', { dx: 0, dy: 7, stdDeviation: 5, 'flood-color': '#342618', 'flood-opacity': .2 })
+  ]));
+  const all = S('g', { filter: `url(#${id}s)` });
+  svg.append(defs, all);
+
+  const pieces = planePieces();
+  const line = { 'vector-effect': 'non-scaling-stroke', fill: 'none', stroke: INK, 'stroke-linecap': 'round' };
+  const edgesD = (p, kind) => p.edges.map((e, i) => {
+    if (e !== kind) return '';
+    const [a, b] = [p.pts[i], p.pts[(i + 1) % p.pts.length]];
+    return `M${a[0].toFixed(4)} ${a[1].toFixed(4)}L${b[0].toFixed(4)} ${b[1].toFixed(4)}`;
+  }).join('');
+  pieces.forEach((p, i) => {
+    const pts = p.pts.map((q) => q.map((n) => n.toFixed(4)).join(',')).join(' ');
+    defs.appendChild(S('clipPath', { id: id + 'c' + i, clipPathUnits: 'userSpaceOnUse' }, [S('polygon', { points: pts })]));
+    p.g = S('g');
+    /* the fill strokes itself in its own colour, so no seam shows between pieces */
+    p.fill = S('polygon', { points: pts, 'stroke-width': .8, 'stroke-linejoin': 'round', 'vector-effect': 'non-scaling-stroke' });
+    p.ink = S('g', { 'clip-path': `url(#${id}c${i})` }, [planeWriting(color)]);
+    p.cut = S('path', Object.assign({ d: edgesD(p, 'cut'), 'stroke-width': .9 }, line));
+    p.creases = ['corners', 'edges', 'half', 'wings'].filter((n) => p.edges.includes(n))
+      .map((n) => ({ n, el: S('path', Object.assign({ d: edgesD(p, n), 'stroke-width': .7 }, line)) }));
+    p.g.append(p.fill, p.ink, p.cut, ...p.creases.map((c) => c.el));
+  });
+  document.body.appendChild(svg);
+
+  const light = unitVec(-.35, .55, .75);
+  const end = planeTarget();
+  /* out to the right at first, then up into the corner */
+  const mid = [x0 + (end[0] - x0) * .7, y0 + (end[1] - y0) * .12];
+  const heading = (dx, dy) => Math.atan2(-dy, dx) - Math.PI / 2;
+  const turn0 = heading(mid[0] - x0, mid[1] - y0);
+
+  function draw(done, cam, look) {
+    const depth = {};
+    pieces.forEach((p) => {
+      const place = planePlace(p, done);
+      const at = (x, y) => planeView(moveBy(place, onSheet([x, y])), cam);
+      const o = at(0, 0), a = at(1, 0), b = at(0, 1);
+      const m = [a[0] - o[0], o[1] - a[1], b[0] - o[0], o[1] - b[1]].map((n) => n * cam.size);
+      const front = m[0] * m[3] - m[1] * m[2] > 0;
+      const u = [a[0] - o[0], a[1] - o[1], a[2] - o[2]], w = [b[0] - o[0], b[1] - o[1], b[2] - o[2]];
+      const n = unitVec(u[1] * w[2] - u[2] * w[1], u[2] * w[0] - u[0] * w[2], u[0] * w[1] - u[1] * w[0]);
+      const lit = (front ? -1 : 1) * (n[0] * light[0] + n[1] * light[1] + n[2] * light[2]);
+      const fill = mix(front ? PAPER_WASH : PAPER_BACK, PAPER_SHADE, Math.min(.4, Math.max(0, (.75 - lit) * .45)));
+      /* the stack faces the eye or away from it, which decides which layer is on top */
+      const up = planeView(turnBy(place, [0, 0, p.flips % 2 ? -1 : 1]), { roll: cam.roll, tilt: cam.tilt, turn: cam.turn })[2];
+      p.order = up >= 0 ? p.layer : -p.layer;
+      const g = depth[p.group] || (depth[p.group] = { z: 0, n: 0 });
+      p.pts.forEach((q) => { g.z += at(q[0], q[1])[2]; g.n++; });
+      p.g.setAttribute('transform', `matrix(${m.concat(cam.x + o[0] * cam.size, cam.y - o[1] * cam.size).map((v) => v.toFixed(3)).join(' ')})`);
+      p.fill.setAttribute('fill', fill);
+      p.fill.setAttribute('stroke', fill);
+      p.ink.setAttribute('opacity', front ? look.ink : 0);
+      p.cut.setAttribute('stroke-opacity', .55 * look.edge);
+      p.creases.forEach((c) => c.el.setAttribute('stroke-opacity', .4 * done[c.n]));
+    });
+    /* we always look down on it, so the body hanging under the wings goes
+       first; then nearer groups of paper over farther ones, and within one
+       flat stack, by layer */
+    const rank = (p) => (p.group.includes('wings') ? 1 : 0);
+    const z = (p) => depth[p.group].z / depth[p.group].n;
+    pieces.slice().sort((a, b) => rank(a) - rank(b) || (Math.abs(z(a) - z(b)) > 1e-6 ? z(a) - z(b) : a.order - b.order))
+      .forEach((p) => all.appendChild(p.g));
+    svg.style.opacity = look.alpha;
+  }
+
+  const t0 = performance.now();
+  function frame(now) {
+    const ms = now - t0;
+    if (ms < PLANE.fold) {
+      const u = ms / PLANE.fold;
+      const settle = smoothstep((u - .44) / .56);
+      draw(
+        { corners: smoothstep(u / .22), edges: smoothstep((u - .22) / .22), half: smoothstep((u - .44) / .3), wings: smoothstep((u - .58) / .3) },
+        { x: x0, y: y0, size: size * (1 - .2 * settle), tilt: -.85 * settle, turn: turn0 * smoothstep((u - .55) / .45), roll: -.35 * settle },
+        { ink: smoothstep(u / .1), edge: smoothstep(u / .2), alpha: 1 }
+      );
+    } else {
+      const t = (ms - PLANE.fold) / PLANE.flight;
+      if (t >= 1) { svg.remove(); landed(); return; }
+      /* along a curve, easing in and out: nothing lurches */
+      const p = (1 - Math.cos(Math.PI * t)) / 2, q = 1 - p;
+      const along = (i) => q * q * [x0, y0][i] + 2 * q * p * mid[i] + p * p * end[i];
+      const slope = (i) => 2 * q * (mid[i] - [x0, y0][i]) + 2 * p * (end[i] - mid[i]);
+      draw(
+        { corners: 1, edges: 1, half: 1, wings: 1 },
+        { x: along(0), y: along(1), size: size * .8 * (1 - .72 * p), tilt: -.85, turn: heading(slope(0), slope(1)), roll: -.35 - .15 * Math.sin(Math.PI * p) },
+        { ink: 1, edge: 1, alpha: 1 - smoothstep((t - .78) / .22) }
+      );
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
 }
 
 /* an empty coupe, waiting, for when no one has ordered yet */
@@ -5621,6 +5924,15 @@ function openSheet(drink) {
       return;
     }
     rememberGuest(who);
+    /* the slip, the shaker and the count answer once the order reaches
+       the bar; with motion off, that's at once */
+    const reached = () => {
+      toast(U('toast_ordered') + drink.name + U('toast_for') + who, drink, state);
+      stirTheBar();
+      if (state.smoke) releaseSmoke(drink);
+    };
+    const still = prefersStill();
+    if (!still) foldAndFly(sheet, drink.color, () => { pulseCounts(); reached(); });
     Book.add({
       id: 'o' + Date.now() + Math.random().toString(36).slice(2, 6),
       drink: drink.id,
@@ -5634,10 +5946,10 @@ function openSheet(drink) {
       at: Date.now(),
       done: false
     });
-    sheet.close();
-    toast(U('toast_ordered') + drink.name + U('toast_for') + who, drink, state);
-    stirTheBar();
-    if (state.smoke) releaseSmoke(drink);
+    if (still) {
+      sheet.close();
+      reached();
+    }
   });
 
   sheet.appendChild(form);
@@ -5772,6 +6084,12 @@ function railHead(title, action) {
   return h;
 }
 
+/* the count on the way to the orders says something new has come in */
+function pulseCounts() {
+  if ($('#tab-orders').getAttribute('aria-selected') === 'true') return;
+  [$('#pending-count'), $('#burger-count')].forEach((n) => { n.classList.remove('pulse'); void n.offsetWidth; n.classList.add('pulse'); });
+}
+
 function renderOrders(isNew) {
   const key = ordersKey();
   if (key === lastOrdersKey) return;
@@ -5787,9 +6105,8 @@ function renderOrders(isNew) {
   $('#tally-poured').textContent = poured.length;
   const counts = [$('#pending-count'), $('#burger-count')];
   counts.forEach((n) => { n.textContent = working.length; n.hidden = !working.length; });
-  if (isNew && working.length > lastWorking && $('#tab-orders').getAttribute('aria-selected') !== 'true') {
-    counts.forEach((n) => { n.classList.remove('pulse'); void n.offsetWidth; n.classList.add('pulse'); });
-  }
+  /* an order flying in as a paper plane pulses the count when it lands */
+  if (isNew && working.length > lastWorking && !planesAloft) pulseCounts();
   lastWorking = working.length;
 
   const body = $('#orders-body');
