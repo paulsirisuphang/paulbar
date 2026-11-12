@@ -7,9 +7,10 @@
    coupe, and the smoking gun pours out smoke. An order arriving sets the
    shaker going too.
 
-   Every arrival paints it onto the page the way a painter would, a part
-   at a time, and presses the house seal on the front of the bar to
-   finish.
+   Every piece of it is a watercolour, painted on its own (art/bar/) and
+   stood where it belongs, so a wider window shows more of the same bar.
+   Every arrival washes it onto the page a part at a time, and presses the
+   house seal on the front of the bar to finish.
 
    Things are drawn on a stage 340 units wide that keeps its size: up
    to 560px on a phone and 800px on a desktop. The counter and the
@@ -19,7 +20,7 @@
    ================================================================ */
 
 const COUNTER_Y = 140;                /* the front edge of the bar top */
-const BAR_TOP = COUNTER_Y - 2;        /* where things stand on it */
+const BAR_TOP = COUNTER_Y - 3.6;      /* where things stand on it: the middle of the top */
 const LABEL = '#F4F0E8';              /* paper labels */
 
 /* a group the stylesheet animates, sitting inside one that places it */
@@ -43,6 +44,32 @@ const paintAs = (el, part, order, written) => {
   if (written) el.setAttribute('data-written', '');
   return el;
 };
+
+/* A watercolour from art/bar/, standing with its foot at (x, foot) and h
+   units tall to there; a shadow or a drip in the picture below its foot
+   hangs below `foot`, the way it would on the wood. `along` is where across
+   the picture x falls, 0 at its left edge and 1 at its right. */
+function painted(name, x, foot, h, along = .5, widest = Infinity) {
+  const [pw, ph, low = 1] = BAR_ART[name];
+  let tall = h / low, w = tall * pw / ph;
+  /* never wider than the room it has: a squat bottle comes out shorter */
+  if (w > widest) { tall *= widest / w; w = widest; }
+  return S('image', { href: ART_BASE + 'bar/' + name + '.webp', x: fx(x - w * along), y: fx(foot - tall * low), width: fx(w), height: fx(tall), preserveAspectRatio: 'none', decoding: 'async' });
+}
+
+/* A run of painted wood from x0 to x1, each length the next one turned
+   end for end, so the grain never repeats where two lengths meet. */
+function paintedRun(name, x0, x1, top, h) {
+  const [pw, ph] = BAR_ART[name];
+  const w = h * pw / ph;
+  const g = S('g');
+  for (let x = x0, i = 0; x < x1; x += w, i++) {
+    const tile = S('image', { href: ART_BASE + 'bar/' + name + '.webp', x: fx(x), y: fx(top), width: fx(w + .3), height: fx(h), preserveAspectRatio: 'none' });
+    if (i % 2) tile.setAttribute('transform', 'translate(' + fx(2 * x + w) + ' 0) scale(-1 1)');
+    g.appendChild(tile);
+  }
+  return g;
+}
 
 /* ---------- the room ---------- */
 
@@ -93,30 +120,23 @@ function paulInKatakana() {
   return g;
 }
 
-function lantern(rand, ceiling) {
+function lantern(ceiling) {
   const hang = joint(LANTERN.x, ceiling, 'lantern');
   const drop = LANTERN.y - ceiling;
   const place = 'translate(0 ' + fx(drop - 14.6 * LANTERN.scale) + ') scale(' + LANTERN.scale + ')';
   hang.inner.appendChild(paintAs(pen([[0, 0], [0, drop + 1]], .7, { alpha: .7, straight: true }), 'lantern', 0));
   const g = paintAs(S('g', { transform: place }), 'lantern', 1);
   hang.inner.appendChild(g);
-  g.appendChild(S('rect', { x: -3.4, y: 14.6, width: 6.8, height: 3.6, rx: .6, fill: '#3B3530' }));
+  /* its light on the wall round it, which brightens when the lantern is
+     pointed at and breathes with it (bar.css) */
   const glow = inkId('lamp');
-  const body = 'M0,18 C13,18 16.6,28 16.6,36.4 C16.6,46 11,55.4 0,55.4 C-11,55.4 -16.6,46 -16.6,36.4 C-16.6,28 -13,18 0,18 Z';
-  g.appendChild(S('defs', {}, [S('radialGradient', { id: glow, cx: .45, cy: .48, r: .6 }, [
-    S('stop', { offset: 0, 'stop-color': '#FFF4D8' }),
-    S('stop', { offset: .7, 'stop-color': '#F3DDAE' }),
-    S('stop', { offset: 1, 'stop-color': '#DDBF8A' })
+  g.appendChild(S('defs', {}, [S('radialGradient', { id: glow }, [
+    S('stop', { offset: 0, 'stop-color': '#FFE7B8', 'stop-opacity': .7 }),
+    S('stop', { offset: 1, 'stop-color': '#FFE7B8', 'stop-opacity': 0 })
   ])]));
-  g.appendChild(S('path', { d: body, fill: '#EFE6D4' }));
-  g.appendChild(S('path', { d: body, fill: 'url(#' + glow + ')', class: 'lantern-light' }));
-  /* the bamboo ribs show through the paper */
-  for (let y = 22.5; y < 53; y += 4.2) {
-    const half = 16.6 * Math.sqrt(Math.max(0, 1 - ((y - 36.6) / 19.4) ** 2));
-    g.appendChild(pen(arc(0, y, half, half * .16, Math.PI * .98, Math.PI * .02, 12), .45, { alpha: .22 }));
-  }
-  g.appendChild(S('path', { d: body, fill: 'none', stroke: INK, 'stroke-width': .9, 'stroke-opacity': .75 }));
-  g.appendChild(S('rect', { x: -4.2, y: 54.4, width: 8.4, height: 2.4, rx: .8, fill: '#3B3530' }));
+  g.appendChild(S('ellipse', { cx: 0, cy: 36.4, rx: 30, ry: 32, fill: 'url(#' + glow + ')', class: 'lantern-light' }));
+  /* the paper lantern, its caps at 14.6 and 56.8 */
+  g.appendChild(painted('lantern', 0, 63.6, 55.1, .53));
   hang.inner.appendChild(paintAs(S('g', { transform: place, class: 'lantern-name' }, [paulInKatakana()]), 'lantern', 2, true));
   return hang.outer;
 }
@@ -126,54 +146,20 @@ const SECRET = 'vieux-carre';
 const openSecret = () => { const d = drinkById(SECRET); if (d) openSheet(d); };
 
 /* The bar top and the front of the slab, from x0 to x1, and the vase and
-   the bottle at either end of the stage. The long front edge of the bar
-   top is the first line the painter draws; the rest of the slab, its
-   other edges and its washes, waits until what stands on it is drawn. */
-function counter(rand, x0, x1) {
+   the bottle at either end of the stage. The wood goes down first, in one
+   long stroke along the bar; what stands on it comes after. */
+function counter(x0, x1) {
   const g = S('g');
-  const top = COUNTER_Y;
-  const slab = paintAs(S('g'), 'counter', 14);
-  slab.appendChild(wash(poly([[x0, top - 6], [x1, top - 6], [x1, top], [x0, top]]), '#E6D2B0', { alpha: 1, edge: 0 }));
-  slab.appendChild(wash(poly([[x0, top], [x1, top], [x1, top + 22], [x0, top + 22]]), '#D2B288', { alpha: 1, edge: 0 }));
-  /* grain, in long runs along the slab */
-  const runs = Math.ceil((x1 - x0) / 38);
-  for (let i = 0; i < runs; i++) {
-    const y = top + 3 + (i % 9) * 2.2 + rand() * 1.2;
-    const sx = x0 - 40 + (i / runs) * (x1 - x0) + rand() * 50;
-    const pts = trace((t) => [sx + t * (180 + rand() * 60), y + Math.sin(t * Math.PI * (1 + rand())) * 1.2], 10);
-    slab.appendChild(pen(pts, .35, { color: '#8C6A43', alpha: .28 + rand() * .2 }));
-  }
-  const edge = paintAs(brush(line([x0, top], [x1, top], Math.ceil((x1 - x0) / 16)), 1.2, { rand, taper: 0 }), 'counter', 0);
-  slab.appendChild(pen(line([x0, top - 6], [x1, top - 6], 2), .5, { alpha: .45, straight: true }));
-  slab.appendChild(pen(line([x0, top + 22], [x1, top + 22], 2), .7, { alpha: .55, straight: true }));
-  slab.appendChild(pen(line([x0, top - 3.2], [x1, top - 3.2], 2), .8, { color: GOUACHE, alpha: .5, straight: true }));
-  g.appendChild(slab);
-  g.appendChild(edge);
-
+  /* the hinoki slab: its top, 9 units deep, with everything standing in
+     the middle of it, then its face, from the front edge down */
+  g.appendChild(paintAs(S('g', {}, [
+    paintedRun('counter-top', x0, x1, COUNTER_Y - 8.5, 9.5),
+    paintedRun('counter-face', x0, x1, COUNTER_Y + 1, 21)
+  ]), 'counter', 0));
   /* a single branch in a stoneware vase at one end of the stage… */
-  const vx = 30, vy = top - 3;
-  const vase = paintAs(S('g'), 'counter', 8);
-  g.appendChild(vase);
-  vase.appendChild(wash('M' + (vx - 5) + ',' + vy + ' Q' + (vx - 7.4) + ',' + (vy - 9) + ' ' + (vx - 2.2) + ',' + (vy - 13) + ' L' + (vx - 2.2) + ',' + (vy - 17) +
-    ' L' + (vx + 2.2) + ',' + (vy - 17) + ' L' + (vx + 2.2) + ',' + (vy - 13) + ' Q' + (vx + 7.4) + ',' + (vy - 9) + ' ' + (vx + 5) + ',' + vy + ' Z',
-    '#B9AC97', { alpha: .97, edge: .35, edgeWidth: .8, edgeAlpha: .8 }));
-  const branch = [[vx, vy - 16], [vx + 3, vy - 30], [vx + 1, vy - 44], [vx + 7, vy - 56]];
-  vase.appendChild(brush(branch, 1.2, { rand, taper: .1, taperEnd: .5 }));
-  [[vx + 3, vy - 30, 1], [vx + 1.4, vy - 41, -1], [vx + 5.6, vy - 51, 1]].forEach(([x, y, s]) => {
-    vase.appendChild(wash(smooth([[x, y], [x + 4 * s, y - 3], [x + 7.5 * s, y - 1.5], [x + 3.6 * s, y + 1.2]], true), '#7F8F55', { alpha: .9, edge: .3, edgeWidth: .5 }));
-  });
-
-  /* …and the bottle that's being poured at the other */
-  const bx = 334, by = top - 3;
-  const bottleD = 'M' + (bx - 5) + ',' + by + ' L' + (bx - 5) + ',' + (by - 22) + ' Q' + (bx - 5) + ',' + (by - 27) + ' ' + (bx - 1.6) + ',' + (by - 29) +
-    ' L' + (bx - 1.6) + ',' + (by - 36) + ' L' + (bx + 1.6) + ',' + (by - 36) + ' L' + (bx + 1.6) + ',' + (by - 29) + ' Q' + (bx + 5) + ',' + (by - 27) + ' ' + (bx + 5) + ',' + (by - 22) + ' L' + (bx + 5) + ',' + by + ' Z';
-  const bottle = paintAs(S('g'), 'counter', 13);
-  g.appendChild(bottle);
-  bottle.appendChild(wash(bottleD, '#A86A2C', { alpha: .9, edge: .3, edgeWidth: .8 }));
-  bottle.appendChild(S('rect', { x: bx - 4, y: by - 17, width: 8, height: 8, fill: LABEL, stroke: INK, 'stroke-width': .4, 'stroke-opacity': .6 }));
-  bottle.appendChild(brush(line([bx - 3, by - 3], [bx - 3, by - 20], 4), .9, { color: GOUACHE, alpha: .6, taper: .3, even: true }));
-  bottle.appendChild(S('rect', { x: bx - 2, y: by - 38.5, width: 4, height: 3, fill: '#3B3530' }));
-  bottle.appendChild(S('path', { d: bottleD, fill: 'none', stroke: INK, 'stroke-width': .7, 'stroke-opacity': .8 }));
+  g.appendChild(paintAs(painted('vase', 30, BAR_TOP, 56), 'counter', 8));
+  /* …and the bottle that's being poured at the other, 30 cm */
+  g.appendChild(paintAs(painted('wine-amber', 334, BAR_TOP, 35), 'counter', 13));
   return g;
 }
 
@@ -200,30 +186,26 @@ const SPIRITS = ['#B47A34', '#8C5426', '#D5DED7', '#6E8BA3', '#A93A2E', '#6F2C28
 /* where each shelf's bottles stand: one high, one behind the counter */
 const SHELVES = [44, 100];
 
-const placed = (item) => 'translate(' + fx(item.x) + ' ' + item.y + ') scale(' + fx(item.scale) + ')';
+/* Which painted bottle stands for each shape of bottle, picked by its
+   colour so the run along a shelf varies the way the drawn one did. */
+const PAINTED_BOTTLES = {
+  square:   ['square-amber', 'round-vermouth', 'square-green'],
+  round:    ['round-vermouth', 'square-amber', 'slim-blue'],
+  slim:     ['slim-clear', 'slim-red', 'slim-tequila', 'tall-green', 'slim-blue'],
+  squat:    ['squat-red', 'squat-amaro', 'round-gold'],
+  decanter: ['decanter-amber', 'round-brown', 'round-gold']
+};
 
 function shelfBottle(item) {
+  const pick = PAINTED_BOTTLES[item.kind];
+  const name = pick[SPIRITS.indexOf(item.color) % pick.length];
+  /* as tall as the drawn bottle, to the top of its cap */
   const b = BOTTLES[item.kind];
-  const g = S('g', { transform: placed(item) });
-  g.appendChild(wash(b.d, item.color, { alpha: .92, edge: .3, edgeWidth: .7 }));
-  if (b.label && item.label) g.appendChild(S('rect', { x: b.label[0], y: b.label[1], width: b.label[2], height: b.label[3], rx: .5, fill: '#F3EDE1', 'fill-opacity': .9 }));
-  g.appendChild(pen([[-b.w * .27, -2.2], [-b.w * .27, b.neck * .5]], .7, { color: GOUACHE, alpha: .55, straight: true }));
-  g.appendChild(S('rect', { x: -b.nw - .3, y: b.neck - 2.4, width: (b.nw + .3) * 2, height: 2.4, rx: .5, fill: item.gold ? '#B08D4A' : '#3B3530' }));
-  g.appendChild(S('path', { d: b.d, fill: 'none', stroke: INK, 'stroke-width': .5, 'stroke-opacity': .55, 'stroke-linejoin': 'round' }));
-  return g;
+  return painted(name, item.x, item.y, (2.4 - b.neck) * item.scale * 1.08, .5, b.w * item.scale * 1.35);
 }
 
 /* a lidded jar in celadon or tea-brown glaze, between the bottles */
-function shelfJar(item) {
-  const g = S('g', { transform: placed(item) });
-  const body = 'M-4.6,0 L4.6,0 Q7.2,-5.8 5.2,-10.6 Q3.6,-12.6 0,-12.6 Q-3.6,-12.6 -5.2,-10.6 Q-7.2,-5.8 -4.6,0 Z';
-  g.appendChild(wash(body, item.color, { alpha: .95, edge: .3, edgeWidth: .8 }));
-  g.appendChild(S('ellipse', { cx: 0, cy: -12.8, rx: 3.8, ry: 1.1, fill: deepen(item.color, .2) }));
-  g.appendChild(S('rect', { x: -.9, y: -14.8, width: 1.8, height: 2, rx: .7, fill: deepen(item.color, .3) }));
-  g.appendChild(pen(arc(0, -6, 4.4, 4.4, Math.PI * .95, Math.PI * 1.3, 6), .7, { color: GOUACHE, alpha: .5 }));
-  g.appendChild(S('path', { d: body, fill: 'none', stroke: INK, 'stroke-width': .5, 'stroke-opacity': .55 }));
-  return g;
-}
+const shelfJar = (item) => painted(item.color === '#A9B79E' ? 'jar-celadon' : 'jar-brown', item.x, item.y, 14.8 * item.scale);
 
 /* The wine: three bottles of red standing together on the lower shelf,
    about as tall as the spirits beside them. */
@@ -278,7 +260,7 @@ function shelfItems(row, x0, x1) {
 }
 
 /* a bottle of red on the shelf, standing on 0,0 */
-const shelfWine = (item) => S('g', { transform: placed(item), class: 'shelf-wine' }, [S('g', { transform: 'translate(0 -8)' }, [wineBottle(.42)])]);
+const shelfWine = (item) => S('g', { class: 'shelf-wine' }, [painted('wine-green', item.x, item.y, 21 * item.scale)]);
 
 /* Floating hinoki shelves from one edge of the window to the other, lit
    along the back so the bottles stand against a warm glow. */
@@ -289,142 +271,24 @@ function backBar(defs, x0, x1) {
     S('stop', { offset: 0, 'stop-color': '#FBE3B4', 'stop-opacity': 0 }),
     S('stop', { offset: 1, 'stop-color': '#FBE3B4', 'stop-opacity': .85 })
   ]));
-  const shade = inkId('shelfshade');
-  defs.appendChild(S('linearGradient', { id: shade, x1: 0, y1: 0, x2: 0, y2: 1 }, [
-    S('stop', { offset: 0, 'stop-color': '#5A4630', 'stop-opacity': .16 }),
-    S('stop', { offset: 1, 'stop-color': '#5A4630', 'stop-opacity': 0 })
-  ]));
   SHELVES.forEach((y, row) => {
     g.appendChild(S('rect', { x: x0, y: y - 26, width: x1 - x0, height: 26, fill: 'url(#' + glow + ')', class: 'shelf-glow' }));
     /* each shelf is painted from the top down: its plank, then what
        stands on it from left to right */
     shelfItems(row, x0, x1).forEach((item, i) => g.appendChild(paintAs(item.jar ? shelfJar(item) : item.wine ? shelfWine(item) : shelfBottle(item), 'shelves', row * 1000 + 1 + i)));
-    /* the plank edge-on, and its shadow on the wall */
-    g.appendChild(paintAs(S('g', {}, [
-      S('rect', { x: x0, y: y + 3.4, width: x1 - x0, height: 5, fill: 'url(#' + shade + ')' }),
-      wash(poly([[x0, y], [x1, y], [x1, y + 3.4], [x0, y + 3.4]]), '#D3B48A', { alpha: 1, edge: 0 }),
-      pen(line([x0, y + .5], [x1, y + .5], 2), .6, { color: GOUACHE, alpha: .6, straight: true }),
-      pen(line([x0, y + 3.4], [x1, y + 3.4], 2), .45, { alpha: .45, straight: true })
-    ]), 'shelves', row * 1000));
+    /* the plank edge-on, with its shadow on the wall */
+    g.appendChild(paintAs(paintedRun('shelf', x0, x1, y - .6, 6), 'shelves', row * 1000));
   });
   return g;
 }
 
 /* ---------- on the counter ---------- */
 
-/* A cobbler shaker, the one Japanese bartenders use: a body that widens
-   to the shoulder, a strainer cone, a small cap. Drawn standing on 0,0. */
-function shaker() {
-  const g = S('g');
-  const outline = 'M-3.3,0 L3.3,0 L4.6,-14.6 L4.6,-15.8 C4.2,-18 2.9,-19.6 2.2,-20.4 L2.2,-21.2 ' +
-    'C2.2,-23.4 1.4,-24.6 0,-24.6 C-1.4,-24.6 -2.2,-23.4 -2.2,-21.2 L-2.2,-20.4 C-2.9,-19.6 -4.2,-18 -4.6,-15.8 L-4.6,-14.6 Z';
-  g.appendChild(wash(outline, '#C6C9C5', { alpha: .97, edge: .3, edgeWidth: .8, edgeAlpha: .8 }));
-  /* the seams where the cone and the cap sit */
-  g.appendChild(pen([[-4.6, -14.8], [4.6, -14.8]], .5, { alpha: .5, straight: true }));
-  g.appendChild(pen([[-2.2, -20.6], [2.2, -20.6]], .45, { alpha: .5, straight: true }));
-  g.appendChild(brush(line([-1.5, -2], [-2.4, -13.6], 4), 1.1, { color: GOUACHE, alpha: .85, taper: .3, even: true }));
-  g.appendChild(brush(line([-1.6, -16.4], [-.9, -19.4], 3), .7, { color: GOUACHE, alpha: .7, taper: .3, even: true }));
-  g.appendChild(S('path', { d: outline, fill: 'none', stroke: INK, 'stroke-width': .7, 'stroke-opacity': .8, 'stroke-linejoin': 'round' }));
-  return g;
-}
-
-/* a bottle of red, standing about its middle; `weight` is its outline's,
-   lighter on the shelf where it is drawn larger */
-function wineBottle(weight = .6) {
-  const g = S('g');
-  const shape = 'M-3.3,8 L3.3,8 L3.3,-2.5 Q3.3,-5.6 1.3,-7.2 L1.3,-12 L-1.3,-12 L-1.3,-7.2 Q-3.3,-5.6 -3.3,-2.5 Z';
-  g.appendChild(wash(shape, '#3E5A43', { alpha: .95, edge: .3, edgeWidth: .7 }));
-  g.appendChild(S('rect', { x: -2.6, y: -1, width: 5.2, height: 5, fill: LABEL, stroke: INK, 'stroke-width': .35, 'stroke-opacity': .6 }));
-  g.appendChild(S('rect', { x: -1.5, y: -13, width: 3, height: 3.4, fill: '#7B2B22' }));
-  g.appendChild(brush(line([-1.9, 6], [-1.9, -3], 3), .7, { color: GOUACHE, alpha: .6, taper: .3, even: true }));
-  g.appendChild(S('path', { d: shape, fill: 'none', stroke: INK, 'stroke-width': weight, 'stroke-opacity': .8 }));
-  return g;
-}
-
 /* Everything on the counter is drawn to one scale: a bottle 30 cm tall is
-   35 units, so a centimetre is about 1.17. */
-
-/* A Japanese mixing glass, the cut kind, half full and stirred: 11 cm
-   tall and 9.5 across the rim, a little narrower at its thick base, with
-   a lip on one side to pour from. Drawn standing on 0,0. */
-function mixingGlass() {
-  const g = S('g');
-  const body = 'M-5.3,0 Q-5.7,0 -5.7,-.6 L-6.1,-13.4 L-6.9,-14.1 L6.1,-14.1 L6.1,-13.4 L5.7,-.6 Q5.7,0 5.3,0 Z';
-  const defs = S('defs');
-  g.appendChild(defs);
-  const inside = clipPath(defs, body);
-  g.appendChild(S('path', { d: body, fill: GLASS_TINT, 'fill-opacity': .35 }));
-  const liquid = 'M-5.2,-1.7 L-5.6,-8.3 L5.6,-8.3 L5.2,-1.7 Z';
-  g.appendChild(wash(liquid, '#B4823F', { alpha: .82, edge: .3, edgeWidth: .6, edgeAlpha: .4 }));
-  g.appendChild(S('ellipse', { cx: 0, cy: -8.3, rx: 5.6, ry: .9, fill: lighten('#B4823F', .4), 'fill-opacity': .8 }));
-  /* the arrow-feather cut on the lower half, inside the glass */
-  const cut = S('g', { 'clip-path': 'url(#' + inside + ')' });
-  for (let i = -3; i <= 3; i++) {
-    cut.appendChild(pen([[i * 2.4 - 3.4, -1.6], [i * 2.4 + 3.4, -9]], .35, { color: GOUACHE, alpha: .45, straight: true }));
-    cut.appendChild(pen([[i * 2.4 + 3.4, -1.6], [i * 2.4 - 3.4, -9]], .35, { color: INK, alpha: .14, straight: true }));
-  }
-  g.appendChild(cut);
-  /* the thick base */
-  g.appendChild(pen([[-5.6, -1.5], [5.6, -1.5]], .4, { alpha: .35, straight: true }));
-  g.appendChild(S('path', { d: body, fill: 'none', stroke: INK, 'stroke-width': .6, 'stroke-opacity': .75, 'stroke-linejoin': 'round' }));
-  g.appendChild(S('ellipse', { cx: -.2, cy: -14.1, rx: 6.3, ry: 1, fill: 'none', stroke: INK, 'stroke-width': .5, 'stroke-opacity': .7 }));
-  g.appendChild(brush(line([-4.6, -2.4], [-4.9, -12.6], 4), .8, { color: GOUACHE, alpha: .7, taper: .3, even: true }));
-  return g;
-}
-
-/* a bar spoon, 40 cm, twisted along its length, its foot in the glass and
-   drawn from where it leans on the rim */
-function barSpoon() {
-  const g = S('g');
-  const foot = [-2.4, 6], tip = [7, -38];
-  g.appendChild(pen([foot, tip], .7, { color: '#8E9391', alpha: 1, straight: true }));
-  for (let i = 1; i < 12; i++) {
-    const u = i / 12;
-    const x = foot[0] + (tip[0] - foot[0]) * u, y = foot[1] + (tip[1] - foot[1]) * u;
-    g.appendChild(pen([[x - .7, y + .3], [x + .7, y - .3]], .35, { color: INK, alpha: .45, straight: true }));
-  }
-  g.appendChild(wash(smooth(arc(tip[0] + .5, tip[1] - 1.6, 1.1, 1.9, 0, Math.PI * 2, 10), true), '#A7ACAA', { alpha: 1, edge: .4, edgeWidth: .5 }));
-  return g;
-}
-
-/* A smoking gun standing on the counter: a hand-held smoker the size of a
-   hair dryer, 16 cm long, its grip down, wood chips smouldering in the
-   steel cup on top and its hose lying along the bar. Drawn standing on
-   0,0 with its nozzle to the left; the hose is drawn by smokingHose. */
-const SMOKER = { x: 72, nozzle: [-11.3, -14.5] };
-function smokingGun() {
-  const g = S('g');
-  const grip = 'M-2.2,0 L4.6,0 Q5.1,0 5,-.6 L4.3,-12.2 L-2.3,-12.2 L-2.9,-.6 Q-2.9,0 -2.2,0 Z';
-  const head = 'M6.2,-11.8 L-7.4,-11.8 Q-8.4,-11.8 -8.7,-12.9 L-10.6,-13.1 L-10.6,-15.9 L-8.7,-16.1 Q-8.3,-17.4 -6.9,-17.4 L5,-17.4 Q6.4,-17.4 6.4,-16 Z';
-  const cup = 'M.6,-17.2 L5.6,-17.2 L6,-21.6 L.2,-21.6 Z';
-  g.appendChild(wash(grip, '#4A4542', { alpha: .95, edge: .3, edgeWidth: .6 }));
-  g.appendChild(wash(head, '#55504C', { alpha: .95, edge: .3, edgeWidth: .6 }));
-  g.appendChild(wash(cup, '#B9BDBA', { alpha: .97, edge: .3, edgeWidth: .5 }));
-  g.appendChild(S('rect', { x: -11.3, y: -16.2, width: 1.1, height: 3.4, rx: .4, fill: '#3B3530' }));
-  g.appendChild(S('rect', { x: -2.9, y: -9.8, width: 1.1, height: 2.4, rx: .5, fill: '#3B3530' }));
-  /* the chips smouldering in the cup */
-  [[2, -21.8, '#C2622F'], [3.4, -22, '#8C3B1E'], [4.5, -21.8, '#C2622F']].forEach(([x, y, c]) => g.appendChild(S('circle', { cx: x, cy: y, r: .55, fill: c })));
-  g.appendChild(brush(line([-6.6, -16.4], [4.4, -16.4], 5), .7, { color: GOUACHE, alpha: .45, taper: .3, even: true }));
-  g.appendChild(pen([[-1.4, -1.6], [-1.6, -10.6]], .5, { color: GOUACHE, alpha: .35, straight: true }));
-  g.appendChild(S('path', { d: grip, fill: 'none', stroke: INK, 'stroke-width': .6, 'stroke-opacity': .8, 'stroke-linejoin': 'round' }));
-  g.appendChild(S('path', { d: head, fill: 'none', stroke: INK, 'stroke-width': .6, 'stroke-opacity': .8, 'stroke-linejoin': 'round' }));
-  g.appendChild(S('path', { d: cup, fill: 'none', stroke: INK, 'stroke-width': .5, 'stroke-opacity': .8, 'stroke-linejoin': 'round' }));
-  g.appendChild(S('ellipse', { cx: 3.1, cy: -21.6, rx: 2.9, ry: .6, fill: 'none', stroke: INK, 'stroke-width': .5, 'stroke-opacity': .8 }));
-  return g;
-}
-
-/* its hose, from the nozzle down onto the counter and along it, in the
-   stage's own units: a soft grey tube with a glint along it */
-function smokingHose() {
-  const g = S('g');
-  const [nx, ny] = [SMOKER.x + SMOKER.nozzle[0], BAR_TOP + SMOKER.nozzle[1]];
-  const run = through([[nx, ny], [nx - 3.2, ny + 1], [nx - 5.3, ny + 5.5], [nx - 6.1, ny + 10.7], [nx - 8.5, ny + 13.4], [nx - 13.7, ny + 13.8], [nx - 18.2, ny + 13.5]], 4);
-  g.appendChild(pen(run, 1.6, { color: '#9A9F9C', alpha: .75 }));
-  g.appendChild(pen(run.map(([x, y]) => [x, y - .45]), .35, { color: GOUACHE, alpha: .5 }));
-  const [ex, ey] = run[run.length - 1];
-  g.appendChild(S('ellipse', { cx: ex - .2, cy: ey, rx: .5, ry: .85, fill: '#3B3530', 'fill-opacity': .7 }));
-  return g;
-}
+   35 units, so a centimetre is about 1.17. The smoking gun stands with its
+   grip at SMOKER.x; in its picture the steel cup sits a little left of the
+   grip and the hose curls away to the left, ending on the bar. */
+const SMOKER = { x: 72, tall: 21.8, along: .86, cup: [-7.7, -21.8], hoseEnd: [-17, -1.5] };
 
 /* Smoke: soft grey wisps that rise and thin out, each on its own slow
    loop. `from` is where it leaves, then where it drifts to, in the
@@ -442,17 +306,6 @@ function smokeWisps(paths, opts = {}) {
   return g;
 }
 
-/* a Japanese jigger: two cones point to point */
-function jigger() {
-  const d = 'M-4.6,-17 L4.6,-17 L1.2,-8.6 L4.2,0 L-4.2,0 L-1.2,-8.6 Z';
-  return S('g', {}, [
-    wash(d, '#C6C9C5', { alpha: .97, edge: .3, edgeWidth: .7 }),
-    S('ellipse', { cx: 0, cy: -17, rx: 4.6, ry: 1, fill: '#9EA3A1' }),
-    pen([[-2.6, -15], [-.9, -9.6]], .7, { color: GOUACHE, alpha: .7, straight: true }),
-    S('path', { d, fill: 'none', stroke: INK, 'stroke-width': .6, 'stroke-opacity': .75 })
-  ]);
-}
-
 /* What's on the bar, left to right, the stretch of it each one's button
    covers, and the words a screen reader says for it. */
 const PIECES = [
@@ -464,7 +317,7 @@ const PIECES = [
 
 /* each piece as a group: what's always there (.still), and what only
    appears while it performs (.act) */
-function drawPieces(rand) {
+function drawPieces() {
   const piece = (id, still, act) => {
     const g = S('g', { class: 'piece piece-' + id });
     if (still) g.appendChild(S('g', { class: 'still' }, still));
@@ -477,13 +330,12 @@ function drawPieces(rand) {
      its ball, and the coupe */
 
   /* a ball teed up beside a coupe, which is a Sidecar */
-  const coupe = paintAs(drawDrink(drinkById('sidecar'), {}, 'static'), 'counter', 12);
   /* a coupe is 15 cm tall: its glass stands 18 units on the counter */
-  [['x', 270.9], ['y', BAR_TOP - 30], ['width', 23], ['height', 32.6]].forEach(([k, v]) => coupe.setAttribute(k, v));
+  const coupe = paintAs(painted('coupe', 282.4, BAR_TOP, 18), 'counter', 12);
 
-  /* the smoking gun, its hose, and the smoke from its cup and hose end */
-  const nozzle = [SMOKER.x + SMOKER.nozzle[0] - 18.2, BAR_TOP - .9];
-  const cupTop = [SMOKER.x + 3.1, BAR_TOP - 21.8];
+  /* the smoke from the gun's cup and from the end of its hose */
+  const cupTop = [SMOKER.x + SMOKER.cup[0], BAR_TOP + SMOKER.cup[1]];
+  const nozzle = [SMOKER.x + SMOKER.hoseEnd[0], BAR_TOP + SMOKER.hoseEnd[1]];
   const drift = (x, y) => [
     [[x, y], [x - .8, y - 6], [x + 1.2, y - 12], [x - .6, y - 18], [x + .6, y - 24]],
     [[x, y], [x + 1, y - 5], [x - 1.4, y - 10], [x + .4, y - 16]],
@@ -491,8 +343,7 @@ function drawPieces(rand) {
   ];
   const smoke = smokeWisps([
     ...drift(...cupTop),
-    [[nozzle[0], nozzle[1]], [nozzle[0] - 3.5, nozzle[1] - 2.4], [nozzle[0] - 5, nozzle[1] - 7.5], [nozzle[0] - 3, nozzle[1] - 12.5], [nozzle[0] - 4.6, nozzle[1] - 18]],
-    [[nozzle[0], nozzle[1] + .2], [nozzle[0] - 5, nozzle[1] - .2], [nozzle[0] - 9, nozzle[1] - 1.4], [nozzle[0] - 13, nozzle[1] - 2.2]]
+    [[nozzle[0], nozzle[1]], [nozzle[0] - 3.5, nozzle[1] - 2.4], [nozzle[0] - 5, nozzle[1] - 7.5], [nozzle[0] - 3, nozzle[1] - 12.5], [nozzle[0] - 4.6, nozzle[1] - 18]]
   ]);
   /* tapped, it pours out a good deal more */
   const billow = smokeWisps([
@@ -500,24 +351,24 @@ function drawPieces(rand) {
     [[nozzle[0], nozzle[1]], [nozzle[0] - 4, nozzle[1] - 4], [nozzle[0] - 3, nozzle[1] - 11], [nozzle[0] - 6, nozzle[1] - 18], [nozzle[0] - 4, nozzle[1] - 26]],
     [[nozzle[0] + 1, nozzle[1]], [nozzle[0] - 2, nozzle[1] - 6], [nozzle[0] + 1, nozzle[1] - 13], [nozzle[0] - 1, nozzle[1] - 21]]
   ], { seed: 'more', every: .9, width: 3.2, alpha: .34 });
-
   return [
+    /* a Japanese mixing glass, 11 cm, and its bar spoon, 40 cm, leaning in it */
     piece('stir', [
-      paintAs(S('g', { transform: 'translate(152 ' + BAR_TOP + ')' }, [mixingGlass()]), 'counter', 2),
-      paintAs(moving(152, BAR_TOP - 8, 'spoon', [barSpoon()]), 'counter', 3)
+      paintAs(painted('mixing-glass', 152, BAR_TOP, 13.5), 'counter', 2),
+      paintAs(moving(152, BAR_TOP - 8, 'spoon', [painted('bar-spoon', 0, 6, 46, .12)]), 'counter', 3)
     ]),
     /* a cobbler shaker is 23 cm tall */
-    piece('shake', [paintAs(moving(190, BAR_TOP, 'shake-body', [S('g', { transform: 'scale(1.1)' }, [shaker()])]), 'counter', 1)]),
+    piece('shake', [paintAs(moving(190, BAR_TOP, 'shake-body', [painted('shaker', 0, 0, 27)]), 'counter', 1)]),
     piece('chip', [
       /* a jigger, 9 cm */
-      paintAs(S('g', { transform: 'translate(216 ' + BAR_TOP + ') scale(.58)' }, [jigger()]), 'counter', 9),
+      paintAs(painted('jigger', 216, BAR_TOP, 10), 'counter', 9),
       coupe,
-      paintAs(pen([[244, BAR_TOP], [244, BAR_TOP - 3.6]], 1.1, { color: '#C7A26A', alpha: 1, straight: true }), 'counter', 10),
-      paintAs(moving(244, BAR_TOP - 6, 'chip-ball', [S('circle', { cx: 0, cy: 0, r: 2.6, fill: GOUACHE, stroke: INK, 'stroke-width': .6, 'stroke-opacity': .8 })]), 'counter', 11)
+      /* a tee pushed into nothing, so it stands its full 5 cm, the ball on it */
+      paintAs(painted('tee', 244, BAR_TOP, 3.6), 'counter', 10),
+      paintAs(moving(244, BAR_TOP - 6, 'chip-ball', [painted('ball', 0, 2.7, 5.4)]), 'counter', 11)
     ]),
     piece('smoke', [paintAs(S('g', {}, [
-      smokingHose(),
-      S('g', { transform: 'translate(' + SMOKER.x + ' ' + BAR_TOP + ')' }, [smokingGun()]),
+      painted('smoking-gun', SMOKER.x, BAR_TOP, SMOKER.tall, SMOKER.along),
       smoke
     ]), 'counter', 7)], [billow])
   ];
@@ -559,16 +410,16 @@ const stirTheBar = () => perform('shake', 3000);
    that it's drawn faster, and then a quick hand starts the next thing
    before the last is done, the way it runs along a shelf. */
 const PAINT_PARTS = [
-  { part: 'counter', ink: 3.1, wash: 1.7, finish: .6 },
-  { part: 'shelves', ink: 1.5, each: .015, most: 2.4, wash: 1.6, finish: .5 },
-  { part: 'lantern', ink: 1.7, wash: .5, finish: .3 }
+  { part: 'counter', ink: 3.1, wash: 4.2, finish: .6 },
+  { part: 'shelves', ink: 1.5, each: .015, most: 2.4, wash: 4.4, finish: .5 },
+  { part: 'lantern', ink: 1.7, wash: 1.4, finish: .3 }
 ];
 const PAINT_FROM = .5;          /* a moment of bare paper first */
 const INK_SPEED = 150;          /* an unhurried hand, in units of the stage a second */
 const PAINT_SKIP = ['pointerdown', 'keydown', 'wheel', 'touchstart'];
 /* when a tap last finished the painting, so that tap does nothing else */
 let paintSkipped = 0;
-const PAINTED = 'path, rect, circle, ellipse';
+const PAINTED = 'path, rect, circle, ellipse, image';
 const UNPAINTED = 'defs, clipPath, mask, pattern, .act';
 const HIGHLIGHT = [GOUACHE, PAPER_WASH];     /* white, put on last */
 const PAPER = [LABEL, '#F3EDE1'];             /* labels: the wash goes round them */
@@ -593,6 +444,8 @@ function markOf(s, k) {
   const attr = (a) => (s.getAttribute(a) || '').toUpperCase();
   const num = (a) => { const v = parseFloat(s.getAttribute(a)); return isNaN(v) ? 1 : v; };
   if (/lantern-light/.test(s.getAttribute('class') || '')) return 'light';
+  /* a watercolour goes on as a wash, a long one laid along the bar */
+  if (s.tagName === 'image') return 'wash';
   const fill = attr('fill'), stroke = attr('stroke');
   const stroked = stroke !== '' && stroke !== 'NONE';
   if (fill === 'NONE') {
@@ -750,8 +603,9 @@ function paintIn(box, svg) {
   PAINT_PARTS.forEach((p) => {
     const list = (parts[p.part] || []).sort((a, b) => a.getAttribute('data-order') - b.getAttribute('data-order'));
     t = ink(list, t, Math.min(p.most || p.ink, p.ink + (p.each || 0) * list.length));
-    t = washes(list, t - .1, p.wash);
-    t = finish(list, t - .3, p.finish);
+    const washed = washes(list, t, p.wash);
+    /* a part with no fine lines left to finish still waits for its washes to dry */
+    t = Math.max(washed, finish(list, washed - .3, p.finish));
     if (p.part === 'counter') menuAt = t;
   });
 
@@ -807,7 +661,6 @@ function renderScene(paint = false) {
   sceneWidth = box.clientWidth;
   const span = Math.max(sceneWidth / stageUnit(), STAGE_W);
   const x0 = 180 - span / 2, x1 = 180 + span / 2;
-  const rand = seeded('bar');
   const svg = S('svg', { viewBox: [x0, VIEW_TOP, span, VIEW_TALL].map((n) => fx(n)).join(' '), 'aria-hidden': 'true', focusable: 'false' });
   const defs = S('defs');
   const glow = inkId('room');
@@ -826,9 +679,9 @@ function renderScene(paint = false) {
   /* the light runs up behind the header to the top of the page, so it
      never starts at an edge where the header ends */
   svg.appendChild(S('rect', { x: x0, y: ceiling, width: span, height: COUNTER_Y - ceiling, fill: 'url(#' + glow + ')', class: 'lantern-glow' }));
-  svg.appendChild(lantern(rand, ceiling));
-  svg.appendChild(counter(rand, x0 - 2, x1 + 2));
-  drawPieces(rand).forEach((g) => svg.appendChild(g));
+  svg.appendChild(lantern(ceiling));
+  svg.appendChild(counter(x0 - 2, x1 + 2));
+  drawPieces().forEach((g) => svg.appendChild(g));
   /* the house seal on the front of the bar, the way a painter signs */
   svg.appendChild(S('g', { transform: 'translate(322 151.5)' }, [S('g', { class: 'bar-seal' }, [houseSeal(17)])]));
 

@@ -616,7 +616,7 @@ function smokeOver(geo, rand, how) {
    Where a drink has a painted picture, it stands in for the drawn glass on
    the menu, the card and the ticket. It stands where the drawn glass would,
    sized to that glass's height, so a tall glass stays taller than a rocks
-   glass; the smoke is still drawn over it. The counter keeps its drawings. */
+   glass; the smoke is still drawn over it. */
 const ART_BASE = 'art/';
 /* the picture runs a little above the rim, for the garnish, and below the
    foot, for the drips */

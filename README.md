@@ -7,10 +7,10 @@ one with its own watercolour, plus one that isn't on the list.
 - The **menu** opens on the bar at rest: shelves of bottles, a paper
   lantern hanging from the top of the page with Paul's name on it in
   katakana (ポール), and the tools left out on a hinoki counter, a smoking
-  gun among them, all drawn to the same scale. Every visit paints it onto
-  the page the way a painter would, a part at a time: the counter and the
-  tools on it, outlined in ink and then washed with colour; then the
-  shelves behind; then the lantern, its name written stroke by stroke, and
+  gun among them, every piece a watercolour, all to the same scale. Every
+  visit washes it onto the page a part at a time: the counter's wood laid
+  along it and the tools on it; then the shelves behind; then the lantern,
+  its name written stroke by stroke, and
   lit last; then the house seal, pressed on the front of the bar. It takes
   about 14 seconds, and a tap finishes it at once. Tap a piece on the
   counter and it does a party piece for ten seconds. The four filters show
@@ -59,14 +59,22 @@ build stops if the script doesn't parse or the stylesheets don't balance.
 | `src/js/` | The code, joined in order into one script |
 | `src/fonts/` | The fonts, cut down to the letters the page uses (`tools/make_fonts.py`) |
 | `art/` | One watercolour per drink, plus `<id>-egg` for a sour served up with egg white; the only files the page loads besides itself |
+| `art/bar/` | The bar in watercolour, a piece at a time: bottles, jars, the counter tools, the lantern, and the wood of the shelves and the counter |
 
 The watercolours were painted with Nano Banana in Figma Weave, one drink at
 a time, each with a finished picture in the same glass as its reference.
 `node tools/paint.mjs <folder of PNGs> art` turns them into the files in
 `art/`: the paper is made see-through, so the drink sits on the card's own
 paper, and each is trimmed and sized. It also writes their sizes to
-`src/data/04-art.js`. A drink without a picture falls back to its drawing,
-and the bar counter keeps its drawings.
+`src/data/04-art.js`. A drink without a picture falls back to its drawing.
+
+The bar was painted the same way, as sheets of things standing in a row:
+bottles, jars, the counter tools, the lantern, and the wood. `node
+tools/sprites.mjs <sheet.png> art/bar <names>` cuts a sheet into one picture
+per thing, and `node tools/bar-art.mjs` records each picture's size and
+where its foot is, so a shadow under a bottle never lifts it off the shelf.
+The code stands each piece where its drawing used to be, so a wider window
+still shows more of the same bar, and the tools still do their party pieces.
 
 The code, file by file:
 
@@ -77,7 +85,7 @@ The code, file by file:
 | `02-book.js` | The order book: this browser first, then the shared book |
 | `03-ink.js` | The brush: strokes, washes and paper grain |
 | `04-glass.js` | Every drink, drawn from its recipe, and the watercolours that stand in for the drawings |
-| `05-bar.js` | The bar: shelves, lantern, counter, the party pieces, the drink behind the lantern, and painting it in |
+| `05-bar.js` | The bar: shelves, lantern, counter, the party pieces, the drink behind the lantern, and washing it in |
 | `06-marks.js` | The seals, the tee, the icons, smoke that leaves the glass, and the paper plane an order flies off in |
 | `07-menu.js` | Filters, sections and the list |
 | `08-sheet.js` | A drink's card and placing an order |

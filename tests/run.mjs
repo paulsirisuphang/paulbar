@@ -34,7 +34,7 @@ async function comeBack(page) {
 /* everything in the bar's drawing that shows at this moment of the painting */
 const inkShowing = (page) => page.evaluate(() => {
   const svg = document.querySelector('#scene svg');
-  return [...svg.querySelectorAll('path, rect, circle, ellipse, text')].filter((s) => {
+  return [...svg.querySelectorAll('path, rect, circle, ellipse, text, image')].filter((s) => {
     if (s.closest('defs, clipPath, mask, pattern, .act')) return false;
     for (let n = s; n !== svg; n = n.parentNode) if (+getComputedStyle(n).opacity < .02) return false;
     const cs = getComputedStyle(s);
@@ -77,15 +77,16 @@ const checks = [
     await page.clock.pauseAt(Date.now() + 1000);
     await page.goto(TEST_PAGE);
     ok(await page.$('#scene.painting'), 'the bar is not painted in on the first load');
-    ok(await count(page, '#scene .paint-line') > 100, 'too few lines are drawn in');
-    ok(await count(page, '#scene .paint-bleed') > 60, 'too few washes are laid in');
+    /* each watercolour is washed in, and the wood laid along the bar */
+    ok(await count(page, '#scene image.paint-bleed') > 30, 'too few watercolours are washed in');
+    ok(await count(page, '#scene image[class*="paint-wipe"]') >= 4, 'the wood of the shelves and the counter is not laid along');
     /* at the first moment the paper is blank; at the last the bar is all there */
     const all = await page.evaluate(() => document.querySelectorAll('#scene svg *').length);
     await page.evaluate(() => document.getAnimations().forEach((a) => { a.pause(); a.currentTime = 0; }));
     eq(await inkShowing(page), 0, 'marks on the paper before the painting starts');
     await page.evaluate(() => document.getAnimations().forEach((a) => { a.currentTime = 30000; }));
     const done = await inkShowing(page);
-    ok(done > 300, `only ${done} marks of ${all} show at the end of the painting`);
+    ok(done > 90, `only ${done} marks of ${all} show at the end of the painting`);
     await page.evaluate(() => document.getAnimations().forEach((a) => a.play()));
     /* it takes its time: still going at nine seconds, done by sixteen */
     await page.clock.runFor(9000);
@@ -109,7 +110,7 @@ const checks = [
       };
       document.querySelectorAll('#scene [data-part]').forEach((o) => {
         const part = o.getAttribute('data-part'), order = o.getAttribute('data-order');
-        const shapes = o.matches('path, rect, circle, ellipse') ? [o] : [...o.querySelectorAll('path, rect, circle, ellipse')];
+        const shapes = o.matches('path, rect, circle, ellipse, image') ? [o] : [...o.querySelectorAll('path, rect, circle, ellipse, image')];
         shapes.forEach((s) => {
           add(part, s);
           add(part + ' ' + order, s);
@@ -128,7 +129,6 @@ const checks = [
     /* Paul's name goes on the lantern stroke by stroke, in the order it's written */
     const written = await page.$$eval('#scene .lantern-name path', (p) => p.map((s) => parseFloat(s.style.getPropertyValue('--d'))));
     ok(written.every((d, i) => !i || d > written[i - 1]), 'the name is not written stroke after stroke: ' + written.join(', '));
-    ok(s['counter 1 lines'].to <= s['counter 1 washes'].from, 'the shaker is coloured before it is outlined');
     ok(s['shelves 0'].from < s['shelves 1'].from, 'a bottle is drawn before the shelf it stands on');
     const total = plan.seal + .6;
     ok(total >= 10 && total <= 15, `the painting takes ${total.toFixed(1)}s`);
@@ -140,7 +140,7 @@ const checks = [
       const svg = document.querySelector('#scene svg');
       const unit = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
       const cord = document.querySelector('#scene .lantern > path');
-      const paper = [...document.querySelectorAll('#scene .lantern path')].find((p) => p.getAttribute('fill') === '#EFE6D4');
+      const paper = document.querySelector('#scene .lantern image');
       return {
         top: cord.getBoundingClientRect().top + window.scrollY,
         light: document.querySelector('#scene .lantern-glow').getBoundingClientRect().top + window.scrollY,
@@ -472,7 +472,7 @@ const checks = [
   ['with reduced motion the bar is simply there, and nothing performs', { reducedMotion: true }, async (page) => {
     await page.goto(TEST_PAGE);
     eq(await count(page, '.painting, .painting-page, #scene .paint-line'), 0, 'painting with reduced motion');
-    ok(await inkShowing(page) > 300, 'the bar is not all there');
+    ok(await inkShowing(page) > 90, 'the bar is not all there');
     for (const b of await page.$$('.piece-tap')) await b.click();
     eq(await count(page, '.piece.acting'), 0, 'pieces performing');
   }],
