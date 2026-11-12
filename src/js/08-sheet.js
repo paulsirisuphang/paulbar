@@ -98,6 +98,19 @@ function optionRow(cls, title, why) {
 
 const sheet = $('#sheet');
 
+/* on a phone the picture leads the card, as wide as it can be */
+const phoneCard = () => window.matchMedia('(max-width: 640px)').matches;
+
+/* crop the drawing's box to the picture, so the picture fills the width
+   it's given rather than standing small in a tall frame */
+function fitToPicture(svg) {
+  const img = svg.querySelector('image');
+  if (!img) return;
+  const x = +img.getAttribute('x'), y = +img.getAttribute('y');
+  const w = +img.getAttribute('width'), h = +img.getAttribute('height');
+  svg.setAttribute('viewBox', [x, y, w, h].map((n) => fx(n)).join(' '));
+}
+
 /* The card is printed on a sheet of handmade paper. The sheet sits behind
    the card's contents, and its deckled edge is drawn to the card's size
    each time that changes. */
@@ -140,11 +153,14 @@ function openSheet(drink) {
   close.addEventListener('click', () => sheet.close());
   head.appendChild(close);
 
+  const wide = phoneCard();
   const preview = artBox('preview', drink, state, 'pour');
+  if (wide) fitToPicture(preview.querySelector('svg'));
   head.appendChild(preview);
   const redraw = () => {
     const was = preview.querySelector('image');
     const art = drinkArt(drink, state, 'pour');
+    if (wide) fitToPicture(art);
     /* the same picture again, say with smoke turned on, doesn't fade back in */
     const now = art.querySelector('image');
     if (was && now && was.getAttribute('href') === now.getAttribute('href')) now.removeAttribute('class');
@@ -161,6 +177,13 @@ function openSheet(drink) {
 
   /* ---------- body ---------- */
   const body = el('div', 'sheet-body');
+  /* on a phone the picture and the name scroll with everything else, so
+     a big picture doesn't leave the rest of the card a sliver to read in */
+  if (wide) {
+    form.classList.add('wide-art');
+    body.appendChild(head);
+    form.appendChild(close);
+  }
 
   /* the story opens on its most surprising line */
   if (drink.story) body.appendChild(field(U('the_story'), el('p', 'story', drink.hook + ' ' + drink.story)));
@@ -178,6 +201,19 @@ function openSheet(drink) {
   /* what's in it, as one line in a guest's words; the measures stay
      behind the bar, in the build on the ticket */
   body.appendChild(field(U('whats_in_it'), el('p', 'inside-line', drink.inside)));
+
+  /* egg white, honey and fish, said plainly; it follows the choices below */
+  const containsLine = el('p', 'contains-line');
+  const containsField = field(U('contains'), containsLine);
+  const paintContains = () => {
+    const list = containsFor(drink, state).map((k) => U('has_' + k));
+    containsField.hidden = !list.length;
+    if (!list.length) return;
+    const line = list.join(U('list_sep'));
+    containsLine.replaceChildren(txt(line.charAt(0).toUpperCase() + line.slice(1)));
+  };
+  paintContains();
+  body.appendChild(containsField);
 
   body.appendChild(field(U('tastes_like'), tastingCard(drink)));
 
@@ -220,7 +256,7 @@ function openSheet(drink) {
   if (drink.egg) {
     const egg = optionRow('egg', U('egg_white'), U('egg_why'));
     egg.input.checked = state.egg;
-    egg.input.addEventListener('change', () => { state.egg = egg.input.checked; redraw(); });
+    egg.input.addEventListener('change', () => { state.egg = egg.input.checked; redraw(); paintContains(); });
     body.appendChild(egg.label);
   }
 
@@ -229,7 +265,7 @@ function openSheet(drink) {
     if (!drink[b]) return;
     const row = optionRow(b, U(b + '_bitters'), U(b + '_why'));
     row.input.checked = state[b];
-    row.input.addEventListener('change', () => { state[b] = row.input.checked; });
+    row.input.addEventListener('change', () => { state[b] = row.input.checked; paintContains(); });
     body.appendChild(row.label);
   });
 
@@ -305,4 +341,94 @@ function openSheet(drink) {
   else (nameInput.value ? send : nameInput).focus({ preventScroll: true });
   body.scrollTop = 0;
   requestAnimationFrame(() => { body.scrollTop = 0; });
+}
+
+/* ================================================================
+   HELP ME CHOOSE — two questions, then up to three drinks
+   ================================================================ */
+
+const TASTES = ['bitter', 'sweet', 'citrus'];
+/* no alcohol, light, medium, strong: the same words the menu prints */
+const LEVEL_WORDS = ['heavy_none', 'level_light', 'level_medium', 'level_strong'];
+const levelOf = (d) => (d.na && !d.warning ? 0 : d.flavor.strength <= 2 ? 1 : d.flavor.strength === 3 ? 2 : 3);
+
+/* the guest's answers stay put if they close it and open it again */
+const chosen = { taste: null, level: null };
+
+/* The drinks that taste most like the answer, at about the strength
+   asked for. "No alcohol" only ever offers drinks with none at all, and
+   any other answer never offers one. The other side of the taste breaks
+   a tie: of two sweet drinks, the less bitter one comes first. */
+function picksFor(taste, level) {
+  const other = taste === 'bitter' ? 'sweet' : 'bitter';
+  return drinks()
+    .filter((d) => !d.hidden && !d.out && (levelOf(d) === 0) === (level === 0))
+    .map((d, i) => ({ d, i, score: d.flavor[taste] * 2 - Math.abs(levelOf(d) - level) * 4 - d.flavor[other] * .1 }))
+    .sort((a, b) => b.score - a.score || a.i - b.i)
+    .slice(0, 3)
+    .map((p) => p.d);
+}
+
+/* a row of answers to one question; key is the answer it sets */
+function pickRow(key, name, options, onPick) {
+  const row = el('div', 'pick-row');
+  row.setAttribute('role', 'group');
+  row.setAttribute('aria-label', name);
+  options.forEach(([value, label]) => {
+    const b = el('button', 'pick');
+    b.type = 'button';
+    b.dataset.value = String(value);
+    b.appendChild(el('span', null, label));
+    b.setAttribute('aria-pressed', String(chosen[key] === value));
+    b.addEventListener('click', () => {
+      chosen[key] = value;
+      $$('.pick', row).forEach((c) => c.setAttribute('aria-pressed', String(c === b)));
+      onPick();
+    });
+    row.appendChild(b);
+  });
+  return row;
+}
+
+function openChooser() {
+  sheet.innerHTML = '';
+  sheet.appendChild(paperSheet());
+  const form = el('form', 'sheet chooser');
+  form.method = 'dialog';
+  form.addEventListener('submit', (e) => e.preventDefault());
+
+  const head = el('div', 'sheet-head');
+  const close = el('button', 'sheet-close');
+  close.type = 'button';
+  close.setAttribute('aria-label', U('close'));
+  close.appendChild(icon('close'));
+  close.addEventListener('click', () => sheet.close());
+  head.appendChild(close);
+  const h2 = el('h2', 'sheet-title', U('choose'));
+  h2.id = 'sheet-title';
+  head.appendChild(h2);
+  head.appendChild(el('p', 'sheet-hook', U('choose_lede')));
+  form.appendChild(head);
+
+  const body = el('div', 'sheet-body');
+  const results = el('div', 'choose-results');
+  results.setAttribute('aria-live', 'polite');
+  const show = () => {
+    results.innerHTML = '';
+    if (chosen.taste == null || chosen.level == null) return;
+    const picks = picksFor(chosen.taste, chosen.level);
+    results.appendChild(el('div', 'caps', U('choose_picks')(picks.length)));
+    const list = el('div', 'entries');
+    picks.forEach((d, i) => list.appendChild(entryEl(d, i)));
+    results.appendChild(list);
+  };
+  body.appendChild(field(U('choose_taste'), pickRow('taste', U('choose_taste'), TASTES.map((t) => [t, U('taste_' + t)]), show)));
+  body.appendChild(field(U('choose_strength'), pickRow('level', U('choose_strength'), LEVEL_WORDS.map((w, i) => [i, U(w)]), show)));
+  body.appendChild(results);
+  show();
+  form.appendChild(body);
+
+  sheet.appendChild(form);
+  sheet.showModal();
+  sheet.focus({ preventScroll: true });
 }

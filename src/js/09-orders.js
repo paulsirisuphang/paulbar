@@ -49,7 +49,7 @@ function ticketEl(order) {
     toast(o.done ? U('toast_poured') + drink.name + U('toast_for') + o.guest : U('toast_back'), drink, o);
   });
   main.appendChild(pour);
-  main.appendChild(artBox('ticket-art', drink, order, 'static'));
+  main.appendChild(artBox('ticket-art', drink, order, 'static', true));
 
   /* the drink, then who it's for and when they asked */
   const text = el('div', 'ticket-text');

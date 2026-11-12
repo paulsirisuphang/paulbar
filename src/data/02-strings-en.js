@@ -1,6 +1,11 @@
 const T_EN = {
   tab_menu: 'Menu', tab_orders: 'Orders',
   surprise: 'Surprise me',
+  choose: 'Help me choose',
+  choose_lede: 'Answer two questions, then pick a drink.',
+  choose_taste: 'What do you feel like?', choose_strength: 'How strong?',
+  taste_bitter: 'Bitter', taste_sweet: 'Sweet', taste_citrus: 'Sour and fresh',
+  choose_picks: (n) => (n === 1 ? 'Try this one' : 'Try one of these'),
   heavy_none: 'No alcohol',
   level_light: 'Light', level_medium: 'Medium', level_strong: 'Strong',
 
@@ -48,7 +53,10 @@ const T_EN = {
   chip_smoke_best: 'Best with smoke',
   chip_smoked: 'Smoked with ', chip_low: 'Low alcohol', chip_na: 'No alcohol',
   chip_warn: 'Not alcohol-free', chip_egg_opt: 'Egg white optional', chip_egg: 'Egg white',
-  chip_yuzu: 'Yuzu bitters', chip_umami: 'Umami bitters',
+  chip_yuzu: 'Yuzu bitters', chip_umami: 'Umami bitters', chip_umami_fish: 'Umami bitters (fish)', chip_honey: 'Honey',
+  contains: 'Contains',
+  has_egg: 'egg white', has_honey: 'honey', has_fish: 'fish, in the umami bitters',
+  list_sep: ', ',
 
   egg_ing: 'egg white', egg_qty: '1',
   yuzu_bitters: 'Yuzu bitters', yuzu_ing: 'yuzu bitters',

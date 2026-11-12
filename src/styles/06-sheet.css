@@ -99,6 +99,21 @@ dialog.sending::backdrop { animation: card-send-fade .45s ease forwards; }
   .sheet-title { align-self: center; }
   .sheet-hook { padding-left: 6px; }
 }
+/* On a phone the picture comes first, nearly the width of the card, and
+   the name and the line about it sit under it; all of it scrolls with
+   the card (sheet.js) while the close button stays in the corner. */
+@media (max-width: 640px) {
+  .wide-art .sheet-body > .sheet-head {
+    grid-template-columns: 1fr;
+    grid-template-areas: 'art' 'title' 'hook';
+    gap: 10px;
+    margin: 0;
+    padding: 6px 0 22px;
+  }
+  .wide-art .sheet-head .preview { justify-self: center; width: 100%; height: min(86vw, 52svh); aspect-ratio: auto; margin-bottom: 8px; }
+  .wide-art .sheet-head .sheet-hook { padding-left: 0; }
+  .wide-art > .sheet-close { background: var(--paper-hi); }
+}
 .preview { grid-area: art; width: clamp(88px, 24vw, 136px); aspect-ratio: 120 / 170; }
 .preview svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .sheet-title {
@@ -296,8 +311,8 @@ dialog.sending::backdrop { animation: card-send-fade .45s ease forwards; }
 }
 /* the smoke line and its woods read as one entry while the woods are open */
 .option.smoke:has(+ .woods:not([hidden])) { border-bottom-color: transparent; }
-.wood-row { display: flex; flex-wrap: wrap; gap: 6px 18px; }
-.wood {
+.wood-row, .pick-row { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.wood, .pick {
   padding: 4px 0;
   border: 0;
   background: none;
@@ -307,10 +322,24 @@ dialog.sending::backdrop { animation: card-send-fade .45s ease forwards; }
   color: var(--ink-3);
   cursor: pointer;
 }
-.wood > span { padding-bottom: 3px; border-bottom: 1px solid transparent; transition: border-color .2s, color .2s; }
-.wood:hover { color: var(--ink); }
-.wood[aria-pressed='true'] { color: var(--ink); }
+.wood > span, .pick > span { padding-bottom: 3px; border-bottom: 1px solid transparent; transition: border-color .2s, color .2s; }
+.wood:hover, .pick:hover { color: var(--ink); }
+.wood[aria-pressed='true'], .pick[aria-pressed='true'] { color: var(--ink); }
 .wood[aria-pressed='true'] > span { border-color: var(--smoke); }
+.pick { font-size: 1rem; }
+.pick[aria-pressed='true'] > span { border-color: var(--shu); }
+
+/* Help me choose: the answers, then the drinks they point to */
+.chooser .sheet-body { gap: 28px; align-content: start; }
+.chooser .sheet-head { grid-template-columns: 1fr; grid-template-areas: "title" "hook"; padding-left: 18px; }
+.chooser .sheet-hook { padding-left: 0; }
+.choose-results { display: grid; gap: 4px; }
+.choose-results:empty { display: none; }
+.chooser .entries { grid-template-columns: 1fr; }
+.chooser .entry:last-child { border-bottom: 0; }
+
+/* egg white, honey, fish */
+.contains-line { margin: 0; max-width: var(--measure); font-size: 1rem; line-height: 1.5; color: var(--ink-2); }
 .wood-note { margin: 0; font-style: italic; font-size: .9375rem; color: var(--ink-3); }
 
 /* the guest's name and note, written on a line */

@@ -122,6 +122,8 @@ function wireChrome() {
     openSheet(pool[Math.floor(Math.random() * pool.length)]);
   });
 
+  $('#choose').addEventListener('click', openChooser);
+
   $('#filters').addEventListener('scroll', paintFilterFade, { passive: true });
   window.addEventListener('resize', paintFilterFade);
   /* the first measure is taken before the fonts are in, and they change the widths */
@@ -154,6 +156,10 @@ function paintStatic() {
   choice.innerHTML = '';
   choice.appendChild(icon('die'));
   choice.appendChild(el('span', null, U('surprise')));
+  const choose = $('#choose');
+  choose.innerHTML = '';
+  choose.appendChild(icon('tune'));
+  choose.appendChild(el('span', null, U('choose')));
 
   $('#notes-summary').textContent = U('bar_notes');
   const summary = $('#notes-summary').parentNode;
@@ -178,8 +184,13 @@ applyPhase();
 setInterval(applyPhase, 60000);
 
 paintStatic();
-/* every arrival paints the bar in, however many times you come back */
-renderScene(true);
+/* the bar paints itself in once a visit: a guest who comes back for a
+   second drink the same evening finds it already there */
+const PAINT_AGAIN_AFTER = 6 * 3600 * 1000;
+const paintedAt = Number(store.get(KEYS.painted, 0)) || 0;
+const paintNow = !(Date.now() - paintedAt < PAINT_AGAIN_AFTER && paintedAt <= Date.now());
+if (paintNow) store.set(KEYS.painted, String(Date.now()));
+renderScene(paintNow);
 wireChrome();
 /* the golf tee is the exclamation mark in the name, and only that */
 $('#tee').appendChild(teeMark());

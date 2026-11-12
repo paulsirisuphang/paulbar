@@ -7,14 +7,18 @@ one with its own watercolour, plus one that isn't on the list.
 - The **menu** opens on the bar at rest: shelves of bottles, a paper
   lantern hanging from the top of the page with Paul's name on it in
   katakana (ポール), and the tools left out on a hinoki counter, a smoking
-  gun among them, every piece a watercolour, all to the same scale. Every
-  visit washes it onto the page a part at a time: the counter's wood laid
+  gun among them, every piece a watercolour, all to the same scale. The
+  first visit of an evening washes it onto the page a part at a time: the counter's wood laid
   along it and the tools on it; then the shelves behind; then the lantern,
   its name written stroke by stroke, and
   lit last; then the house seal, pressed on the front of the bar. It takes
-  about 14 seconds, and a tap finishes it at once. Tap a piece on the
+  about 11 seconds, and a tap finishes it at once. A guest who comes back
+  within 6 hours finds the bar already there. Tap a piece on the
   counter and it does a party piece for ten seconds. The four filters show
   one section at a time; with none chosen, the whole card shows.
+- **Surprise me** opens a random drink. **Help me choose** asks how the
+  guest likes it (bitter, sweet, sour and fresh) and how strong, and offers
+  up to 3 drinks that match. "No alcohol" only offers drinks with none.
 - Each line on the menu says how the drink tastes and how strong it is.
   A **drink's card** adds its story, what's in it (one line, no measures:
   those stay behind the bar, on the ticket), how it tastes, and the
@@ -25,6 +29,11 @@ one with its own watercolour, plus one that isn't on the list.
   in by default, out for the classic. The Whiskey Sour and the Pandan Sour
   come with egg white, and the guest can take it out. A drink that doesn't
   take smoke has no smoke option, and its card doesn't explain why.
+  Under what's in it, the card says when the drink contains egg white,
+  honey (Bénédictine counts) or fish (the umami bitters), and it follows
+  the guest's choices. The menu marks honey and the fish too.
+- On a phone the card opens on the picture, nearly the card's width, with
+  the name under it, and all of it scrolls.
 - **Sending** an order folds its card into a paper plane, the way a dart is
   folded by hand, and flies it to the orders button in the top right corner;
   the slip confirming the order comes when it lands. With reduced motion the
@@ -58,7 +67,7 @@ build stops if the script doesn't parse or the stylesheets don't balance.
 | `src/data/` | The drinks, the English and Thai copy, and the shared book's address |
 | `src/js/` | The code, joined in order into one script |
 | `src/fonts/` | The fonts, cut down to the letters the page uses (`tools/make_fonts.py`) |
-| `art/` | One watercolour per drink, plus `<id>-egg` for a sour served up with egg white; the only files the page loads besides itself |
+| `art/` | One watercolour per drink, plus `<id>-egg` for a sour served up with egg white; the only files the page loads besides itself, and the menu's load as they come near the screen |
 | `art/bar/` | The bar in watercolour, a piece at a time: bottles, jars, the counter tools, the lantern, and the wood of the shelves and the counter |
 
 The watercolours were painted with Nano Banana in Figma Weave, one drink at

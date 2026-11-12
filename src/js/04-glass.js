@@ -655,9 +655,29 @@ function drinkArt(drink, opts, mode) {
   return key ? drawPainted(drink, key, opts, mode) : drawDrink(drink, opts, mode);
 }
 
+/* The menu's and the tickets' pictures load as they come near the
+   screen, so a phone on a weak signal gets the bar and the first drinks
+   first. The card's picture always loads at once. */
+const nearScreen = 'IntersectionObserver' in window ? new IntersectionObserver((seen) => {
+  seen.forEach((e) => {
+    if (!e.isIntersecting) return;
+    nearScreen.unobserve(e.target);
+    e.target.querySelectorAll('image[data-href]').forEach((img) => {
+      img.setAttribute('href', img.getAttribute('data-href'));
+      img.removeAttribute('data-href');
+    });
+  });
+}, { rootMargin: '600px 0px' }) : null;
+
 /* a drawing in a box, ready to drop into the page */
-function artBox(cls, drink, opts, mode) {
+function artBox(cls, drink, opts, mode, lazy = false) {
   const box = el('div', cls);
   box.appendChild(drinkArt(drink, opts, mode));
+  const img = box.querySelector('image');
+  if (lazy && nearScreen && img) {
+    img.setAttribute('data-href', img.getAttribute('href'));
+    img.removeAttribute('href');
+    nearScreen.observe(box);
+  }
   return box;
 }

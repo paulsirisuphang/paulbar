@@ -72,7 +72,7 @@ async function order(page, id, guest) {
 }
 
 const checks = [
-  ['the bar paints itself in on every load, from blank paper', { clock: true }, async (page) => {
+  ['the bar paints itself in once a visit, from blank paper', { clock: true }, async (page) => {
     /* the clock stands still until it's run on, however slow the machine */
     await page.clock.pauseAt(Date.now() + 1000);
     await page.goto(TEST_PAGE);
@@ -93,8 +93,14 @@ const checks = [
     ok(await page.$('#scene.painting'), 'the painting was over in under nine seconds');
     await page.clock.runFor(7000);
     ok(!(await page.$('.painting, .painting-page')), 'the painting never finishes on its own');
+    /* back for a second drink the same evening, the bar is already there */
     await page.reload();
-    ok(await page.$('#scene.painting'), 'the bar is not painted in after a refresh');
+    ok(!(await page.$('#scene.painting')), 'the bar painted in again on a second visit the same evening');
+    ok(await inkShowing(page) > 90, 'the bar is not all there on a second visit');
+    /* another evening, it paints in again */
+    await page.evaluate(() => localStorage.setItem('paulsbar.painted.v1', String(Date.now() - 7 * 3600 * 1000)));
+    await page.reload();
+    ok(await page.$('#scene.painting'), 'the bar is not painted in on a visit hours later');
   }],
 
   ['it paints the way a painter would: a part at a time, outline before colour', { width: 1280, height: 860 }, async (page) => {
@@ -237,7 +243,7 @@ const checks = [
     eq(umami.sort().join(', '), 'negroni, old-fashioned, rye-manhattan', 'drinks with umami bitters in');
     /* the menu line says so */
     const marked = await page.$$eval('.entry', (n) => n.filter((e) => e.querySelector('.note.umami')).map((e) => e.dataset.drink).sort().join(', '));
-    eq(marked, 'negroni, old-fashioned, rye-manhattan', 'drinks whose menu line says umami bitters');
+    eq(marked, 'negroni, old-fashioned, ponzu-gimlet, rye-manhattan, umami-martini', 'drinks whose menu line says umami bitters, with fish');
     /* unticked, the order is the classic */
     await openDrink(page, 'rye-manhattan');
     await page.click('#sheet .option.umami');
@@ -542,8 +548,13 @@ const checks = [
     eq(want.filter((k) => !PICTURES[k]).join(', '), '', 'drinks without a picture');
     const art = new URL('../art/', import.meta.url).pathname;
     eq(Object.keys(PICTURES).filter((k) => !fs.existsSync(art + k + '.webp')).join(', '), '', 'pictures missing from art/');
-    /* on the page, every one on the menu loads */
+    /* on the page, the pictures far down the menu wait until it's scrolled to */
     await enter(page);
+    const waiting = () => count(page, '.entry svg.painted image[data-href]');
+    ok(await waiting() > 5, 'every picture on the menu loads at once');
+    for (const entry of await page.$$('.entry')) await entry.scrollIntoViewIfNeeded();
+    await page.waitForFunction(() => !document.querySelector('.entry image[data-href]'));
+    /* and then every one loads */
     const broken = await page.evaluate(async () => {
       const hrefs = [...document.querySelectorAll('.entry svg.painted image')].map((i) => i.getAttribute('href'));
       const bad = [];
@@ -558,6 +569,86 @@ const checks = [
     ok((await shown()).endsWith('whiskey-sour-egg.webp'), 'the sour opens without its coupe');
     await page.click('#sheet .option.egg');
     ok((await shown()).endsWith('whiskey-sour.webp'), 'no egg white still shows the coupe');
+  }],
+
+  ['Help me choose asks two questions and offers drinks to match', { width: 390, height: 844 }, async (page) => {
+    await enter(page);
+    /* both buttons sit on one line on a phone */
+    const tops = await page.$$eval('.hero-actions .choice', (b) => b.map((n) => Math.round(n.getBoundingClientRect().top)));
+    eq(tops.length, 2, 'buttons under the bar');
+    eq(tops[0], tops[1], 'Surprise me and Help me choose on one line');
+    await page.click('#choose');
+    await page.waitForFunction(() => document.getElementById('sheet').open);
+    eq(await text(page, '#sheet-title'), 'Help me choose', 'the card title');
+    eq(await count(page, '#sheet .entry'), 0, 'drinks offered before both questions are answered');
+    const pick = async (q, label) => page.locator('#sheet .pick-row').nth(q).locator('.pick', { hasText: label }).click();
+    const offered = () => page.$$eval('#sheet .entry', (n) => n.map((e) => e.dataset.drink));
+    await pick(0, 'Bitter');
+    eq(await count(page, '#sheet .entry'), 0, 'drinks offered after one answer');
+    await pick(1, 'Light');
+    eq((await offered()).join(', '), 'suze-tonic, bitters-soda, campari-tonic', 'bitter and light');
+    await pick(0, 'Sour and fresh');
+    await pick(1, 'Strong');
+    eq((await offered()).join(', '), 'margarita, gimlet, ponzu-gimlet', 'sour and strong');
+    /* no alcohol offers only drinks with none at all */
+    await pick(1, 'No alcohol');
+    eq((await offered()).join(', '), 'honey-lemon-fizz', 'no alcohol');
+    eq(await text(page, '#sheet .choose-results .caps'), 'Try this one', 'the label over a single drink');
+    /* every answer offers something, and never the secret or a drink that's out */
+    for (const taste of ['Bitter', 'Sweet', 'Sour and fresh']) {
+      for (const level of ['Light', 'Medium', 'Strong']) {
+        await pick(0, taste);
+        await pick(1, level);
+        const got = await offered();
+        eq(got.length, 3, `drinks offered for ${taste}, ${level}`);
+        ok(!got.some((id) => ['sidecar', 'corpse-reviver', 'pegu-club', 'honey-lemon-fizz'].includes(id)), `${taste}, ${level} offered ${got.join(', ')}`);
+      }
+    }
+    /* a drink opens its card, ready to order */
+    await page.click('#sheet .entry');
+    ok(await page.$('#sheet .sheet-foot .btn'), 'the offered drink did not open its card');
+    await closeCard(page);
+    /* the answers are still there next time */
+    await page.click('#choose');
+    await page.waitForFunction(() => document.getElementById('sheet').open);
+    eq(await count(page, '#sheet .entry'), 3, 'drinks offered when it opens again');
+    ok(!(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)), 'the page scrolls sideways');
+  }],
+
+  ['a drink says when it has egg white, honey or fish in it', {}, async (page) => {
+    await enter(page);
+    const contains = () => page.$eval('#sheet', (s) => { const f = s.querySelector('.contains-line'); return f && !f.closest('[hidden]') ? f.textContent.trim() : ''; });
+    await openDrink(page, 'pandan-sour');
+    eq(await contains(), 'Egg white, honey', 'the pandan sour');
+    await page.click('#sheet .option.egg');
+    eq(await contains(), 'Honey', 'the pandan sour without egg white');
+    await closeCard(page);
+    await openDrink(page, 'rye-manhattan');
+    eq(await contains(), 'Fish, in the umami bitters', 'the Manhattan');
+    await page.click('#sheet .option.umami');
+    eq(await contains(), '', 'the classic Manhattan');
+    await closeCard(page);
+    await openDrink(page, 'monte-carlo');
+    eq(await contains(), 'Honey', 'the Monte Carlo, made with Bénédictine');
+    await closeCard(page);
+    /* on the menu, honey has its own mark */
+    const honey = await page.$$eval('.entry', (n) => n.filter((e) => e.querySelector('.note.honey')).map((e) => e.dataset.drink).sort().join(', '));
+    eq(honey, 'bees-knees, bobby-burns, honey-collins, honey-lemon-fizz, margarita, monte-carlo, pandan-sour, penicillin', 'drinks marked honey');
+  }],
+
+  ['on a phone the card opens on the picture, nearly as wide as the card, with the name under it', { width: 390, height: 844 }, async (page) => {
+    await enter(page);
+    for (const id of ['negroni', 'tom-collins']) {
+      await openDrink(page, id);
+      await page.waitForTimeout(500);
+      const box = await page.evaluate(() => {
+        const r = (sel) => document.querySelector(sel).getBoundingClientRect();
+        return { pic: r('#sheet .preview image'), title: r('#sheet-title'), body: r('#sheet .sheet-body') };
+      });
+      ok(box.pic.bottom <= box.title.top + 1, `${id}: the picture is not above the name`);
+      if (id === 'negroni') ok(box.pic.width >= box.body.width * .7, `${id}: the picture is ${Math.round(box.pic.width)}px wide on a ${Math.round(box.body.width)}px card`);
+      await closeCard(page);
+    }
   }],
 
   ['Surprise me pours something from the menu, never the secret', {}, async (page) => {

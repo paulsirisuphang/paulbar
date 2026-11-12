@@ -471,11 +471,18 @@ main {
 }
 .piece-smoke.acting .act .smoke-wisp { animation-duration: 3.6s; }
 
-/* sits on the front edge of the counter */
-.choice {
+/* the two buttons sit on the front edge of the counter */
+.hero-actions {
   position: relative;
   z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
   margin-top: 18px;
+  padding-inline: 16px;
+}
+.choice {
   border-radius: var(--radius);
   display: inline-flex;
   align-items: center;
@@ -498,6 +505,14 @@ main {
 .choice:active { transform: translateY(0); }
 .choice svg { width: 15px; height: 15px; flex: none; transition: transform .6s var(--ease); }
 .choice:hover svg, .choice.rolling svg { transform: rotate(180deg); }
+/* Help me choose: the same button in outline, second to Surprise me */
+.choice.ghost { background: none; color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.choice.ghost:hover { background: rgba(38, 34, 30, .06); }
+.choice.ghost:hover svg { transform: none; }
+@media (max-width: 420px) {
+  .choice { gap: 9px; padding: 12px 16px 12px 14px; letter-spacing: .16em; }
+  :lang(th) .choice { letter-spacing: .02em; }
+}
 
 /* ---------- painted in on arrival (bar.js) ---------- */
 
@@ -557,7 +572,7 @@ main {
 /* the menu comes in under it once the counter is painted */
 .painting-page #filters,
 .painting-page #menu-body,
-.painting-page .choice { animation: paint-fade .9s ease-out var(--menu-at, 2s) both; }
+.painting-page .hero-actions { animation: paint-fade .9s ease-out var(--menu-at, 2s) both; }
 
 /* ================================================================
    THE MENU — sections of drinks set like a printed card
@@ -694,6 +709,7 @@ main {
 .note.egg, .note.low { color: var(--kincha); }
 .note.yuzu { color: var(--yuzu); }
 .note.umami { color: var(--ink-2); }
+.note.honey { color: var(--kincha); }
 
 .no-match {
   padding: 56px 24px;
@@ -802,6 +818,21 @@ dialog.sending::backdrop { animation: card-send-fade .45s ease forwards; }
   .sheet-head { grid-template-areas: 'art title' 'hook hook'; padding: 28px 42px 18px 10px; }
   .sheet-title { align-self: center; }
   .sheet-hook { padding-left: 6px; }
+}
+/* On a phone the picture comes first, nearly the width of the card, and
+   the name and the line about it sit under it; all of it scrolls with
+   the card (sheet.js) while the close button stays in the corner. */
+@media (max-width: 640px) {
+  .wide-art .sheet-body > .sheet-head {
+    grid-template-columns: 1fr;
+    grid-template-areas: 'art' 'title' 'hook';
+    gap: 10px;
+    margin: 0;
+    padding: 6px 0 22px;
+  }
+  .wide-art .sheet-head .preview { justify-self: center; width: 100%; height: min(86vw, 52svh); aspect-ratio: auto; margin-bottom: 8px; }
+  .wide-art .sheet-head .sheet-hook { padding-left: 0; }
+  .wide-art > .sheet-close { background: var(--paper-hi); }
 }
 .preview { grid-area: art; width: clamp(88px, 24vw, 136px); aspect-ratio: 120 / 170; }
 .preview svg { display: block; width: 100%; height: 100%; overflow: visible; }
@@ -1000,8 +1031,8 @@ dialog.sending::backdrop { animation: card-send-fade .45s ease forwards; }
 }
 /* the smoke line and its woods read as one entry while the woods are open */
 .option.smoke:has(+ .woods:not([hidden])) { border-bottom-color: transparent; }
-.wood-row { display: flex; flex-wrap: wrap; gap: 6px 18px; }
-.wood {
+.wood-row, .pick-row { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.wood, .pick {
   padding: 4px 0;
   border: 0;
   background: none;
@@ -1011,10 +1042,24 @@ dialog.sending::backdrop { animation: card-send-fade .45s ease forwards; }
   color: var(--ink-3);
   cursor: pointer;
 }
-.wood > span { padding-bottom: 3px; border-bottom: 1px solid transparent; transition: border-color .2s, color .2s; }
-.wood:hover { color: var(--ink); }
-.wood[aria-pressed='true'] { color: var(--ink); }
+.wood > span, .pick > span { padding-bottom: 3px; border-bottom: 1px solid transparent; transition: border-color .2s, color .2s; }
+.wood:hover, .pick:hover { color: var(--ink); }
+.wood[aria-pressed='true'], .pick[aria-pressed='true'] { color: var(--ink); }
 .wood[aria-pressed='true'] > span { border-color: var(--smoke); }
+.pick { font-size: 1rem; }
+.pick[aria-pressed='true'] > span { border-color: var(--shu); }
+
+/* Help me choose: the answers, then the drinks they point to */
+.chooser .sheet-body { gap: 28px; align-content: start; }
+.chooser .sheet-head { grid-template-columns: 1fr; grid-template-areas: "title" "hook"; padding-left: 18px; }
+.chooser .sheet-hook { padding-left: 0; }
+.choose-results { display: grid; gap: 4px; }
+.choose-results:empty { display: none; }
+.chooser .entries { grid-template-columns: 1fr; }
+.chooser .entry:last-child { border-bottom: 0; }
+
+/* egg white, honey, fish */
+.contains-line { margin: 0; max-width: var(--measure); font-size: 1rem; line-height: 1.5; color: var(--ink-2); }
 .wood-note { margin: 0; font-style: italic; font-size: .9375rem; color: var(--ink-3); }
 
 /* the guest's name and note, written on a line */
@@ -1474,7 +1519,10 @@ details.notes[open] summary svg { transform: rotate(90deg); }
     <section class="view" id="view-menu" role="tabpanel" aria-labelledby="tab-menu">
       <div class="hero">
         <div class="scene" id="scene"></div>
-        <button class="choice" id="choice" type="button"></button>
+        <div class="hero-actions">
+          <button class="choice" id="choice" type="button"></button>
+          <button class="choice ghost" id="choose" type="button"></button>
+        </div>
       </div>
       <nav class="filters" id="filters" aria-label="Show one kind of drink"></nav>
       <div id="menu-body"></div>
@@ -2194,6 +2242,11 @@ const SECTIONS = ['stirred', 'shaken', 'long', 'mocktail'];
 const T_EN = {
   tab_menu: 'Menu', tab_orders: 'Orders',
   surprise: 'Surprise me',
+  choose: 'Help me choose',
+  choose_lede: 'Answer two questions, then pick a drink.',
+  choose_taste: 'What do you feel like?', choose_strength: 'How strong?',
+  taste_bitter: 'Bitter', taste_sweet: 'Sweet', taste_citrus: 'Sour and fresh',
+  choose_picks: (n) => (n === 1 ? 'Try this one' : 'Try one of these'),
   heavy_none: 'No alcohol',
   level_light: 'Light', level_medium: 'Medium', level_strong: 'Strong',
 
@@ -2241,7 +2294,10 @@ const T_EN = {
   chip_smoke_best: 'Best with smoke',
   chip_smoked: 'Smoked with ', chip_low: 'Low alcohol', chip_na: 'No alcohol',
   chip_warn: 'Not alcohol-free', chip_egg_opt: 'Egg white optional', chip_egg: 'Egg white',
-  chip_yuzu: 'Yuzu bitters', chip_umami: 'Umami bitters',
+  chip_yuzu: 'Yuzu bitters', chip_umami: 'Umami bitters', chip_umami_fish: 'Umami bitters (fish)', chip_honey: 'Honey',
+  contains: 'Contains',
+  has_egg: 'egg white', has_honey: 'honey', has_fish: 'fish, in the umami bitters',
+  list_sep: ', ',
 
   egg_ing: 'egg white', egg_qty: '1',
   yuzu_bitters: 'Yuzu bitters', yuzu_ing: 'yuzu bitters',
@@ -2343,6 +2399,14 @@ const T_TH = {
   tab_menu: 'เมนู',
   tab_orders: 'ออร์เดอร์',
   surprise: 'เสี่ยงดวงสักแก้ว',
+  choose: 'ช่วยเลือกให้หน่อย',
+  choose_lede: 'ตอบสองข้อ แล้วเลือกแก้วที่ชอบ',
+  choose_taste: 'อยากได้รสแบบไหน',
+  choose_strength: 'แรงแค่ไหน',
+  taste_bitter: 'ขม',
+  taste_sweet: 'หวาน',
+  taste_citrus: 'เปรี้ยวสดชื่น',
+  choose_picks: () => 'แนะนำให้ลอง',
   heavy_none: 'ไม่มีแอลกอฮอล์',
   level_light: 'เบา',
   level_medium: 'ปานกลาง',
@@ -2377,7 +2441,10 @@ const T_TH = {
   ago_now: 'เมื่อสักครู่',
   ago_min: (m) => m + ' นาทีที่แล้ว',
   ago_hr: (h) => h + ' ชั่วโมงที่แล้ว',
-  chip_yuzu: 'บิตเตอร์ยูซุ', chip_umami: 'บิตเตอร์อูมามิ',
+  chip_yuzu: 'บิตเตอร์ยูซุ', chip_umami: 'บิตเตอร์อูมามิ', chip_umami_fish: 'บิตเตอร์อูมามิ (มีปลา)', chip_honey: 'น้ำผึ้ง',
+  contains: 'ส่วนผสมที่ควรระวัง',
+  has_egg: 'ไข่ขาว', has_honey: 'น้ำผึ้ง', has_fish: 'ปลาโอในบิตเตอร์อูมามิ',
+  list_sep: ' · ',
   egg_ing: 'ไข่ขาว', egg_qty: '1 ฟอง',
   yuzu_bitters: 'บิตเตอร์ยูซุ', yuzu_ing: 'บิตเตอร์ยูซุ',
   yuzu_why: 'เปรี้ยวหอมแบบดอกไม้ คล้ายเกรปฟรุตผสมมะนาว ไม่ใส่ก็ได้ ถ้าอยากได้สูตรดั้งเดิม',
@@ -3183,7 +3250,8 @@ const store = {
 const KEYS = {
   orders: 'paulsbar.orders.v1',
   guest: 'paulsbar.guest.v1',
-  lang: 'paulsbar.lang.v1'
+  lang: 'paulsbar.lang.v1',
+  painted: 'paulsbar.painted.v1'
 };
 
 /* ---------- js/01-i18n.js ---------- */
@@ -4317,10 +4385,30 @@ function drinkArt(drink, opts, mode) {
   return key ? drawPainted(drink, key, opts, mode) : drawDrink(drink, opts, mode);
 }
 
+/* The menu's and the tickets' pictures load as they come near the
+   screen, so a phone on a weak signal gets the bar and the first drinks
+   first. The card's picture always loads at once. */
+const nearScreen = 'IntersectionObserver' in window ? new IntersectionObserver((seen) => {
+  seen.forEach((e) => {
+    if (!e.isIntersecting) return;
+    nearScreen.unobserve(e.target);
+    e.target.querySelectorAll('image[data-href]').forEach((img) => {
+      img.setAttribute('href', img.getAttribute('data-href'));
+      img.removeAttribute('data-href');
+    });
+  });
+}, { rootMargin: '600px 0px' }) : null;
+
 /* a drawing in a box, ready to drop into the page */
-function artBox(cls, drink, opts, mode) {
+function artBox(cls, drink, opts, mode, lazy = false) {
   const box = el('div', cls);
   box.appendChild(drinkArt(drink, opts, mode));
+  const img = box.querySelector('image');
+  if (lazy && nearScreen && img) {
+    img.setAttribute('data-href', img.getAttribute('href'));
+    img.removeAttribute('href');
+    nearScreen.observe(box);
+  }
   return box;
 }
 
@@ -5221,6 +5309,10 @@ const ICONS = {
   smoke: '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M5 11c-1.8-1.6 1.5-3.1 0-5S5.6 2.8 7 1"/><path d="M8.2 11c-1.1-1 .9-2 0-3.2" opacity=".6"/></svg>',
   drop: '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round"><path d="M6 1.6C4.7 3.7 3.1 5.5 3.1 7.4a2.9 2.9 0 0 0 5.8 0C8.9 5.5 7.3 3.7 6 1.6z"/></svg>',
   leaf: '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M2.2 9.8C2 5.4 4.8 2.4 9.8 2.2 9.6 7 6.6 9.8 2.2 9.8zM2.2 9.8L6.6 5.4"/></svg>',
+  /* a cell of honeycomb */
+  honey: '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round"><path d="M6 1.4l4 2.3v4.6L6 10.6 2 8.3V3.7z"/></svg>',
+  /* two sliders, for choosing by taste */
+  tune: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M2.5 5h11M2.5 11h11"/><circle cx="10.5" cy="5" r="1.8" fill="currentColor" stroke="none"/><circle cx="5.5" cy="11" r="1.8" fill="currentColor" stroke="none"/></svg>',
   egg: '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1"><path d="M6 1.4c2.1 0 3.8 3 3.8 5.4S8.1 10.6 6 10.6 2.2 9.2 2.2 6.8 3.9 1.4 6 1.4z"/></svg>',
   low: '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1"><circle cx="6" cy="6" r="4.4"/><path d="M1.6 7.2h8.8" /></svg>',
   none: '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1"><circle cx="6" cy="6" r="4.4"/></svg>',
@@ -5605,8 +5697,22 @@ function paintFilterFade() {
 
 /* ---------- a drink, as the menu lists it ---------- */
 
+/* What a guest with an allergy, or who eats no animal products, needs to
+   know. Read from the English recipe, so both languages always agree:
+   Bénédictine is made with honey, and the umami bitters with bonito. */
+function containsFor(drink, opts = {}) {
+  const base = DRINKS.find((d) => d.id === drink.id) || drink;
+  const has = (re) => re.test(base.inside) || base.build.some(([, ing]) => re.test(ing));
+  const out = [];
+  if (drink.egg && opts.egg) out.push('egg');
+  if (has(/honey|Bénédictine/i)) out.push('honey');
+  if ((drink.umami && opts.umami) || has(/umami/i)) out.push('fish');
+  return out;
+}
+
 /* what's particular about it, as a line of small print */
 function notesFor(drink) {
+  const has = containsFor(drink, { umami: !!drink.umami });
   const out = [];
   if (drink.smoke) {
     out.push({ cls: 'smoke', icon: 'smoke', text: drink.best ? U('chip_smoke_best') : U('chip_smoke')(woodLabel(drink.woods[0]).toLowerCase()) });
@@ -5615,8 +5721,9 @@ function notesFor(drink) {
   if (drink.na && !drink.warning) out.push({ cls: 'na', icon: 'none', text: U('chip_na') });
   if (drink.warning) out.push({ cls: 'warn', icon: 'warn', text: U('chip_warn') });
   if (drink.egg) out.push({ cls: 'egg', icon: 'egg', text: U(drink.eggDefault ? 'chip_egg' : 'chip_egg_opt') });
+  if (has.includes('honey')) out.push({ cls: 'honey', icon: 'honey', text: U('chip_honey') });
   if (drink.yuzu) out.push({ cls: 'yuzu', icon: 'drop', text: U('chip_yuzu') });
-  if (drink.umami) out.push({ cls: 'umami', icon: 'drop', text: U('chip_umami') });
+  if (has.includes('fish')) out.push({ cls: 'umami', icon: 'drop', text: U('chip_umami_fish') });
   return out;
 }
 
@@ -5637,7 +5744,7 @@ function entryEl(drink, index) {
   b.dataset.drink = drink.id;
   b.style.setProperty('--i', String(index));
   /* a drink that's smoked by default shows its smoke on the menu too */
-  b.appendChild(artBox('entry-art', drink, { smoke: !!drink.smoke, egg: !!drink.eggDefault }, 'live'));
+  b.appendChild(artBox('entry-art', drink, { smoke: !!drink.smoke, egg: !!drink.eggDefault }, 'live', true));
 
   const text = el('div', 'entry-text');
   const name = el('div', 'entry-name');
@@ -5781,6 +5888,19 @@ function optionRow(cls, title, why) {
 
 const sheet = $('#sheet');
 
+/* on a phone the picture leads the card, as wide as it can be */
+const phoneCard = () => window.matchMedia('(max-width: 640px)').matches;
+
+/* crop the drawing's box to the picture, so the picture fills the width
+   it's given rather than standing small in a tall frame */
+function fitToPicture(svg) {
+  const img = svg.querySelector('image');
+  if (!img) return;
+  const x = +img.getAttribute('x'), y = +img.getAttribute('y');
+  const w = +img.getAttribute('width'), h = +img.getAttribute('height');
+  svg.setAttribute('viewBox', [x, y, w, h].map((n) => fx(n)).join(' '));
+}
+
 /* The card is printed on a sheet of handmade paper. The sheet sits behind
    the card's contents, and its deckled edge is drawn to the card's size
    each time that changes. */
@@ -5823,11 +5943,14 @@ function openSheet(drink) {
   close.addEventListener('click', () => sheet.close());
   head.appendChild(close);
 
+  const wide = phoneCard();
   const preview = artBox('preview', drink, state, 'pour');
+  if (wide) fitToPicture(preview.querySelector('svg'));
   head.appendChild(preview);
   const redraw = () => {
     const was = preview.querySelector('image');
     const art = drinkArt(drink, state, 'pour');
+    if (wide) fitToPicture(art);
     /* the same picture again, say with smoke turned on, doesn't fade back in */
     const now = art.querySelector('image');
     if (was && now && was.getAttribute('href') === now.getAttribute('href')) now.removeAttribute('class');
@@ -5844,6 +5967,13 @@ function openSheet(drink) {
 
   /* ---------- body ---------- */
   const body = el('div', 'sheet-body');
+  /* on a phone the picture and the name scroll with everything else, so
+     a big picture doesn't leave the rest of the card a sliver to read in */
+  if (wide) {
+    form.classList.add('wide-art');
+    body.appendChild(head);
+    form.appendChild(close);
+  }
 
   /* the story opens on its most surprising line */
   if (drink.story) body.appendChild(field(U('the_story'), el('p', 'story', drink.hook + ' ' + drink.story)));
@@ -5861,6 +5991,19 @@ function openSheet(drink) {
   /* what's in it, as one line in a guest's words; the measures stay
      behind the bar, in the build on the ticket */
   body.appendChild(field(U('whats_in_it'), el('p', 'inside-line', drink.inside)));
+
+  /* egg white, honey and fish, said plainly; it follows the choices below */
+  const containsLine = el('p', 'contains-line');
+  const containsField = field(U('contains'), containsLine);
+  const paintContains = () => {
+    const list = containsFor(drink, state).map((k) => U('has_' + k));
+    containsField.hidden = !list.length;
+    if (!list.length) return;
+    const line = list.join(U('list_sep'));
+    containsLine.replaceChildren(txt(line.charAt(0).toUpperCase() + line.slice(1)));
+  };
+  paintContains();
+  body.appendChild(containsField);
 
   body.appendChild(field(U('tastes_like'), tastingCard(drink)));
 
@@ -5903,7 +6046,7 @@ function openSheet(drink) {
   if (drink.egg) {
     const egg = optionRow('egg', U('egg_white'), U('egg_why'));
     egg.input.checked = state.egg;
-    egg.input.addEventListener('change', () => { state.egg = egg.input.checked; redraw(); });
+    egg.input.addEventListener('change', () => { state.egg = egg.input.checked; redraw(); paintContains(); });
     body.appendChild(egg.label);
   }
 
@@ -5912,7 +6055,7 @@ function openSheet(drink) {
     if (!drink[b]) return;
     const row = optionRow(b, U(b + '_bitters'), U(b + '_why'));
     row.input.checked = state[b];
-    row.input.addEventListener('change', () => { state[b] = row.input.checked; });
+    row.input.addEventListener('change', () => { state[b] = row.input.checked; paintContains(); });
     body.appendChild(row.label);
   });
 
@@ -5990,6 +6133,96 @@ function openSheet(drink) {
   requestAnimationFrame(() => { body.scrollTop = 0; });
 }
 
+/* ================================================================
+   HELP ME CHOOSE — two questions, then up to three drinks
+   ================================================================ */
+
+const TASTES = ['bitter', 'sweet', 'citrus'];
+/* no alcohol, light, medium, strong: the same words the menu prints */
+const LEVEL_WORDS = ['heavy_none', 'level_light', 'level_medium', 'level_strong'];
+const levelOf = (d) => (d.na && !d.warning ? 0 : d.flavor.strength <= 2 ? 1 : d.flavor.strength === 3 ? 2 : 3);
+
+/* the guest's answers stay put if they close it and open it again */
+const chosen = { taste: null, level: null };
+
+/* The drinks that taste most like the answer, at about the strength
+   asked for. "No alcohol" only ever offers drinks with none at all, and
+   any other answer never offers one. The other side of the taste breaks
+   a tie: of two sweet drinks, the less bitter one comes first. */
+function picksFor(taste, level) {
+  const other = taste === 'bitter' ? 'sweet' : 'bitter';
+  return drinks()
+    .filter((d) => !d.hidden && !d.out && (levelOf(d) === 0) === (level === 0))
+    .map((d, i) => ({ d, i, score: d.flavor[taste] * 2 - Math.abs(levelOf(d) - level) * 4 - d.flavor[other] * .1 }))
+    .sort((a, b) => b.score - a.score || a.i - b.i)
+    .slice(0, 3)
+    .map((p) => p.d);
+}
+
+/* a row of answers to one question; key is the answer it sets */
+function pickRow(key, name, options, onPick) {
+  const row = el('div', 'pick-row');
+  row.setAttribute('role', 'group');
+  row.setAttribute('aria-label', name);
+  options.forEach(([value, label]) => {
+    const b = el('button', 'pick');
+    b.type = 'button';
+    b.dataset.value = String(value);
+    b.appendChild(el('span', null, label));
+    b.setAttribute('aria-pressed', String(chosen[key] === value));
+    b.addEventListener('click', () => {
+      chosen[key] = value;
+      $$('.pick', row).forEach((c) => c.setAttribute('aria-pressed', String(c === b)));
+      onPick();
+    });
+    row.appendChild(b);
+  });
+  return row;
+}
+
+function openChooser() {
+  sheet.innerHTML = '';
+  sheet.appendChild(paperSheet());
+  const form = el('form', 'sheet chooser');
+  form.method = 'dialog';
+  form.addEventListener('submit', (e) => e.preventDefault());
+
+  const head = el('div', 'sheet-head');
+  const close = el('button', 'sheet-close');
+  close.type = 'button';
+  close.setAttribute('aria-label', U('close'));
+  close.appendChild(icon('close'));
+  close.addEventListener('click', () => sheet.close());
+  head.appendChild(close);
+  const h2 = el('h2', 'sheet-title', U('choose'));
+  h2.id = 'sheet-title';
+  head.appendChild(h2);
+  head.appendChild(el('p', 'sheet-hook', U('choose_lede')));
+  form.appendChild(head);
+
+  const body = el('div', 'sheet-body');
+  const results = el('div', 'choose-results');
+  results.setAttribute('aria-live', 'polite');
+  const show = () => {
+    results.innerHTML = '';
+    if (chosen.taste == null || chosen.level == null) return;
+    const picks = picksFor(chosen.taste, chosen.level);
+    results.appendChild(el('div', 'caps', U('choose_picks')(picks.length)));
+    const list = el('div', 'entries');
+    picks.forEach((d, i) => list.appendChild(entryEl(d, i)));
+    results.appendChild(list);
+  };
+  body.appendChild(field(U('choose_taste'), pickRow('taste', U('choose_taste'), TASTES.map((t) => [t, U('taste_' + t)]), show)));
+  body.appendChild(field(U('choose_strength'), pickRow('level', U('choose_strength'), LEVEL_WORDS.map((w, i) => [i, U(w)]), show)));
+  body.appendChild(results);
+  show();
+  form.appendChild(body);
+
+  sheet.appendChild(form);
+  sheet.showModal();
+  sheet.focus({ preventScroll: true });
+}
+
 /* ---------- js/09-orders.js ---------- */
 /* ================================================================
    ORDERS — tickets on the rail, the build behind each one, and a
@@ -6042,7 +6275,7 @@ function ticketEl(order) {
     toast(o.done ? U('toast_poured') + drink.name + U('toast_for') + o.guest : U('toast_back'), drink, o);
   });
   main.appendChild(pour);
-  main.appendChild(artBox('ticket-art', drink, order, 'static'));
+  main.appendChild(artBox('ticket-art', drink, order, 'static', true));
 
   /* the drink, then who it's for and when they asked */
   const text = el('div', 'ticket-text');
@@ -6328,6 +6561,8 @@ function wireChrome() {
     openSheet(pool[Math.floor(Math.random() * pool.length)]);
   });
 
+  $('#choose').addEventListener('click', openChooser);
+
   $('#filters').addEventListener('scroll', paintFilterFade, { passive: true });
   window.addEventListener('resize', paintFilterFade);
   /* the first measure is taken before the fonts are in, and they change the widths */
@@ -6360,6 +6595,10 @@ function paintStatic() {
   choice.innerHTML = '';
   choice.appendChild(icon('die'));
   choice.appendChild(el('span', null, U('surprise')));
+  const choose = $('#choose');
+  choose.innerHTML = '';
+  choose.appendChild(icon('tune'));
+  choose.appendChild(el('span', null, U('choose')));
 
   $('#notes-summary').textContent = U('bar_notes');
   const summary = $('#notes-summary').parentNode;
@@ -6384,8 +6623,13 @@ applyPhase();
 setInterval(applyPhase, 60000);
 
 paintStatic();
-/* every arrival paints the bar in, however many times you come back */
-renderScene(true);
+/* the bar paints itself in once a visit: a guest who comes back for a
+   second drink the same evening finds it already there */
+const PAINT_AGAIN_AFTER = 6 * 3600 * 1000;
+const paintedAt = Number(store.get(KEYS.painted, 0)) || 0;
+const paintNow = !(Date.now() - paintedAt < PAINT_AGAIN_AFTER && paintedAt <= Date.now());
+if (paintNow) store.set(KEYS.painted, String(Date.now()));
+renderScene(paintNow);
 wireChrome();
 /* the golf tee is the exclamation mark in the name, and only that */
 $('#tee').appendChild(teeMark());

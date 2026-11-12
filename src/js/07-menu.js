@@ -54,8 +54,22 @@ function paintFilterFade() {
 
 /* ---------- a drink, as the menu lists it ---------- */
 
+/* What a guest with an allergy, or who eats no animal products, needs to
+   know. Read from the English recipe, so both languages always agree:
+   Bénédictine is made with honey, and the umami bitters with bonito. */
+function containsFor(drink, opts = {}) {
+  const base = DRINKS.find((d) => d.id === drink.id) || drink;
+  const has = (re) => re.test(base.inside) || base.build.some(([, ing]) => re.test(ing));
+  const out = [];
+  if (drink.egg && opts.egg) out.push('egg');
+  if (has(/honey|Bénédictine/i)) out.push('honey');
+  if ((drink.umami && opts.umami) || has(/umami/i)) out.push('fish');
+  return out;
+}
+
 /* what's particular about it, as a line of small print */
 function notesFor(drink) {
+  const has = containsFor(drink, { umami: !!drink.umami });
   const out = [];
   if (drink.smoke) {
     out.push({ cls: 'smoke', icon: 'smoke', text: drink.best ? U('chip_smoke_best') : U('chip_smoke')(woodLabel(drink.woods[0]).toLowerCase()) });
@@ -64,8 +78,9 @@ function notesFor(drink) {
   if (drink.na && !drink.warning) out.push({ cls: 'na', icon: 'none', text: U('chip_na') });
   if (drink.warning) out.push({ cls: 'warn', icon: 'warn', text: U('chip_warn') });
   if (drink.egg) out.push({ cls: 'egg', icon: 'egg', text: U(drink.eggDefault ? 'chip_egg' : 'chip_egg_opt') });
+  if (has.includes('honey')) out.push({ cls: 'honey', icon: 'honey', text: U('chip_honey') });
   if (drink.yuzu) out.push({ cls: 'yuzu', icon: 'drop', text: U('chip_yuzu') });
-  if (drink.umami) out.push({ cls: 'umami', icon: 'drop', text: U('chip_umami') });
+  if (has.includes('fish')) out.push({ cls: 'umami', icon: 'drop', text: U('chip_umami_fish') });
   return out;
 }
 
@@ -86,7 +101,7 @@ function entryEl(drink, index) {
   b.dataset.drink = drink.id;
   b.style.setProperty('--i', String(index));
   /* a drink that's smoked by default shows its smoke on the menu too */
-  b.appendChild(artBox('entry-art', drink, { smoke: !!drink.smoke, egg: !!drink.eggDefault }, 'live'));
+  b.appendChild(artBox('entry-art', drink, { smoke: !!drink.smoke, egg: !!drink.eggDefault }, 'live', true));
 
   const text = el('div', 'entry-text');
   const name = el('div', 'entry-name');

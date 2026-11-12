@@ -133,6 +133,7 @@
 .note.egg, .note.low { color: var(--kincha); }
 .note.yuzu { color: var(--yuzu); }
 .note.umami { color: var(--ink-2); }
+.note.honey { color: var(--kincha); }
 
 .no-match {
   padding: 56px 24px;
