@@ -1,7 +1,7 @@
 # Paul's Bar
 
 A cocktail menu that friends order from on their phones, in English or Thai.
-It's set like a printed card on washi paper: 31 drinks in four sections, each
+It's set like a printed card on washi paper: 28 drinks in four sections, each
 one drawn in ink and wash from its own recipe, plus one that isn't on the
 list.
 

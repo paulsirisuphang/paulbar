@@ -116,7 +116,7 @@ function wireChrome() {
 
   const choice = $('#choice');
   choice.addEventListener('click', () => {
-    const pool = drinks().filter((d) => !d.hidden);
+    const pool = drinks().filter((d) => !d.hidden && !d.out);
     choice.classList.add('rolling');
     setTimeout(() => choice.classList.remove('rolling'), 600);
     openSheet(pool[Math.floor(Math.random() * pool.length)]);

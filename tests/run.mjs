@@ -185,7 +185,9 @@ const checks = [
 
   ['the menu lists every drink but the secret one', {}, async (page) => {
     await enter(page);
-    eq(await count(page, '.entry'), 31, 'drinks on the menu');
+    eq(await count(page, '.entry'), 28, 'drinks on the menu');
+    /* no Cointreau on the bar, so the drinks that need it are off the menu */
+    for (const id of ['sidecar', 'corpse-reviver', 'pegu-club']) eq(await count(page, `.entry[data-drink="${id}"]`), 0, `${id} on the menu`);
     for (const id of ['bobby-burns', 'penicillin', 'pandan-sour']) eq(await count(page, `.entry[data-drink="${id}"]`), 1, id + ' on the menu');
     eq(await count(page, '.entry[data-drink="de-la-louisiane"]'), 0, 'De La Louisiane on the menu');
     eq(await count(page, '.entry[data-drink="vieux-carre"]'), 0, 'the secret drink on the menu');
@@ -256,7 +258,7 @@ const checks = [
     await enter(page);
     /* the menu shows smoke over every drink that takes it, and no other */
     const smoked = await page.$$eval('.entry', (n) => n.filter((e) => e.querySelector('.entry-art .wisp-soft')).map((e) => e.dataset.drink));
-    eq(smoked.length, 9, 'drinks shown smoking on the menu: ' + smoked.join(', '));
+    eq(smoked.length, 8, 'drinks shown smoking on the menu: ' + smoked.join(', '));
     ok(!smoked.includes('gimlet'), 'smoke over a drink that never takes it');
     /* a drink that never takes smoke just doesn't offer it, without saying why */
     await openDrink(page, 'gimlet');
@@ -332,7 +334,7 @@ const checks = [
 
   ['pouring stamps the ticket, and clearing empties the rail', {}, async (page) => {
     await enter(page);
-    await order(page, 'sidecar', 'Ton');
+    await order(page, 'bees-knees', 'Ton');
     await page.click('#burger');
     await page.click('#tab-orders');
     await page.click('.pour');
@@ -479,7 +481,7 @@ const checks = [
     await enter(page);
     const wide = () => page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     eq(await wide(), 0, 'sideways overflow on the menu');
-    await openDrink(page, 'corpse-reviver');
+    await openDrink(page, 'pandan-sour');
     eq(await wide(), 0, 'sideways overflow with a card open');
   }],
 

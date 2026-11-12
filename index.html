@@ -1754,11 +1754,13 @@ const DRINKS = [
     flavor: { bitter: 1, sweet: 3, citrus: 4, herbal: 0, strength: 3 },
     build: [['2 oz', 'bourbon'], ['0.75 oz', 'lemon'], ['0.75 oz', 'simple syrup']],
     steps: [
+      "For a ginger version, use honey-ginger syrup in place of the simple syrup, if you have it.",
       "Add the bourbon, lemon and simple syrup to a shaker with ice.",
       "Shake hard for 12 seconds, until the tin hurts to hold.",
       "Strain over fresh ice."
     ],
     eggSteps: [
+      "For a ginger version, use honey-ginger syrup in place of the simple syrup, if you have it.",
       "Add the bourbon, lemon, simple syrup and egg white to a shaker, with no ice yet.",
       "Dry-shake 10 seconds to build the foam.",
       "Add ice and shake hard 12 seconds more.",
@@ -1861,7 +1863,7 @@ const DRINKS = [
     glass: 'rocks', color: '#C8963F', ice: 'cube', garnish: 'none'
   },
   {
-    id: 'sidecar', name: 'Sidecar', method: 'Shaken', section: 'shaken',
+    id: 'sidecar', name: 'Sidecar', method: 'Shaken', section: 'shaken', out: true,
     inside: "Cognac, Cointreau, lemon",
     taste: "Orange and brandy, tart and not too sweet.",
     hook: "An army captain kept arriving at the bar in a motorcycle sidecar.",
@@ -1879,27 +1881,27 @@ const DRINKS = [
     glass: 'coupe', color: '#C98B3A', ice: 'none', garnish: 'lemon-twist'
   },
   {
-    id: 'margarita', name: 'Margarita', method: 'Shaken', section: 'shaken',
-    inside: "Tequila, Cointreau, lime, salt on half the rim",
-    taste: "Tart lime and tequila, with a salty rim.",
+    id: 'margarita', name: "Tommy's Margarita", method: 'Shaken', section: 'shaken',
+    inside: "Tequila, lime, honey, salt on half the rim",
+    taste: "Tart lime and tequila, a little honey, and a salty rim.",
     yuzu: { qty: '3 dashes', step: 'Add 3 dashes of yuzu bitters to the shaker.', at: 2 },
-    hook: "Margarita is Spanish for daisy, and the Daisy is an old family of sour drinks.",
-    story: "This is simply the tequila version, so at least 8 people have claimed they invented it, and none can prove it.",
-    flavor: { bitter: 1, sweet: 3, citrus: 5, herbal: 2, strength: 4 },
-    build: [['2 oz', 'tequila'], ['0.75 oz', 'Cointreau'], ['0.75 oz', 'lime']],
+    hook: "It's named after Tommy's, a Mexican restaurant in San Francisco.",
+    story: "Julio Bermejo made it there around 1990, with agave syrup in place of the orange liqueur. This one uses honey.",
+    flavor: { bitter: 0, sweet: 3, citrus: 5, herbal: 1, strength: 4 },
+    build: [['2 oz', 'tequila'], ['1 oz', 'lime'], ['0.75 oz', 'honey syrup']],
     steps: [
       "Salt half the rim of a rocks glass, leaving half bare so there is a choice.",
-      "Add the tequila, Cointreau and lime to a shaker with ice.",
+      "Add the tequila, lime and honey syrup to a shaker with ice.",
       "Shake hard for 12 seconds.",
       "Strain over fresh ice."
     ],
     smoke: false,
-    glass: 'rocks', color: '#CBD489', ice: 'cubes', garnish: 'lime-wedge'
+    glass: 'rocks', color: '#D3CB86', ice: 'cubes', garnish: 'lime-wedge'
   },
 
 
   {
-    id: 'corpse-reviver', name: 'Corpse Reviver №2', method: 'Shaken', section: 'shaken',
+    id: 'corpse-reviver', name: 'Corpse Reviver №2', method: 'Shaken', section: 'shaken', out: true,
     inside: "Gin, Cointreau, Lillet Blanc, lemon",
     taste: "Lemon and orange, very easy to drink.",
     hook: "It was published as a hangover cure, with a warning printed underneath.",
@@ -1918,7 +1920,7 @@ const DRINKS = [
     glass: 'coupe', color: '#D9CE8E', ice: 'none', garnish: 'lemon-twist'
   },
   {
-    id: 'pegu-club', name: 'Pegu Club', method: 'Shaken', section: 'shaken',
+    id: 'pegu-club', name: 'Pegu Club', method: 'Shaken', section: 'shaken', out: true,
     inside: "Gin, Cointreau, lime, Angostura and orange bitters",
     taste: "Lime and orange, with spice at the end.",
     hook: "It's named after a British officers' club in Rangoon.",
@@ -2150,6 +2152,7 @@ const DRINKS = [
     flavor: { bitter: 0, sweet: 4, citrus: 4, herbal: 1, strength: 0 },
     build: [['1 oz', 'honey syrup'], ['0.75 oz', 'lemon'], ['pinch', 'salt'], ['3 oz', 'club soda']],
     steps: [
+      "For a ginger version, use honey-ginger syrup in place of the honey syrup, if you have it.",
       "Shake the honey syrup, lemon and salt with ice.",
       "Strain into a tall glass over fresh ice.",
       "Top with soda.",
@@ -2257,7 +2260,7 @@ const T_EN = {
   notes: [
     { h: 'Simple syrup', p: 'Equal parts sugar and hot water, stirred until clear. Keeps a month in the fridge.' },
     { h: 'Honey syrup', p: "Two parts honey to one part warm water. Raw honey is too thick to mix cold, so don't skip this. Keeps a month in the fridge." },
-    { h: 'Honey-ginger syrup', p: 'For the Penicillin. Simmer 1 cup honey and 1 cup water with a 15 cm piece of fresh ginger, sliced thin, for 5 minutes. Let it cool, then strain. Keeps 2 weeks in the fridge.' },
+    { h: 'Honey-ginger syrup', p: 'For the Penicillin, or a ginger version of the Whiskey Sour or Honey Lemon Fizz. Simmer 1 cup honey and 1 cup water with a 15 cm piece of fresh ginger, sliced thin, for 5 minutes. Let it cool, then strain. Keeps 2 weeks in the fridge.' },
     { h: 'Stir or shake', p: "Stir drinks that are all spirits: about 30 seconds in a mixing glass with good ice. Shake anything with citrus or egg: 12 hard seconds, until the shaker is almost too cold to hold." },
     { h: 'Tall drinks', p: 'Fill the glass to the top with ice. Less ice melts faster, not slower.' },
     { h: 'Every mocktail gets salt', p: 'A pinch costs nothing, and it does more to stop a mocktail tasting like plain juice than any expensive alcohol-free spirit.' },
@@ -2313,7 +2316,7 @@ const WOODS_TH = {
    what's between them (thaiText, core.js). A new loanword in the copy
    belongs here; tools/thai_check.mjs lists how every string will split. */
 const TH_KEEP = [
-  'ออร์เดอร์', 'โรสแมรี่', 'สเปรย์', 'มิ้นต์', 'ไทม์', 'โหระพา', 'ม็อกเทล', 'บาร์เทนเดอร์', 'เชคเกอร์', 'การ์นิช', 'คูเป้', 'ร็อก', 'เวอร์ชัน', 'เช็ก',
+  'ออร์เดอร์', 'ซานฟรานซิสโก', 'เม็กซิกัน', 'อากาเว่', 'โรสแมรี่', 'สเปรย์', 'มิ้นต์', 'ไทม์', 'โหระพา', 'ม็อกเทล', 'บาร์เทนเดอร์', 'เชคเกอร์', 'การ์นิช', 'คูเป้', 'ร็อก', 'เวอร์ชัน', 'เช็ก',
   'จิน', 'เบอร์เบิน', 'ไรย์', 'คอนญัก', 'เตกีลา', 'วอดก้า', 'สวีท', 'เวอร์มุท', 'แอบซินธ์', 'มาราสคิโน',
   'คูราเซา', 'ลิเคียว', 'บิตเตอร์', 'ไซรัป', 'มาร์ตินี่', 'โทนิก', 'ไฮบอล', 'เดซี่', 'เชอร์รี', 'วอลนัต',
   'พีแคน', 'คาราเมล', 'เจนเชียน', 'ควินิน', 'ซิงโคนา', 'โคชินีล', 'คาร์มีน', 'เคานต์', 'วินสตัน',
@@ -2431,7 +2434,7 @@ const T_TH = {
   notes: [
     { h: 'ไซรัปน้ำตาล', p: 'น้ำตาลกับน้ำร้อนอย่างละเท่ากัน คนจนใส แช่ตู้เย็นเก็บได้หนึ่งเดือน' },
     { h: 'ไซรัปน้ำผึ้ง', p: 'น้ำผึ้งสองส่วนต่อน้ำอุ่นหนึ่งส่วน น้ำผึ้งดิบข้นเกินกว่าจะผสมกับของเย็นได้ ขั้นนี้จึงข้ามไม่ได้ เก็บได้หนึ่งเดือน' },
-    { h: 'ไซรัปน้ำผึ้งขิง', p: 'สำหรับ Penicillin ต้มน้ำผึ้ง 1 ถ้วยกับน้ำ 1 ถ้วย ใส่ขิงสดหั่นบาง ๆ ยาวราว 15 ซม. เคี่ยว 5 นาที พักให้เย็นแล้วกรอง แช่ตู้เย็นเก็บได้สองสัปดาห์' },
+    { h: 'ไซรัปน้ำผึ้งขิง', p: 'สำหรับ Penicillin หรือ Whiskey Sour และ Honey Lemon Fizz เวอร์ชันขิง ต้มน้ำผึ้ง 1 ถ้วยกับน้ำ 1 ถ้วย ใส่ขิงสดหั่นบาง ๆ ยาวราว 15 ซม. เคี่ยว 5 นาที พักให้เย็นแล้วกรอง แช่ตู้เย็นเก็บได้สองสัปดาห์' },
     { h: 'คนหรือเขย่า', p: 'ถ้ามีแต่เหล้า ให้คนในแก้วผสมกับน้ำแข็งก้อนแข็ง ๆ ราว 30 วินาที ถ้ามีน้ำมะนาวหรือไข่ ให้เขย่าแรง ๆ 12 วินาที จนเชคเกอร์เย็นจนแทบจับไม่ไหว' },
     { h: 'แก้วทรงสูง', p: 'ใส่น้ำแข็งให้เต็มแก้ว น้ำแข็งครึ่งแก้วละลายเร็วกว่า ไม่ได้ช้ากว่า' },
     { h: 'ม็อกเทลใส่เกลือทุกแก้ว', p: 'แค่หยิบมือเดียว ไม่เสียเงินสักบาท แต่ช่วยไม่ให้รสออกมาเหมือนน้ำผลไม้จืด ๆ ได้ดีกว่าเหล้า 0% แพง ๆ เสียอีก' },
@@ -2605,11 +2608,13 @@ const TH = {
     story: "แก้วนี้เขย่าสองรอบ รอบแรกไม่ใส่น้ำแข็งเพื่อตีไข่ให้เป็นฟอง รอบสองใส่น้ำแข็งเพื่อให้เย็น",
     build: [['2 ออนซ์', 'เบอร์เบิน'], ['0.75 ออนซ์', 'น้ำเลมอน'], ['0.75 ออนซ์', 'ไซรัปน้ำตาล']],
     steps: [
+      'ถ้ามีไซรัปน้ำผึ้งขิง ใช้แทนไซรัปน้ำตาลได้ จะได้เวอร์ชันขิง',
       'ใส่เบอร์เบิน น้ำเลมอน ไซรัปน้ำตาล และน้ำแข็งลงในเชคเกอร์',
       SHAKE_HARD,
       'กรองลงบนน้ำแข็งใหม่'
     ],
     eggSteps: [
+      'ถ้ามีไซรัปน้ำผึ้งขิง ใช้แทนไซรัปน้ำตาลได้ จะได้เวอร์ชันขิง',
       'ใส่เบอร์เบิน น้ำเลมอน ไซรัปน้ำตาล และไข่ขาวลงในเชคเกอร์ ยังไม่ต้องใส่น้ำแข็ง',
       'เขย่าเปล่า ๆ 10 วินาที ให้เกิดฟอง',
       'ใส่น้ำแข็ง แล้วเขย่าแรง ๆ ต่ออีก 12 วินาที',
@@ -2712,16 +2717,16 @@ const TH = {
     ]
   },
   'margarita': {
-    inside: "เตกีลา · Cointreau · มะนาว · เกลือครึ่งขอบ",
-    taste: "มะนาวจี๊ดกับเตกีลา ขอบแก้วเค็ม",
+    inside: "เตกีลา · มะนาว · น้ำผึ้ง · เกลือครึ่งขอบ",
+    taste: "มะนาวจี๊ดกับเตกีลา หวานน้ำผึ้งนิด ๆ ขอบแก้วเค็ม",
     yuzu: { qty: '3 แดช', step: 'ใส่บิตเตอร์ยูซุ 3 แดชลงในเชคเกอร์', at: 2 },
     method: 'เขย่ากับน้ำแข็ง',
-    hook: "Margarita ภาษาสเปนแปลว่าเดซี่ ชื่อตระกูลค็อกเทลรสเปรี้ยวเก่าแก่",
-    story: "แก้วนี้เป็นแค่เดซี่ฉบับเตกีลา เลยมีคนอ้างว่าเป็นคนคิดอย่างน้อย 8 คน และไม่มีใครพิสูจน์ได้สักคน",
-    build: [['2 ออนซ์', 'เตกีลา'], ['0.75 ออนซ์', 'Cointreau'], ['0.75 ออนซ์', 'น้ำมะนาว']],
+    hook: "ชื่อมาจาก Tommy's ร้านอาหารเม็กซิกันในซานฟรานซิสโก",
+    story: "Julio Bermejo คิดแก้วนี้ที่ร้านนั้นราวปี 1990 ใช้ไซรัปอากาเว่แทนลิเคียวส้ม ส่วนแก้วนี้ใช้น้ำผึ้ง",
+    build: [['2 ออนซ์', 'เตกีลา'], ['1 ออนซ์', 'น้ำมะนาว'], ['0.75 ออนซ์', 'ไซรัปน้ำผึ้ง']],
     steps: [
       'ป้ายเกลือที่ขอบแก้วร็อกแค่ครึ่งเดียว อีกครึ่งเว้นไว้ให้เลือก',
-      'ใส่เตกีลา Cointreau น้ำมะนาว และน้ำแข็งลงในเชคเกอร์',
+      'ใส่เตกีลา น้ำมะนาว ไซรัปน้ำผึ้ง และน้ำแข็งลงในเชคเกอร์',
       SHAKE,
       'กรองลงบนน้ำแข็งใหม่'
     ]
@@ -2972,6 +2977,7 @@ const TH = {
     story: "เกลือช่วยกดความขม และดึงรสอื่นให้เด่น แก้วนี้เลยไม่จืดเหมือนน้ำผลไม้ธรรมดา",
     build: [['1 ออนซ์', 'ไซรัปน้ำผึ้ง'], ['0.75 ออนซ์', 'น้ำเลมอน'], ['หยิบมือ', 'เกลือ'], ['3 ออนซ์', 'โซดา']],
     steps: [
+      'ถ้ามีไซรัปน้ำผึ้งขิง ใช้แทนไซรัปน้ำผึ้งได้ จะได้เวอร์ชันขิง',
       'เขย่าไซรัปน้ำผึ้ง น้ำเลมอน และเกลือกับน้ำแข็ง',
       'กรองลงแก้วทรงสูงที่ใส่น้ำแข็งใหม่ไว้',
       'เติมโซดาจนเต็ม',
@@ -5579,7 +5585,7 @@ function applyPhase() {
   document.documentElement.dataset.phase = phaseNow();
 }
 
-const listed = (sec) => drinks().filter((d) => d.section === sec && !d.hidden);
+const listed = (sec) => drinks().filter((d) => d.section === sec && !d.hidden && !d.out);
 
 /* ---------- filters ---------- */
 
@@ -6326,7 +6332,7 @@ function wireChrome() {
 
   const choice = $('#choice');
   choice.addEventListener('click', () => {
-    const pool = drinks().filter((d) => !d.hidden);
+    const pool = drinks().filter((d) => !d.hidden && !d.out);
     choice.classList.add('rolling');
     setTimeout(() => choice.classList.remove('rolling'), 600);
     openSheet(pool[Math.floor(Math.random() * pool.length)]);

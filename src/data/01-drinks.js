@@ -228,11 +228,13 @@ const DRINKS = [
     flavor: { bitter: 1, sweet: 3, citrus: 4, herbal: 0, strength: 3 },
     build: [['2 oz', 'bourbon'], ['0.75 oz', 'lemon'], ['0.75 oz', 'simple syrup']],
     steps: [
+      "For a ginger version, use honey-ginger syrup in place of the simple syrup, if you have it.",
       "Add the bourbon, lemon and simple syrup to a shaker with ice.",
       "Shake hard for 12 seconds, until the tin hurts to hold.",
       "Strain over fresh ice."
     ],
     eggSteps: [
+      "For a ginger version, use honey-ginger syrup in place of the simple syrup, if you have it.",
       "Add the bourbon, lemon, simple syrup and egg white to a shaker, with no ice yet.",
       "Dry-shake 10 seconds to build the foam.",
       "Add ice and shake hard 12 seconds more.",
@@ -335,7 +337,7 @@ const DRINKS = [
     glass: 'rocks', color: '#C8963F', ice: 'cube', garnish: 'none'
   },
   {
-    id: 'sidecar', name: 'Sidecar', method: 'Shaken', section: 'shaken',
+    id: 'sidecar', name: 'Sidecar', method: 'Shaken', section: 'shaken', out: true,
     inside: "Cognac, Cointreau, lemon",
     taste: "Orange and brandy, tart and not too sweet.",
     hook: "An army captain kept arriving at the bar in a motorcycle sidecar.",
@@ -353,27 +355,27 @@ const DRINKS = [
     glass: 'coupe', color: '#C98B3A', ice: 'none', garnish: 'lemon-twist'
   },
   {
-    id: 'margarita', name: 'Margarita', method: 'Shaken', section: 'shaken',
-    inside: "Tequila, Cointreau, lime, salt on half the rim",
-    taste: "Tart lime and tequila, with a salty rim.",
+    id: 'margarita', name: "Tommy's Margarita", method: 'Shaken', section: 'shaken',
+    inside: "Tequila, lime, honey, salt on half the rim",
+    taste: "Tart lime and tequila, a little honey, and a salty rim.",
     yuzu: { qty: '3 dashes', step: 'Add 3 dashes of yuzu bitters to the shaker.', at: 2 },
-    hook: "Margarita is Spanish for daisy, and the Daisy is an old family of sour drinks.",
-    story: "This is simply the tequila version, so at least 8 people have claimed they invented it, and none can prove it.",
-    flavor: { bitter: 1, sweet: 3, citrus: 5, herbal: 2, strength: 4 },
-    build: [['2 oz', 'tequila'], ['0.75 oz', 'Cointreau'], ['0.75 oz', 'lime']],
+    hook: "It's named after Tommy's, a Mexican restaurant in San Francisco.",
+    story: "Julio Bermejo made it there around 1990, with agave syrup in place of the orange liqueur. This one uses honey.",
+    flavor: { bitter: 0, sweet: 3, citrus: 5, herbal: 1, strength: 4 },
+    build: [['2 oz', 'tequila'], ['1 oz', 'lime'], ['0.75 oz', 'honey syrup']],
     steps: [
       "Salt half the rim of a rocks glass, leaving half bare so there is a choice.",
-      "Add the tequila, Cointreau and lime to a shaker with ice.",
+      "Add the tequila, lime and honey syrup to a shaker with ice.",
       "Shake hard for 12 seconds.",
       "Strain over fresh ice."
     ],
     smoke: false,
-    glass: 'rocks', color: '#CBD489', ice: 'cubes', garnish: 'lime-wedge'
+    glass: 'rocks', color: '#D3CB86', ice: 'cubes', garnish: 'lime-wedge'
   },
 
 
   {
-    id: 'corpse-reviver', name: 'Corpse Reviver №2', method: 'Shaken', section: 'shaken',
+    id: 'corpse-reviver', name: 'Corpse Reviver №2', method: 'Shaken', section: 'shaken', out: true,
     inside: "Gin, Cointreau, Lillet Blanc, lemon",
     taste: "Lemon and orange, very easy to drink.",
     hook: "It was published as a hangover cure, with a warning printed underneath.",
@@ -392,7 +394,7 @@ const DRINKS = [
     glass: 'coupe', color: '#D9CE8E', ice: 'none', garnish: 'lemon-twist'
   },
   {
-    id: 'pegu-club', name: 'Pegu Club', method: 'Shaken', section: 'shaken',
+    id: 'pegu-club', name: 'Pegu Club', method: 'Shaken', section: 'shaken', out: true,
     inside: "Gin, Cointreau, lime, Angostura and orange bitters",
     taste: "Lime and orange, with spice at the end.",
     hook: "It's named after a British officers' club in Rangoon.",
@@ -624,6 +626,7 @@ const DRINKS = [
     flavor: { bitter: 0, sweet: 4, citrus: 4, herbal: 1, strength: 0 },
     build: [['1 oz', 'honey syrup'], ['0.75 oz', 'lemon'], ['pinch', 'salt'], ['3 oz', 'club soda']],
     steps: [
+      "For a ginger version, use honey-ginger syrup in place of the honey syrup, if you have it.",
       "Shake the honey syrup, lemon and salt with ice.",
       "Strain into a tall glass over fresh ice.",
       "Top with soda.",

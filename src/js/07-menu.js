@@ -19,7 +19,7 @@ function applyPhase() {
   document.documentElement.dataset.phase = phaseNow();
 }
 
-const listed = (sec) => drinks().filter((d) => d.section === sec && !d.hidden);
+const listed = (sec) => drinks().filter((d) => d.section === sec && !d.hidden && !d.out);
 
 /* ---------- filters ---------- */
 
