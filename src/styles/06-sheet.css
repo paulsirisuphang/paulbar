@@ -95,24 +95,8 @@ dialog.sending::backdrop { animation: card-send-fade .45s ease forwards; }
   border-bottom: 1px solid var(--rule);
 }
 @media (max-width: 640px) {
-  .sheet-head { grid-template-areas: 'art title' 'hook hook'; padding: 28px 42px 18px 10px; }
-  .sheet-title { align-self: center; }
-  .sheet-hook { padding-left: 6px; }
-}
-/* On a phone the picture comes first, nearly the width of the card, and
-   the name and the line about it sit under it; all of it scrolls with
-   the card (sheet.js) while the close button stays in the corner. */
-@media (max-width: 640px) {
-  .wide-art .sheet-body > .sheet-head {
-    grid-template-columns: 1fr;
-    grid-template-areas: 'art' 'title' 'hook';
-    gap: 10px;
-    margin: 0;
-    padding: 6px 0 22px;
-  }
-  .wide-art .sheet-head .preview { justify-self: center; width: 100%; height: min(86vw, 52svh); aspect-ratio: auto; margin-bottom: 8px; }
-  .wide-art .sheet-head .sheet-hook { padding-left: 0; }
-  .wide-art > .sheet-close { background: var(--paper-hi); }
+  .sheet-head { gap: 6px 16px; padding: 28px 42px 20px 10px; }
+  .sheet-hook { align-self: start; }
 }
 .preview { grid-area: art; width: clamp(88px, 24vw, 136px); aspect-ratio: 120 / 170; }
 .preview svg { display: block; width: 100%; height: 100%; overflow: visible; }

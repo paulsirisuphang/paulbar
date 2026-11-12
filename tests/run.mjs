@@ -636,21 +636,6 @@ const checks = [
     eq(honey, 'bees-knees, bobby-burns, honey-collins, honey-lemon-fizz, margarita, monte-carlo, pandan-sour, penicillin', 'drinks marked honey');
   }],
 
-  ['on a phone the card opens on the picture, nearly as wide as the card, with the name under it', { width: 390, height: 844 }, async (page) => {
-    await enter(page);
-    for (const id of ['negroni', 'tom-collins']) {
-      await openDrink(page, id);
-      await page.waitForTimeout(500);
-      const box = await page.evaluate(() => {
-        const r = (sel) => document.querySelector(sel).getBoundingClientRect();
-        return { pic: r('#sheet .preview image'), title: r('#sheet-title'), body: r('#sheet .sheet-body') };
-      });
-      ok(box.pic.bottom <= box.title.top + 1, `${id}: the picture is not above the name`);
-      if (id === 'negroni') ok(box.pic.width >= box.body.width * .7, `${id}: the picture is ${Math.round(box.pic.width)}px wide on a ${Math.round(box.body.width)}px card`);
-      await closeCard(page);
-    }
-  }],
-
   ['Surprise me pours something from the menu, never the secret', {}, async (page) => {
     await enter(page);
     for (let i = 0; i < 6; i++) {

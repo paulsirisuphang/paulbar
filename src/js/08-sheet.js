@@ -98,19 +98,6 @@ function optionRow(cls, title, why) {
 
 const sheet = $('#sheet');
 
-/* on a phone the picture leads the card, as wide as it can be */
-const phoneCard = () => window.matchMedia('(max-width: 640px)').matches;
-
-/* crop the drawing's box to the picture, so the picture fills the width
-   it's given rather than standing small in a tall frame */
-function fitToPicture(svg) {
-  const img = svg.querySelector('image');
-  if (!img) return;
-  const x = +img.getAttribute('x'), y = +img.getAttribute('y');
-  const w = +img.getAttribute('width'), h = +img.getAttribute('height');
-  svg.setAttribute('viewBox', [x, y, w, h].map((n) => fx(n)).join(' '));
-}
-
 /* The card is printed on a sheet of handmade paper. The sheet sits behind
    the card's contents, and its deckled edge is drawn to the card's size
    each time that changes. */
@@ -153,14 +140,11 @@ function openSheet(drink) {
   close.addEventListener('click', () => sheet.close());
   head.appendChild(close);
 
-  const wide = phoneCard();
   const preview = artBox('preview', drink, state, 'pour');
-  if (wide) fitToPicture(preview.querySelector('svg'));
   head.appendChild(preview);
   const redraw = () => {
     const was = preview.querySelector('image');
     const art = drinkArt(drink, state, 'pour');
-    if (wide) fitToPicture(art);
     /* the same picture again, say with smoke turned on, doesn't fade back in */
     const now = art.querySelector('image');
     if (was && now && was.getAttribute('href') === now.getAttribute('href')) now.removeAttribute('class');
@@ -177,13 +161,6 @@ function openSheet(drink) {
 
   /* ---------- body ---------- */
   const body = el('div', 'sheet-body');
-  /* on a phone the picture and the name scroll with everything else, so
-     a big picture doesn't leave the rest of the card a sliver to read in */
-  if (wide) {
-    form.classList.add('wide-art');
-    body.appendChild(head);
-    form.appendChild(close);
-  }
 
   /* the story opens on its most surprising line */
   if (drink.story) body.appendChild(field(U('the_story'), el('p', 'story', drink.hook + ' ' + drink.story)));

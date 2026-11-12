@@ -32,8 +32,6 @@ one with its own watercolour, plus one that isn't on the list.
   Under what's in it, the card says when the drink contains egg white,
   honey (Bénédictine counts) or fish (the umami bitters), and it follows
   the guest's choices. The menu marks honey and the fish too.
-- On a phone the card opens on the picture, nearly the card's width, with
-  the name under it, and all of it scrolls.
 - **Sending** an order folds its card into a paper plane, the way a dart is
   folded by hand, and flies it to the orders button in the top right corner;
   the slip confirming the order comes when it lands. With reduced motion the
