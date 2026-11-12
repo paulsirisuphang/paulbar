@@ -87,6 +87,10 @@
   100% { opacity: 0; transform: translate(2px, -8px) scale(1.06, 1.15); }
 }
 
+/* a painted drink comes up gently on the card, the way the wash dries in */
+.painted-in { animation: painted-in .6s ease-out both; }
+@keyframes painted-in { from { opacity: 0; } }
+
 /* the ice gives up while you make up your mind */
 /* each cube is drawn about its own centre, so it shrinks in place */
 .melt {

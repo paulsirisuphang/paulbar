@@ -2,8 +2,7 @@
 
 A cocktail menu that friends order from on their phones, in English or Thai.
 It's set like a printed card on washi paper: 28 drinks in four sections, each
-one drawn in ink and wash from its own recipe, plus one that isn't on the
-list.
+one with its own watercolour, plus one that isn't on the list.
 
 - The **menu** opens on the bar at rest: shelves of bottles, a paper
   lantern hanging from the top of the page with Paul's name on it in
@@ -59,6 +58,15 @@ build stops if the script doesn't parse or the stylesheets don't balance.
 | `src/data/` | The drinks, the English and Thai copy, and the shared book's address |
 | `src/js/` | The code, joined in order into one script |
 | `src/fonts/` | The fonts, cut down to the letters the page uses (`tools/make_fonts.py`) |
+| `art/` | One watercolour per drink, plus `<id>-egg` for a sour served up with egg white; the only files the page loads besides itself |
+
+The watercolours were painted with Nano Banana in Figma Weave, one drink at
+a time, each with a finished picture in the same glass as its reference.
+`node tools/paint.mjs <folder of PNGs> art` turns them into the files in
+`art/`: the paper is made see-through, so the drink sits on the card's own
+paper, and each is trimmed and sized. It also writes their sizes to
+`src/data/04-art.js`. A drink without a picture falls back to its drawing,
+and the bar counter keeps its drawings.
 
 The code, file by file:
 
@@ -68,7 +76,7 @@ The code, file by file:
 | `01-i18n.js` | The two languages, and switching between them |
 | `02-book.js` | The order book: this browser first, then the shared book |
 | `03-ink.js` | The brush: strokes, washes and paper grain |
-| `04-glass.js` | Every drink, drawn from its recipe |
+| `04-glass.js` | Every drink, drawn from its recipe, and the watercolours that stand in for the drawings |
 | `05-bar.js` | The bar: shelves, lantern, counter, the party pieces, the drink behind the lantern, and painting it in |
 | `06-marks.js` | The seals, the tee, the icons, smoke that leaves the glass, and the paper plane an order flies off in |
 | `07-menu.js` | Filters, sections and the list |
@@ -137,7 +145,7 @@ python3 tools/artlab.py            every drawing on one sheet, build/artlab.html
 
 The checks cover the painting, the menu, the filters, the card, ordering,
 the build panel, pouring, the lantern and the tee, the party pieces, Thai,
-reduced motion, and phone and desktop layouts.
+reduced motion, phone and desktop layouts, and a picture for every drink.
 
 ## Fonts
 

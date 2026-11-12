@@ -107,6 +107,10 @@ def main():
     (ROOT / "index.html").write_text(out, encoding="utf-8")
 
     test = re.sub(r"const BOOK = \{[^}]*\};", "const BOOK = {}; /* test build: shared book off */", out, count=1)
+    # the test page sits in build/, one folder below the pictures
+    test = test.replace("const ART_BASE = 'art/';", "const ART_BASE = '../art/';", 1)
+    if "const ART_BASE = '../art/';" not in test:
+        sys.exit("the test build can't find the pictures")
     if "AIza" in test or "firebaseapp.com" in test:
         sys.exit("the test build still points at the real order book")
     BUILD.mkdir(exist_ok=True)

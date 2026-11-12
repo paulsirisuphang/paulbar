@@ -612,9 +612,51 @@ function smokeOver(geo, rand, how) {
   return g;
 }
 
+/* ---------- the watercolours ----------
+   Where a drink has a painted picture, it stands in for the drawn glass on
+   the menu, the card and the ticket. It stands where the drawn glass would,
+   sized to that glass's height, so a tall glass stays taller than a rocks
+   glass; the smoke is still drawn over it. The counter keeps its drawings. */
+const ART_BASE = 'art/';
+/* the picture runs a little above the rim, for the garnish, and below the
+   foot, for the drips */
+const PAINT_TALL = 1.3, PAINT_DROP = .12;
+
+function paintedKey(drink, opts = {}) {
+  const key = drink.egg && opts.egg ? drink.id + '-egg' : drink.id;
+  return PICTURES[key] ? key : null;
+}
+
+function drawPainted(drink, key, opts, mode) {
+  const v = visual(drink, opts);
+  const G = GLASS[v.glass];
+  const geo = geometry(G);
+  const [pw, ph] = PICTURES[key];
+  const glassH = geo.groundY - (G.rimY - G.rimW * G.tilt);
+  let h = glassH * PAINT_TALL, w = h * pw / ph;
+  if (w > 130) { h *= 130 / w; w = 130; }
+  const bottom = geo.groundY + glassH * PAINT_DROP;
+
+  const svg = S('svg', { viewBox: ART_BOX, 'aria-hidden': 'true', focusable: 'false', class: 'painted' });
+  const pic = S('image', {
+    href: ART_BASE + key + '.webp', x: fx(CX - w / 2), y: fx(bottom - h), width: fx(w), height: fx(h),
+    preserveAspectRatio: 'xMidYMax meet', decoding: 'async'
+  });
+  if (mode === 'pour' && !prefersStill()) pic.setAttribute('class', 'painted-in');
+  svg.appendChild(pic);
+  if (v.smoke) svg.appendChild(smokeOver(geo, seeded(drink.id + ':' + v.glass), mode === 'pour' ? 'rising' : mode !== 'static' ? 'drifting' : 'still'));
+  return svg;
+}
+
+/* the picture where there is one, the drawing where there isn't */
+function drinkArt(drink, opts, mode) {
+  const key = paintedKey(drink, opts);
+  return key ? drawPainted(drink, key, opts, mode) : drawDrink(drink, opts, mode);
+}
+
 /* a drawing in a box, ready to drop into the page */
 function artBox(cls, drink, opts, mode) {
   const box = el('div', cls);
-  box.appendChild(drawDrink(drink, opts, mode));
+  box.appendChild(drinkArt(drink, opts, mode));
   return box;
 }

@@ -1417,6 +1417,10 @@ details.notes[open] summary svg { transform: rotate(90deg); }
   100% { opacity: 0; transform: translate(2px, -8px) scale(1.06, 1.15); }
 }
 
+/* a painted drink comes up gently on the card, the way the wash dries in */
+.painted-in { animation: painted-in .6s ease-out both; }
+@keyframes painted-in { from { opacity: 0; } }
+
 /* the ice gives up while you make up your mind */
 /* each cube is drawn about its own centre, so it shrinks in place */
 .melt {
@@ -3003,6 +3007,50 @@ const TH = {
   }
 };
 
+/* ---------- data/04-art.js ---------- */
+/* ---------- the watercolours ----------
+   One painted picture per drink in art/, with its size in pixels. A sour
+   that can take egg white has a second one, <id>-egg, in its coupe.
+   tools/paint.mjs writes this file; don't edit it by hand. */
+
+const PICTURES = {
+  'americano': [254, 400],
+  'bees-knees': [301, 400],
+  'bitters-soda': [234, 400],
+  'bobby-burns': [300, 400],
+  'boulevardier': [377, 400],
+  'campari-tonic': [246, 400],
+  'corpse-reviver': [299, 400],
+  'gimlet': [298, 400],
+  'gin-sour-egg': [256, 400],
+  'gin-sour': [375, 400],
+  'gin-tonic': [237, 400],
+  'honey-collins': [249, 400],
+  'honey-lemon-fizz': [246, 400],
+  'lillet-spritz': [221, 400],
+  'lillet-tonic': [222, 400],
+  'margarita': [398, 400],
+  'monte-carlo': [304, 400],
+  'negroni': [375, 400],
+  'old-fashioned': [344, 400],
+  'pandan-sour-egg': [338, 400],
+  'pandan-sour': [375, 400],
+  'pegu-club': [296, 400],
+  'penicillin': [364, 400],
+  'ponzu-gimlet': [304, 400],
+  'rye-manhattan': [253, 400],
+  'sazerac': [362, 400],
+  'sidecar': [327, 400],
+  'suze-tonic': [229, 400],
+  'tom-collins': [249, 400],
+  'umami-martini': [274, 400],
+  'vieux-carre': [396, 400],
+  'whiskey-highball': [249, 400],
+  'whiskey-sour-egg': [290, 400],
+  'whiskey-sour': [353, 400],
+  'white-negroni': [373, 400]
+};
+
 /* ---------- js/00-core.js ---------- */
 /* ================================================================
    CORE — DOM and storage helpers everything else leans on
@@ -4185,10 +4233,52 @@ function smokeOver(geo, rand, how) {
   return g;
 }
 
+/* ---------- the watercolours ----------
+   Where a drink has a painted picture, it stands in for the drawn glass on
+   the menu, the card and the ticket. It stands where the drawn glass would,
+   sized to that glass's height, so a tall glass stays taller than a rocks
+   glass; the smoke is still drawn over it. The counter keeps its drawings. */
+const ART_BASE = 'art/';
+/* the picture runs a little above the rim, for the garnish, and below the
+   foot, for the drips */
+const PAINT_TALL = 1.3, PAINT_DROP = .12;
+
+function paintedKey(drink, opts = {}) {
+  const key = drink.egg && opts.egg ? drink.id + '-egg' : drink.id;
+  return PICTURES[key] ? key : null;
+}
+
+function drawPainted(drink, key, opts, mode) {
+  const v = visual(drink, opts);
+  const G = GLASS[v.glass];
+  const geo = geometry(G);
+  const [pw, ph] = PICTURES[key];
+  const glassH = geo.groundY - (G.rimY - G.rimW * G.tilt);
+  let h = glassH * PAINT_TALL, w = h * pw / ph;
+  if (w > 130) { h *= 130 / w; w = 130; }
+  const bottom = geo.groundY + glassH * PAINT_DROP;
+
+  const svg = S('svg', { viewBox: ART_BOX, 'aria-hidden': 'true', focusable: 'false', class: 'painted' });
+  const pic = S('image', {
+    href: ART_BASE + key + '.webp', x: fx(CX - w / 2), y: fx(bottom - h), width: fx(w), height: fx(h),
+    preserveAspectRatio: 'xMidYMax meet', decoding: 'async'
+  });
+  if (mode === 'pour' && !prefersStill()) pic.setAttribute('class', 'painted-in');
+  svg.appendChild(pic);
+  if (v.smoke) svg.appendChild(smokeOver(geo, seeded(drink.id + ':' + v.glass), mode === 'pour' ? 'rising' : mode !== 'static' ? 'drifting' : 'still'));
+  return svg;
+}
+
+/* the picture where there is one, the drawing where there isn't */
+function drinkArt(drink, opts, mode) {
+  const key = paintedKey(drink, opts);
+  return key ? drawPainted(drink, key, opts, mode) : drawDrink(drink, opts, mode);
+}
+
 /* a drawing in a box, ready to drop into the page */
 function artBox(cls, drink, opts, mode) {
   const box = el('div', cls);
-  box.appendChild(drawDrink(drink, opts, mode));
+  box.appendChild(drinkArt(drink, opts, mode));
   return box;
 }
 
@@ -5841,8 +5931,13 @@ function openSheet(drink) {
   const preview = artBox('preview', drink, state, 'pour');
   head.appendChild(preview);
   const redraw = () => {
+    const was = preview.querySelector('image');
+    const art = drinkArt(drink, state, 'pour');
+    /* the same picture again, say with smoke turned on, doesn't fade back in */
+    const now = art.querySelector('image');
+    if (was && now && was.getAttribute('href') === now.getAttribute('href')) now.removeAttribute('class');
     preview.innerHTML = '';
-    preview.appendChild(drawDrink(drink, state, 'pour'));
+    preview.appendChild(art);
   };
 
   /* no profile words up here: the tasting card below says it better */

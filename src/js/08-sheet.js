@@ -143,8 +143,13 @@ function openSheet(drink) {
   const preview = artBox('preview', drink, state, 'pour');
   head.appendChild(preview);
   const redraw = () => {
+    const was = preview.querySelector('image');
+    const art = drinkArt(drink, state, 'pour');
+    /* the same picture again, say with smoke turned on, doesn't fade back in */
+    const now = art.querySelector('image');
+    if (was && now && was.getAttribute('href') === now.getAttribute('href')) now.removeAttribute('class');
     preview.innerHTML = '';
-    preview.appendChild(drawDrink(drink, state, 'pour'));
+    preview.appendChild(art);
   };
 
   /* no profile words up here: the tasting card below says it better */

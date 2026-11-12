@@ -531,6 +531,35 @@ const checks = [
     ok(/data:image\/svg/.test(card.ink), 'the order button is not a stroke of ink');
   }],
 
+  ['every drink has its watercolour, and a sour its coupe with egg white too', {}, async (page) => {
+    const dir = new URL('../src/data/', import.meta.url).pathname;
+    const src = fs.readdirSync(dir).sort().map((f) => fs.readFileSync(dir + f, 'utf8')).join('\n');
+    const ctx = {};
+    vm.createContext(ctx);
+    vm.runInContext(src + '\n;globalThis.__ = { DRINKS, PICTURES };', ctx);
+    const { DRINKS, PICTURES } = ctx.__;
+    const want = DRINKS.flatMap((d) => (d.egg ? [d.id, d.id + '-egg'] : [d.id]));
+    eq(want.filter((k) => !PICTURES[k]).join(', '), '', 'drinks without a picture');
+    const art = new URL('../art/', import.meta.url).pathname;
+    eq(Object.keys(PICTURES).filter((k) => !fs.existsSync(art + k + '.webp')).join(', '), '', 'pictures missing from art/');
+    /* on the page, every one on the menu loads */
+    await enter(page);
+    const broken = await page.evaluate(async () => {
+      const hrefs = [...document.querySelectorAll('.entry svg.painted image')].map((i) => i.getAttribute('href'));
+      const bad = [];
+      for (const h of hrefs) { const img = new Image(); img.src = h; try { await img.decode(); } catch { bad.push(h); } }
+      return { count: hrefs.length, bad };
+    });
+    eq(broken.count, await count(page, '.entry'), 'menu entries showing a picture');
+    eq(broken.bad.join(', '), '', 'pictures that failed to load');
+    /* unticking egg white swaps the coupe for the rocks glass */
+    const shown = () => page.evaluate(() => document.querySelector('#sheet .preview svg image').getAttribute('href'));
+    await openDrink(page, 'whiskey-sour');
+    ok((await shown()).endsWith('whiskey-sour-egg.webp'), 'the sour opens without its coupe');
+    await page.click('#sheet .option.egg');
+    ok((await shown()).endsWith('whiskey-sour.webp'), 'no egg white still shows the coupe');
+  }],
+
   ['Surprise me pours something from the menu, never the secret', {}, async (page) => {
     await enter(page);
     for (let i = 0; i < 6; i++) {
