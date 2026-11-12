@@ -99,7 +99,7 @@ dialog.sending::backdrop { animation: card-send-fade .45s ease forwards; }
   .sheet-title { align-self: center; }
   .sheet-hook { padding-left: 6px; }
 }
-.preview { grid-area: art; width: clamp(88px, 24vw, 118px); aspect-ratio: 120 / 170; }
+.preview { grid-area: art; width: clamp(88px, 24vw, 136px); aspect-ratio: 120 / 170; }
 .preview svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .sheet-title {
   grid-area: title;

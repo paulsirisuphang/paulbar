@@ -619,8 +619,9 @@ function smokeOver(geo, rand, how) {
    glass; the smoke is still drawn over it. */
 const ART_BASE = 'art/';
 /* the picture runs a little above the rim, for the garnish, and below the
-   foot, for the drips */
-const PAINT_TALL = 1.3, PAINT_DROP = .12;
+   foot, for the drips; it's drawn a size up from the glass, so a short
+   drink fills its box, and a tall one stops at the top of it */
+const PAINT_TALL = 1.55, PAINT_DROP = .12, PAINT_MOST = 172, PAINT_WIDEST = 150;
 
 function paintedKey(drink, opts = {}) {
   const key = drink.egg && opts.egg ? drink.id + '-egg' : drink.id;
@@ -633,8 +634,8 @@ function drawPainted(drink, key, opts, mode) {
   const geo = geometry(G);
   const [pw, ph] = PICTURES[key];
   const glassH = geo.groundY - (G.rimY - G.rimW * G.tilt);
-  let h = glassH * PAINT_TALL, w = h * pw / ph;
-  if (w > 130) { h *= 130 / w; w = 130; }
+  let h = Math.min(glassH * PAINT_TALL, PAINT_MOST), w = h * pw / ph;
+  if (w > PAINT_WIDEST) { h *= PAINT_WIDEST / w; w = PAINT_WIDEST; }
   const bottom = geo.groundY + glassH * PAINT_DROP;
 
   const svg = S('svg', { viewBox: ART_BOX, 'aria-hidden': 'true', focusable: 'false', class: 'painted' });
