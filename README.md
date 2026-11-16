@@ -1,7 +1,7 @@
 # Paul's Bar
 
 A cocktail menu that friends order from on their phones, in English or Thai.
-It's set like a printed card on washi paper: 28 drinks in four sections, each
+It's set like a printed card on washi paper: 27 drinks in four sections, each
 one with its own watercolour, plus one that isn't on the list.
 
 - The **menu** opens on the bar at rest: shelves of bottles, a paper
@@ -22,7 +22,7 @@ one with its own watercolour, plus one that isn't on the list.
 - Each line on the menu says how the drink tastes and how strong it is.
   A **drink's card** adds its story, what's in it (one line, no measures:
   those stay behind the bar, on the ticket), how it tastes, and the
-  options it takes: smoke and a choice of wood on 9 drinks, egg white on 3,
+  options it takes: smoke and a choice of wood on 7 drinks, egg white on 3,
   yuzu bitters on 5 and umami bitters on 3. A drink that takes smoke opens
   with it on, on the wood that suits it best, and shows its smoke on the
   menu; the guest can take it off. The Japanese bitters work the same way:

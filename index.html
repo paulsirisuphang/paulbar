@@ -1600,32 +1600,32 @@ const DRINKS = [
   },
   {
     id: 'boulevardier', name: 'Boulevardier', method: 'Stirred', section: 'stirred',
-    inside: "Bourbon, Campari, sweet vermouth",
-    taste: "A bourbon Negroni: bitter orange, caramel and oak.",
+    inside: "Blended Scotch, Campari, sweet vermouth",
+    taste: "A Scotch Negroni: bitter orange, malt and oak.",
     hook: "An American in Paris named it after the magazine he published.",
     story: "Then the drink disappeared for 80 years, until bartenders brought it back.",
     flavor: { bitter: 4, sweet: 3, citrus: 2, herbal: 3, strength: 4 },
-    build: [['1.5 oz', 'bourbon'], ['1 oz', 'Campari'], ['1 oz', 'sweet vermouth']],
+    build: [['1.5 oz', 'Johnnie Walker'], ['1 oz', 'Campari'], ['1 oz', 'sweet vermouth']],
     steps: [
       "Fill a mixing glass with good ice.",
-      "Add the bourbon, Campari and sweet vermouth.",
+      "Add the Johnnie Walker, Campari and sweet vermouth.",
       "Stir 30 seconds.",
       "Strain over one large cube, or straight up.",
       "Express an orange peel over the surface and drop it in."
     ],
-    smoke: true, woods: ['Cherry', 'Oak', 'Pecan', 'Walnut'], best: true,
-    smokeNote: "The best drink here to smoke. Bourbon's caramel and oak go well with it.",
+    smoke: true, woods: ['Cherry', 'Oak', 'Pecan'], best: true,
+    smokeNote: "The best drink here to smoke. The Scotch and the Campari both stand up to it.",
     glass: 'rocks', color: '#92321B', ice: 'cube', garnish: 'orange-twist'
   },
   {
     id: 'old-fashioned', name: 'Old Fashioned', method: 'Stirred', section: 'stirred',
-    inside: "Bourbon, sugar, Angostura",
+    inside: "Blended Scotch, sugar, Angostura",
     taste: "Mostly whiskey, a little sweet, a little spice.",
     umami: { qty: '2 dashes', step: 'Add 2 dashes of umami bitters.', at: 2 },
     hook: "People ordered it the old-fashioned way, and that became its name.",
     story: "By the 1880s bartenders added liqueurs to everything. The old way meant just spirit, sugar, water and bitters.",
     flavor: { bitter: 2, sweet: 3, citrus: 1, herbal: 1, strength: 5 },
-    build: [['2 oz', 'bourbon'], ['1', 'sugar cube (or 0.25 oz simple syrup)'], ['2 dashes', 'Angostura']],
+    build: [['2 oz', 'Johnnie Walker'], ['1', 'sugar cube (or 0.25 oz simple syrup)'], ['2 dashes', 'Angostura']],
     steps: [
       "Put the sugar cube in the glass with the bitters and a bar spoon of water.",
       "Muddle until the sugar is mostly dissolved.",
@@ -1633,12 +1633,12 @@ const DRINKS = [
       "Stir 30 seconds, adding a second cube partway through.",
       "Express an orange peel and drop it in."
     ],
-    smoke: true, woods: ['Oak', 'Oak + a pinch of cinnamon', 'Pecan', 'Walnut'],
+    smoke: true, woods: ['Oak', 'Oak + a pinch of cinnamon', 'Pecan'],
     smokeNote: "The classic drink to smoke. Oak suits the whiskey.",
     glass: 'rocks', color: '#A55E22', ice: 'cube', garnish: 'orange-twist'
   },
   {
-    id: 'monte-carlo', name: 'Monte Carlo', method: 'Stirred', section: 'stirred',
+    id: 'monte-carlo', name: 'Monte Carlo', method: 'Stirred', section: 'stirred', out: true,
     inside: "Bourbon, Bénédictine (honey-herb liqueur), Angostura",
     taste: "Honey and herbs, less sweet than a Manhattan.",
     hook: "The Bénédictine in it was sold with the story of a monk who never existed.",
@@ -1657,27 +1657,28 @@ const DRINKS = [
     smokeNote: "Light smoke goes well with the honey in the Bénédictine.",
     glass: 'coupe', color: '#A9722A', ice: 'none', garnish: 'lemon-twist'
   },
-  /* made with bourbon now; the id stays so orders already in the book still find it */
+  /* a Rob Roy while there's no bourbon: a Manhattan made with Scotch. The id
+     stays so orders already in the book still find it */
   {
-    id: 'rye-manhattan', name: 'Manhattan', method: 'Stirred', section: 'stirred',
-    inside: "Bourbon, sweet vermouth, Angostura",
-    taste: "Rich and a little sweet, with caramel and spice.",
+    id: 'rye-manhattan', name: 'Rob Roy', method: 'Stirred', section: 'stirred',
+    inside: "Blended Scotch, sweet vermouth, Angostura",
+    taste: "A Manhattan made with Scotch, rich and a little sweet.",
     umami: { qty: '2 dashes', step: 'Add 2 dashes of umami bitters.', at: 3 },
-    hook: "It wasn't invented for Winston Churchill's mother, whatever other bars tell you.",
-    story: "She was in England at the time, about to give birth to Winston.",
+    hook: "It's named after a Broadway operetta about a Scottish outlaw.",
+    story: "A bartender at the Waldorf Hotel in New York made it in 1894, when the show opened nearby.",
     flavor: { bitter: 2, sweet: 3, citrus: 1, herbal: 3, strength: 5 },
-    build: [['2 oz', 'bourbon'], ['1 oz', 'sweet vermouth'], ['2 dashes', 'Angostura']],
+    build: [['2 oz', 'Johnnie Walker'], ['1 oz', 'sweet vermouth'], ['2 dashes', 'Angostura']],
     steps: [
       "Taste the vermouth before you start. Flat vermouth is what ruins this drink.",
       "Fill a mixing glass with good ice.",
-      "Add the bourbon, sweet vermouth and Angostura.",
+      "Add the Johnnie Walker, sweet vermouth and Angostura.",
       "Stir 30 seconds.",
       "Strain up into a chilled coupe.",
       "Garnish with a cherry, or express an orange peel."
     ],
-    tip: "Taste the vermouth first. After a month or two open on the shelf it goes flat, and that's the most common reason a home Manhattan tastes wrong.",
+    tip: "Taste the vermouth first. After a month or two open on the shelf it goes flat, and that's the most common reason a home Rob Roy tastes wrong.",
     smoke: true, woods: ['Oak', 'Pecan'],
-    smokeNote: "Oak smoke suits the bourbon.",
+    smokeNote: "Oak smoke suits the Scotch.",
     glass: 'coupe', color: '#8A3B21', ice: 'none', garnish: 'cherry'
   },
   {
@@ -1701,17 +1702,17 @@ const DRINKS = [
   },
   {
     id: 'vieux-carre', name: 'Smoke Vieux Carré', method: 'Stirred',
-    inside: "Bourbon, cognac, sweet vermouth, Bénédictine, bitters",
+    inside: "Cognac, sweet vermouth, Bénédictine, bitters",
     taste: "Rich and spiced, with smoke.",
     section: 'stirred', hidden: true,
     hook: "It was created at a New Orleans hotel whose bar now turns like a carousel.",
     story: "Vieux Carré means old square, the old name for the French Quarter.",
     flavor: { bitter: 3, sweet: 3, citrus: 1, herbal: 5, strength: 5 },
-    build: [['1 oz', 'bourbon'], ['1 oz', 'cognac'], ['1 oz', 'sweet vermouth'],
+    build: [['2 oz', 'cognac'], ['1 oz', 'sweet vermouth'],
             ['0.25 oz', 'Bénédictine'], ['1 dash', "Peychaud's"], ['1 dash', 'Angostura']],
     steps: [
       "Fill a mixing glass with good ice.",
-      "Add the bourbon, cognac, sweet vermouth and Bénédictine.",
+      "Add the cognac, sweet vermouth and Bénédictine.",
       "Add one dash each of Peychaud's and Angostura.",
       "Stir 30 seconds.",
       "Strain over one large cube.",
@@ -1782,22 +1783,22 @@ const DRINKS = [
 
   {
     id: 'whiskey-sour', name: 'Whiskey Sour', method: 'Shaken', section: 'shaken',
-    inside: "Bourbon, lemon, sugar, egg white",
-    taste: "Sweet and sour bourbon under a soft foam.",
+    inside: "Blended Scotch, lemon, sugar, egg white",
+    taste: "Sweet and sour Scotch under a soft foam.",
     eggDefault: true,
     hook: "The egg white adds no flavor, only the foam on top.",
     story: "It's shaken twice: first without ice to whip the egg into foam, then with ice to chill it.",
     flavor: { bitter: 1, sweet: 3, citrus: 4, herbal: 0, strength: 3 },
-    build: [['2 oz', 'bourbon'], ['0.75 oz', 'lemon'], ['0.75 oz', 'simple syrup']],
+    build: [['2 oz', 'Johnnie Walker'], ['0.75 oz', 'lemon'], ['0.75 oz', 'simple syrup']],
     steps: [
       "For a ginger version, use honey-ginger syrup in place of the simple syrup, if you have it.",
-      "Add the bourbon, lemon and simple syrup to a shaker with ice.",
+      "Add the Johnnie Walker, lemon and simple syrup to a shaker with ice.",
       "Shake hard for 12 seconds, until the tin hurts to hold.",
       "Strain over fresh ice."
     ],
     eggSteps: [
       "For a ginger version, use honey-ginger syrup in place of the simple syrup, if you have it.",
-      "Add the bourbon, lemon, simple syrup and egg white to a shaker, with no ice yet.",
+      "Add the Johnnie Walker, lemon, simple syrup and egg white to a shaker, with no ice yet.",
       "Dry-shake 10 seconds to build the foam.",
       "Add ice and shake hard 12 seconds more.",
       "Double-strain into a chilled glass, no ice.",
@@ -2118,7 +2119,7 @@ const DRINKS = [
       "Top with soda.",
       "If you want, express a lemon peel over the top and drop it in."
     ],
-    tip: "Use bourbon instead of gin for a John Collins.",
+    tip: "Use whiskey instead of gin for a John Collins.",
     smoke: false,
     glass: 'tall', color: '#D0C384', ice: 'tall', garnish: 'none', bubbles: true
   },
@@ -2313,10 +2314,10 @@ const T_EN = {
   ],
   wood_table_head: ['Wood', 'Use on'],
   wood_table: [
-    ['Apple, pear, peach', "The lightest. Monte Carlo, and any drink you don't want to cover up"],
+    ['Apple, pear, peach', "The lightest. For any drink you don't want to cover up"],
     ['Cherry', 'Negroni, Boulevardier. Best match for Campari'],
-    ['Oak', 'The standard for whiskey. Old Fashioned, Sazerac, Manhattan'],
-    ['Pecan', 'Medium and nutty. Sazerac, Manhattan'],
+    ['Oak', 'The standard for whiskey. Old Fashioned, Sazerac, Rob Roy'],
+    ['Pecan', 'Medium and nutty. Sazerac, Rob Roy'],
     ['Cinnamon', 'A pinch blended into oak, never on its own. Old Fashioned only'],
     ['Walnut', 'Strong and bitter, so use a little. Bourbon drinks only, never the Negroni']
   ]
@@ -2376,7 +2377,7 @@ const TH_KEEP = [
   'ฝานแว่น', 'หั่นเสี้ยว', 'เข้มข้น', 'เปรี้ยวสด', 'ส่วนผสม', 'คอเหล้า', 'เคล็ดลับ', 'เครื่องมือ',
   'เครื่องเทศ', 'โรงกลั่น', 'ยึดครอง', 'ราชสำนัก', 'ม้าหมุน', 'หัวจ่าย', 'เด็ดขาด', 'ผู้โดยสาร', 'รายชื่อ',
   'อักษรย่อ', 'ตลอดกาล', 'สายเข้ม', 'สายเปรี้ยว', 'สายซ่า', 'สายไม่เมา', 'เสี่ยงดวง', 'สัดส่วน', 'ยูซุ', 'อูมามิ', 'คอมบุ', 'พอนสึ', 'ดาชิ', 'จุนไม', 'โคจิ', 'สาเก', 'นางาซากิ', 'ดัตช์', 'เกรปฟรุต', 'ปลาโอแห้ง', 'ปลาโอ', 'เห็ดหอม', 'พันช์', 'น้ำซุป', 'โป๊ยกั๊ก', 'เลมอนเนด', 'ซิตรัส', 'รากไม้', 'อะเพอริทีฟ', 'นุ่มลื่น', 'กลมกล่อม', 'เชื้อสาย', 'เนื้อสัมผัส', 'นิดหนึ่ง', 'นิดเดียว', 'นิดหน่อย', 'หนานุ่ม', 'ครูสอนฟันดาบ', 'ขณะที่', 'ต่อมา', 'กลายเป็น', 'แดช', 'ด้านบน', 'ขึ้นมา', 'ขี้เกียจ', 'ข้างนอก',
-  'ใบเตย', 'เตยหอม', 'ข้าวเหนียว', 'ข้าวหอมมะลิ', 'ขนมปังขาว', 'สารหอม', 'ลอยหน้า', 'ช้อนบาร์', 'กรอง', 'ฟองนุ่ม', 'ดรายเวอร์มุท', 'ดราย'
+  'มอลต์', 'บรอดเวย์', 'ละครเพลง', 'นอกกฎหมาย', 'ใบเตย', 'เตยหอม', 'ข้าวเหนียว', 'ข้าวหอมมะลิ', 'ขนมปังขาว', 'สารหอม', 'ลอยหน้า', 'ช้อนบาร์', 'กรอง', 'ฟองนุ่ม', 'ดรายเวอร์มุท', 'ดราย'
 ];
 
 const T_TH = {
@@ -2498,10 +2499,10 @@ const T_TH = {
   ],
   wood_table_head: ['ไม้', 'ใช้กับ'],
   wood_table: [
-    ['แอปเปิล แพร์ พีช', 'อ่อนที่สุด ใช้กับ Monte Carlo หรือแก้วที่ไม่อยากให้ควันกลบรส'],
+    ['แอปเปิล แพร์ พีช', 'อ่อนที่สุด ใช้กับแก้วที่ไม่อยากให้ควันกลบรส'],
     ['เชอร์รี', 'Negroni และ Boulevardier เข้ากับ Campari ที่สุด'],
-    ['โอ๊ก', 'ไม้มาตรฐานคู่วิสกี้ ใช้กับ Old Fashioned, Sazerac, Manhattan'],
-    ['พีแคน', 'แรงปานกลาง กลิ่นออกถั่ว ใช้กับ Sazerac, Manhattan'],
+    ['โอ๊ก', 'ไม้มาตรฐานคู่วิสกี้ ใช้กับ Old Fashioned, Sazerac, Rob Roy'],
+    ['พีแคน', 'แรงปานกลาง กลิ่นออกถั่ว ใช้กับ Sazerac, Rob Roy'],
     ['อบเชย', 'โรยลงในไม้โอ๊กนิดเดียว ห้ามใช้เดี่ยว ๆ ใช้กับ Old Fashioned เท่านั้น'],
     ['วอลนัต', 'ฝาดและแรง ใช้นิดเดียวพอ เฉพาะแก้วเบอร์เบิน ห้ามใช้กับ Negroni']
   ]
@@ -2539,29 +2540,29 @@ const TH = {
     smokeNote: "ไม้เชอร์รีเข้ากับ Campari ที่สุด"
   },
   'boulevardier': {
-    inside: "เบอร์เบิน · Campari · สวีทเวอร์มุท",
-    taste: "Negroni ฉบับเบอร์เบิน ขมส้ม หอมคาราเมลกับโอ๊ก",
+    inside: "เบลนเด็ดสก็อตช์ · Campari · สวีทเวอร์มุท",
+    taste: "Negroni ฉบับสก็อตช์ ขมส้ม หอมมอลต์กับโอ๊ก",
     method: 'คนกับน้ำแข็ง',
     hook: 'หนุ่มอเมริกันในปารีสตั้งชื่อแก้วนี้ตามนิตยสารของตัวเอง',
     story: "จากนั้นแก้วนี้ก็หายไป 80 ปี จนบาร์เทนเดอร์รุ่นหลังนำกลับมาทำใหม่",
-    build: [['1.5 ออนซ์', 'เบอร์เบิน'], ['1 ออนซ์', 'Campari'], ['1 ออนซ์', 'สวีทเวอร์มุท']],
+    build: [['1.5 ออนซ์', 'Johnnie Walker'], ['1 ออนซ์', 'Campari'], ['1 ออนซ์', 'สวีทเวอร์มุท']],
     steps: [
       FILL_MIXING,
-      'เทเบอร์เบิน Campari และสวีทเวอร์มุทลงไป',
+      'เท Johnnie Walker, Campari และสวีทเวอร์มุทลงไป',
       STIR,
       'กรองลงบนน้ำแข็งก้อนใหญ่หนึ่งก้อน หรือเสิร์ฟแบบไม่มีน้ำแข็งก็ได้',
       ORANGE_IN
     ],
-    smokeNote: "แก้วที่รมควันแล้วอร่อยที่สุดในเมนู คาราเมลกับโอ๊กของเบอร์เบินเข้ากับควันพอดี"
+    smokeNote: "แก้วที่รมควันแล้วอร่อยที่สุดในเมนู ทั้งสก็อตช์และ Campari รับควันได้ดี"
   },
   'old-fashioned': {
-    inside: "เบอร์เบิน · น้ำตาล · Angostura",
+    inside: "เบลนเด็ดสก็อตช์ · น้ำตาล · Angostura",
     taste: "วิสกี้นำ หวานนิด เครื่องเทศหน่อย",
     umami: { qty: '2 แดช', step: 'ใส่บิตเตอร์อูมามิ 2 แดช', at: 2 },
     method: 'คนกับน้ำแข็ง',
     hook: 'คอเหล้าสั่งกันว่า “ขอแบบโบราณ” จนกลายเป็นชื่อแก้วนี้',
     story: "ยุค 1880 บาร์เทนเดอร์ใส่ลิเคียวลงไปแทบทุกแก้ว ขอแบบโบราณเลยหมายถึงเหล้า น้ำตาล น้ำ และบิตเตอร์ แค่นั้น",
-    build: [['2 ออนซ์', 'เบอร์เบิน'], ['1 ก้อน', 'น้ำตาลก้อน (หรือไซรัปน้ำตาล 0.25 ออนซ์)'], ['2 แดช', 'Angostura']],
+    build: [['2 ออนซ์', 'Johnnie Walker'], ['1 ก้อน', 'น้ำตาลก้อน (หรือไซรัปน้ำตาล 0.25 ออนซ์)'], ['2 แดช', 'Angostura']],
     steps: [
       'ใส่น้ำตาลก้อน บิตเตอร์ และน้ำหนึ่งช้อนบาร์ลงในแก้ว',
       'บดจนน้ำตาลละลายเกือบหมด',
@@ -2589,23 +2590,23 @@ const TH = {
     smokeNote: "ควันอ่อน ๆ เข้ากับกลิ่นน้ำผึ้งของ Bénédictine"
   },
   'rye-manhattan': {
-    inside: "เบอร์เบิน · สวีทเวอร์มุท · Angostura",
-    taste: "เข้มข้น หวานหน่อย หอมคาราเมลกับเครื่องเทศ",
+    inside: "เบลนเด็ดสก็อตช์ · สวีทเวอร์มุท · Angostura",
+    taste: "Manhattan ฉบับสก็อตช์ เข้มข้น หวานหน่อย",
     umami: { qty: '2 แดช', step: 'ใส่บิตเตอร์อูมามิ 2 แดช', at: 3 },
     method: 'คนกับน้ำแข็ง',
-    hook: "บาร์อื่นจะเล่ายังไงก็ตาม แก้วนี้ไม่ได้คิดขึ้นเพื่อแม่ของวินสตัน เชอร์ชิล",
-    story: "ตอนนั้นเธออยู่ที่อังกฤษ และกำลังจะคลอดวินสตัน",
-    build: [['2 ออนซ์', 'เบอร์เบิน'], ['1 ออนซ์', 'สวีทเวอร์มุท'], ['2 แดช', 'Angostura']],
+    hook: "ตั้งชื่อตามละครเพลงบรอดเวย์ เรื่องของ Rob Roy คนนอกกฎหมายชาวสก็อต",
+    story: "บาร์เทนเดอร์ของโรงแรม Waldorf ในนิวยอร์กคิดแก้วนี้ขึ้นในปี 1894 ตอนที่ละครเรื่องนี้เปิดแสดงอยู่ใกล้ ๆ",
+    build: [['2 ออนซ์', 'Johnnie Walker'], ['1 ออนซ์', 'สวีทเวอร์มุท'], ['2 แดช', 'Angostura']],
     steps: [
       'ชิมเวอร์มุทก่อนเริ่ม เวอร์มุทที่รสตกแล้วคือตัวที่ทำให้แก้วนี้พัง',
       FILL_MIXING,
-      'เทเบอร์เบิน สวีทเวอร์มุท และ Angostura ลงไป',
+      'เท Johnnie Walker, สวีทเวอร์มุท และ Angostura ลงไป',
       STIR,
       'กรองลงแก้วคูเป้แช่เย็น',
       'ตกแต่งด้วยเชอร์รี หรือบีบเปลือกส้มเหนือแก้ว'
     ],
-    tip: "ชิมเวอร์มุทก่อน ถ้าเปิดขวดทิ้งไว้เกินเดือนสองเดือน รสจะตก และนี่คือสาเหตุอันดับหนึ่งที่ Manhattan ทำเองที่บ้านไม่อร่อย",
-    smokeNote: "ควันไม้โอ๊กเข้ากับเบอร์เบิน"
+    tip: "ชิมเวอร์มุทก่อน ถ้าเปิดขวดทิ้งไว้เกินเดือนสองเดือน รสจะตก และนี่คือสาเหตุอันดับหนึ่งที่ Rob Roy ทำเองที่บ้านไม่อร่อย",
+    smokeNote: "ควันไม้โอ๊กเข้ากับสก็อตช์"
   },
   'sazerac': {
     inside: "คอนญัก · น้ำตาล · Peychaud's",
@@ -2656,21 +2657,21 @@ const TH = {
     ]
   },
   'whiskey-sour': {
-    inside: "เบอร์เบิน · เลมอน · น้ำตาล · ไข่ขาว",
+    inside: "เบลนเด็ดสก็อตช์ · เลมอน · น้ำตาล · ไข่ขาว",
     taste: "เปรี้ยวอมหวาน ฟองนุ่มด้านบน",
     method: 'เขย่ากับน้ำแข็ง',
     hook: "ไข่ขาวไม่ได้ให้รสอะไรเลย ใส่ไว้เพื่อฟองด้านบนอย่างเดียว",
     story: "แก้วนี้เขย่าสองรอบ รอบแรกไม่ใส่น้ำแข็งเพื่อตีไข่ให้เป็นฟอง รอบสองใส่น้ำแข็งเพื่อให้เย็น",
-    build: [['2 ออนซ์', 'เบอร์เบิน'], ['0.75 ออนซ์', 'น้ำเลมอน'], ['0.75 ออนซ์', 'ไซรัปน้ำตาล']],
+    build: [['2 ออนซ์', 'Johnnie Walker'], ['0.75 ออนซ์', 'น้ำเลมอน'], ['0.75 ออนซ์', 'ไซรัปน้ำตาล']],
     steps: [
       'ถ้ามีไซรัปน้ำผึ้งขิง ใช้แทนไซรัปน้ำตาลได้ จะได้เวอร์ชันขิง',
-      'ใส่เบอร์เบิน น้ำเลมอน ไซรัปน้ำตาล และน้ำแข็งลงในเชคเกอร์',
+      'ใส่ Johnnie Walker, น้ำเลมอน ไซรัปน้ำตาล และน้ำแข็งลงในเชคเกอร์',
       SHAKE_HARD,
       'กรองลงบนน้ำแข็งใหม่'
     ],
     eggSteps: [
       'ถ้ามีไซรัปน้ำผึ้งขิง ใช้แทนไซรัปน้ำตาลได้ จะได้เวอร์ชันขิง',
-      'ใส่เบอร์เบิน น้ำเลมอน ไซรัปน้ำตาล และไข่ขาวลงในเชคเกอร์ ยังไม่ต้องใส่น้ำแข็ง',
+      'ใส่ Johnnie Walker, น้ำเลมอน ไซรัปน้ำตาล และไข่ขาวลงในเชคเกอร์ ยังไม่ต้องใส่น้ำแข็ง',
       'เขย่าเปล่า ๆ 10 วินาที ให้เกิดฟอง',
       'ใส่น้ำแข็ง แล้วเขย่าแรง ๆ ต่ออีก 12 วินาที',
       'กรองสองชั้นลงแก้วแช่เย็น ไม่ใส่น้ำแข็ง',
@@ -2787,16 +2788,16 @@ const TH = {
     ]
   },
   'vieux-carre': {
-    inside: "เบอร์เบิน · คอนญัก · สวีทเวอร์มุท · Bénédictine · บิตเตอร์",
+    inside: "คอนญัก · สวีทเวอร์มุท · Bénédictine · บิตเตอร์",
     taste: "เข้ม เครื่องเทศ หอมควัน",
     method: 'คนกับน้ำแข็ง',
     hook: "แก้วนี้เกิดที่โรงแรมแห่งหนึ่งในนิวออร์ลีนส์ ที่ทุกวันนี้บาร์ของโรงแรมหมุนได้เหมือนม้าหมุน",
     story: "Vieux Carré แปลว่าจัตุรัสเก่า ชื่อเดิมของย่านเฟรนช์ควอเตอร์",
-    build: [['1 ออนซ์', 'เบอร์เบิน'], ['1 ออนซ์', 'คอนญัก'], ['1 ออนซ์', 'สวีทเวอร์มุท'],
+    build: [['2 ออนซ์', 'คอนญัก'], ['1 ออนซ์', 'สวีทเวอร์มุท'],
             ['0.25 ออนซ์', 'Bénédictine'], ['1 แดช', "Peychaud's"], ['1 แดช', 'Angostura']],
     steps: [
       FILL_MIXING,
-      'เทเบอร์เบิน คอนญัก สวีทเวอร์มุท และ Bénédictine ลงไป',
+      'เทคอนญัก สวีทเวอร์มุท และ Bénédictine ลงไป',
       "หยด Peychaud's และ Angostura อย่างละหนึ่งแดช",
       STIR,
       'กรองลงบนน้ำแข็งก้อนใหญ่หนึ่งก้อน',
@@ -2975,7 +2976,7 @@ const TH = {
       'เติมโซดาจนเต็ม',
       'ถ้าชอบ บีบเปลือกเลมอนเหนือแก้ว แล้วหย่อนลงไป'
     ],
-    tip: "ใช้เบอร์เบินแทนจินจะได้ John Collins"
+    tip: "ใช้วิสกี้แทนจินจะได้ John Collins"
   },
   'whiskey-highball': {
     inside: "Hibiki Harmony (วิสกี้ญี่ปุ่น) · โซดา · ผิวเลมอน",

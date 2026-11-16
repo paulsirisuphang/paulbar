@@ -88,10 +88,10 @@ const T_EN = {
   ],
   wood_table_head: ['Wood', 'Use on'],
   wood_table: [
-    ['Apple, pear, peach', "The lightest. Monte Carlo, and any drink you don't want to cover up"],
+    ['Apple, pear, peach', "The lightest. For any drink you don't want to cover up"],
     ['Cherry', 'Negroni, Boulevardier. Best match for Campari'],
-    ['Oak', 'The standard for whiskey. Old Fashioned, Sazerac, Manhattan'],
-    ['Pecan', 'Medium and nutty. Sazerac, Manhattan'],
+    ['Oak', 'The standard for whiskey. Old Fashioned, Sazerac, Rob Roy'],
+    ['Pecan', 'Medium and nutty. Sazerac, Rob Roy'],
     ['Cinnamon', 'A pinch blended into oak, never on its own. Old Fashioned only'],
     ['Walnut', 'Strong and bitter, so use a little. Bourbon drinks only, never the Negroni']
   ]

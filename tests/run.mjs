@@ -191,9 +191,9 @@ const checks = [
 
   ['the menu lists every drink but the secret one', {}, async (page) => {
     await enter(page);
-    eq(await count(page, '.entry'), 28, 'drinks on the menu');
+    eq(await count(page, '.entry'), 27, 'drinks on the menu');
     /* no Cointreau on the bar, so the drinks that need it are off the menu */
-    for (const id of ['sidecar', 'corpse-reviver', 'pegu-club']) eq(await count(page, `.entry[data-drink="${id}"]`), 0, `${id} on the menu`);
+    for (const id of ['sidecar', 'corpse-reviver', 'pegu-club', 'monte-carlo']) eq(await count(page, `.entry[data-drink="${id}"]`), 0, `${id} on the menu`);
     for (const id of ['bobby-burns', 'penicillin', 'pandan-sour']) eq(await count(page, `.entry[data-drink="${id}"]`), 1, id + ' on the menu');
     eq(await count(page, '.entry[data-drink="de-la-louisiane"]'), 0, 'De La Louisiane on the menu');
     eq(await count(page, '.entry[data-drink="vieux-carre"]'), 0, 'the secret drink on the menu');
@@ -224,7 +224,7 @@ const checks = [
     await enter(page);
     await openDrink(page, 'whiskey-sour');
     ok(await page.$('#sheet .option.egg input:checked'), 'the whiskey sour opens without egg white');
-    eq(await text(page, '#sheet .inside-line'), 'Bourbon, lemon, sugar, egg white', 'what is in it');
+    eq(await text(page, '#sheet .inside-line'), 'Blended Scotch, lemon, sugar, egg white', 'what is in it');
     eq(await count(page, '#sheet .build'), 0, 'measures on the guest\'s card');
     await closeCard(page);
   }],
@@ -264,7 +264,7 @@ const checks = [
     await enter(page);
     /* the menu shows smoke over every drink that takes it, and no other */
     const smoked = await page.$$eval('.entry', (n) => n.filter((e) => e.querySelector('.entry-art .wisp-soft')).map((e) => e.dataset.drink));
-    eq(smoked.length, 8, 'drinks shown smoking on the menu: ' + smoked.join(', '));
+    eq(smoked.length, 7, 'drinks shown smoking on the menu: ' + smoked.join(', '));
     ok(!smoked.includes('gimlet'), 'smoke over a drink that never takes it');
     /* a drink that never takes smoke just doesn't offer it, without saying why */
     await openDrink(page, 'gimlet');
@@ -426,7 +426,7 @@ const checks = [
     const filters = await page.$$eval('.filter', (n) => n.map((b) => b.textContent));
     ok(filters.every((f) => /[\u0E00-\u0E7F]/.test(f)), 'a filter is not in Thai');
     const words = await page.$$eval('.entry[data-drink="boulevardier"] .entry-hook .tw', (n) => n.map((w) => w.textContent));
-    ok(words.includes('คาราเมล') && words.includes('เบอร์เบิน'), 'a loanword is cut in two: ' + words.join('|'));
+    ok(words.includes('สก็อตช์') && words.includes('มอลต์'), 'a loanword is cut in two: ' + words.join('|'));
     const split = await page.$$eval('.note', (n) => n.filter((x) => x.children.length !== 2).length);
     eq(split, 0, 'notes whose words came apart');
     eq(await page.$eval('.entry-hook', (n) => getComputedStyle(n).fontStyle), 'normal', 'a Thai hook set in italic');
@@ -601,7 +601,7 @@ const checks = [
         await pick(1, level);
         const got = await offered();
         eq(got.length, 3, `drinks offered for ${taste}, ${level}`);
-        ok(!got.some((id) => ['sidecar', 'corpse-reviver', 'pegu-club', 'honey-lemon-fizz'].includes(id)), `${taste}, ${level} offered ${got.join(', ')}`);
+        ok(!got.some((id) => ['sidecar', 'corpse-reviver', 'pegu-club', 'monte-carlo', 'honey-lemon-fizz'].includes(id)), `${taste}, ${level} offered ${got.join(', ')}`);
       }
     }
     /* a drink opens its card, ready to order */
@@ -628,12 +628,12 @@ const checks = [
     await page.click('#sheet .option.umami');
     eq(await contains(), '', 'the classic Manhattan');
     await closeCard(page);
-    await openDrink(page, 'monte-carlo');
-    eq(await contains(), 'Honey', 'the Monte Carlo, made with Bénédictine');
+    await openDrink(page, 'bobby-burns');
+    eq(await contains(), 'Honey', 'the Bobby Burns, made with Bénédictine');
     await closeCard(page);
     /* on the menu, honey has its own mark */
     const honey = await page.$$eval('.entry', (n) => n.filter((e) => e.querySelector('.note.honey')).map((e) => e.dataset.drink).sort().join(', '));
-    eq(honey, 'bees-knees, bobby-burns, honey-collins, honey-lemon-fizz, margarita, monte-carlo, pandan-sour, penicillin', 'drinks marked honey');
+    eq(honey, 'bees-knees, bobby-burns, honey-collins, honey-lemon-fizz, margarita, pandan-sour, penicillin', 'drinks marked honey');
   }],
 
   ['Surprise me pours something from the menu, never the secret', {}, async (page) => {
