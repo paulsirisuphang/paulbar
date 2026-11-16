@@ -2279,9 +2279,9 @@ const T_EN = {
   chip_smoke_best: 'Best with smoke',
   chip_smoked: 'Smoked with ', chip_low: 'Low alcohol', chip_na: 'No alcohol',
   chip_warn: 'Not alcohol-free', chip_egg_opt: 'Egg white optional', chip_egg: 'Egg white',
-  chip_yuzu: 'Yuzu bitters', chip_umami: 'Umami bitters', chip_umami_fish: 'Umami bitters (fish)', chip_honey: 'Honey',
+  chip_yuzu: 'Yuzu bitters', chip_umami: 'Umami bitters', chip_umami_bonito: 'Umami bitters (bonito)', chip_honey: 'Honey',
   contains: 'Contains',
-  has_egg: 'egg white', has_honey: 'honey', has_fish: 'fish, in the umami bitters',
+  has_egg: 'egg white', has_honey: 'honey', has_bonito: 'bonito, in the umami bitters',
   list_sep: ', ',
 
   egg_ing: 'egg white', egg_qty: '1',
@@ -2426,9 +2426,9 @@ const T_TH = {
   ago_now: 'เมื่อสักครู่',
   ago_min: (m) => m + ' นาทีที่แล้ว',
   ago_hr: (h) => h + ' ชั่วโมงที่แล้ว',
-  chip_yuzu: 'บิตเตอร์ยูซุ', chip_umami: 'บิตเตอร์อูมามิ', chip_umami_fish: 'บิตเตอร์อูมามิ (มีปลา)', chip_honey: 'น้ำผึ้ง',
+  chip_yuzu: 'บิตเตอร์ยูซุ', chip_umami: 'บิตเตอร์อูมามิ', chip_umami_bonito: 'บิตเตอร์อูมามิ (ปลาโอ)', chip_honey: 'น้ำผึ้ง',
   contains: 'ส่วนผสมที่ควรระวัง',
-  has_egg: 'ไข่ขาว', has_honey: 'น้ำผึ้ง', has_fish: 'ปลาโอในบิตเตอร์อูมามิ',
+  has_egg: 'ไข่ขาว', has_honey: 'น้ำผึ้ง', has_bonito: 'ปลาโอในบิตเตอร์อูมามิ',
   list_sep: ' · ',
   egg_ing: 'ไข่ขาว', egg_qty: '1 ฟอง',
   yuzu_bitters: 'บิตเตอร์ยูซุ', yuzu_ing: 'บิตเตอร์ยูซุ',
@@ -5691,7 +5691,7 @@ function containsFor(drink, opts = {}) {
   const out = [];
   if (drink.egg && opts.egg) out.push('egg');
   if (has(/honey|Bénédictine/i)) out.push('honey');
-  if ((drink.umami && opts.umami) || has(/umami/i)) out.push('fish');
+  if ((drink.umami && opts.umami) || has(/umami/i)) out.push('bonito');
   return out;
 }
 
@@ -5708,7 +5708,7 @@ function notesFor(drink) {
   if (drink.egg) out.push({ cls: 'egg', icon: 'egg', text: U(drink.eggDefault ? 'chip_egg' : 'chip_egg_opt') });
   if (has.includes('honey')) out.push({ cls: 'honey', icon: 'honey', text: U('chip_honey') });
   if (drink.yuzu) out.push({ cls: 'yuzu', icon: 'drop', text: U('chip_yuzu') });
-  if (has.includes('fish')) out.push({ cls: 'umami', icon: 'drop', text: U('chip_umami_fish') });
+  if (has.includes('bonito')) out.push({ cls: 'umami', icon: 'drop', text: U('chip_umami_bonito') });
   return out;
 }
 
@@ -5954,7 +5954,7 @@ function openSheet(drink) {
      behind the bar, in the build on the ticket */
   body.appendChild(field(U('whats_in_it'), el('p', 'inside-line', drink.inside)));
 
-  /* egg white, honey and fish, said plainly; it follows the choices below */
+  /* egg white, honey and bonito, said plainly; it follows the choices below */
   const containsLine = el('p', 'contains-line');
   const containsField = field(U('contains'), containsLine);
   const paintContains = () => {

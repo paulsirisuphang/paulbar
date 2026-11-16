@@ -63,7 +63,7 @@ function containsFor(drink, opts = {}) {
   const out = [];
   if (drink.egg && opts.egg) out.push('egg');
   if (has(/honey|Bénédictine/i)) out.push('honey');
-  if ((drink.umami && opts.umami) || has(/umami/i)) out.push('fish');
+  if ((drink.umami && opts.umami) || has(/umami/i)) out.push('bonito');
   return out;
 }
 
@@ -80,7 +80,7 @@ function notesFor(drink) {
   if (drink.egg) out.push({ cls: 'egg', icon: 'egg', text: U(drink.eggDefault ? 'chip_egg' : 'chip_egg_opt') });
   if (has.includes('honey')) out.push({ cls: 'honey', icon: 'honey', text: U('chip_honey') });
   if (drink.yuzu) out.push({ cls: 'yuzu', icon: 'drop', text: U('chip_yuzu') });
-  if (has.includes('fish')) out.push({ cls: 'umami', icon: 'drop', text: U('chip_umami_fish') });
+  if (has.includes('bonito')) out.push({ cls: 'umami', icon: 'drop', text: U('chip_umami_bonito') });
   return out;
 }
 

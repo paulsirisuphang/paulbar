@@ -30,8 +30,8 @@ one with its own watercolour, plus one that isn't on the list.
   come with egg white, and the guest can take it out. A drink that doesn't
   take smoke has no smoke option, and its card doesn't explain why.
   Under what's in it, the card says when the drink contains egg white,
-  honey (Bénédictine counts) or fish (the umami bitters), and it follows
-  the guest's choices. The menu marks honey and the fish too.
+  honey (Bénédictine counts) or bonito (in the umami bitters), and it follows
+  the guest's choices. The menu marks honey and the bonito too.
 - **Sending** an order folds its card into a paper plane, the way a dart is
   folded by hand, and flies it to the orders button in the top right corner;
   the slip confirming the order comes when it lands. With reduced motion the

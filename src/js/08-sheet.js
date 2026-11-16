@@ -179,7 +179,7 @@ function openSheet(drink) {
      behind the bar, in the build on the ticket */
   body.appendChild(field(U('whats_in_it'), el('p', 'inside-line', drink.inside)));
 
-  /* egg white, honey and fish, said plainly; it follows the choices below */
+  /* egg white, honey and bonito, said plainly; it follows the choices below */
   const containsLine = el('p', 'contains-line');
   const containsField = field(U('contains'), containsLine);
   const paintContains = () => {

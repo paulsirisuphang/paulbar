@@ -53,9 +53,9 @@ const T_EN = {
   chip_smoke_best: 'Best with smoke',
   chip_smoked: 'Smoked with ', chip_low: 'Low alcohol', chip_na: 'No alcohol',
   chip_warn: 'Not alcohol-free', chip_egg_opt: 'Egg white optional', chip_egg: 'Egg white',
-  chip_yuzu: 'Yuzu bitters', chip_umami: 'Umami bitters', chip_umami_fish: 'Umami bitters (fish)', chip_honey: 'Honey',
+  chip_yuzu: 'Yuzu bitters', chip_umami: 'Umami bitters', chip_umami_bonito: 'Umami bitters (bonito)', chip_honey: 'Honey',
   contains: 'Contains',
-  has_egg: 'egg white', has_honey: 'honey', has_fish: 'fish, in the umami bitters',
+  has_egg: 'egg white', has_honey: 'honey', has_bonito: 'bonito, in the umami bitters',
   list_sep: ', ',
 
   egg_ing: 'egg white', egg_qty: '1',

@@ -243,7 +243,7 @@ const checks = [
     eq(umami.sort().join(', '), 'negroni, old-fashioned, rye-manhattan', 'drinks with umami bitters in');
     /* the menu line says so */
     const marked = await page.$$eval('.entry', (n) => n.filter((e) => e.querySelector('.note.umami')).map((e) => e.dataset.drink).sort().join(', '));
-    eq(marked, 'negroni, old-fashioned, ponzu-gimlet, rye-manhattan, umami-martini', 'drinks whose menu line says umami bitters, with fish');
+    eq(marked, 'negroni, old-fashioned, ponzu-gimlet, rye-manhattan, umami-martini', 'drinks whose menu line says umami bitters, with bonito');
     /* unticked, the order is the classic */
     await openDrink(page, 'rye-manhattan');
     await page.click('#sheet .option.umami');
@@ -615,7 +615,7 @@ const checks = [
     ok(!(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)), 'the page scrolls sideways');
   }],
 
-  ['a drink says when it has egg white, honey or fish in it', {}, async (page) => {
+  ['a drink says when it has egg white, honey or bonito in it', {}, async (page) => {
     await enter(page);
     const contains = () => page.$eval('#sheet', (s) => { const f = s.querySelector('.contains-line'); return f && !f.closest('[hidden]') ? f.textContent.trim() : ''; });
     await openDrink(page, 'pandan-sour');
@@ -624,9 +624,9 @@ const checks = [
     eq(await contains(), 'Honey', 'the pandan sour without egg white');
     await closeCard(page);
     await openDrink(page, 'rye-manhattan');
-    eq(await contains(), 'Fish, in the umami bitters', 'the Manhattan');
+    eq(await contains(), 'Bonito, in the umami bitters', 'the Rob Roy');
     await page.click('#sheet .option.umami');
-    eq(await contains(), '', 'the classic Manhattan');
+    eq(await contains(), '', 'the classic Rob Roy');
     await closeCard(page);
     await openDrink(page, 'bobby-burns');
     eq(await contains(), 'Honey', 'the Bobby Burns, made with Bénédictine');
